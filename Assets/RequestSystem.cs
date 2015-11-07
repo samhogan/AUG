@@ -5,10 +5,12 @@ using System.Collections.Generic;
 //this monobehavior script facillitates the generation of every system(terrain, surface)
 //and attaches to a gameobject that things will be generated around
 //this picks 3d spots around the player that tell each system what to generate
+//NOTE: a surface unit must be bigger than a chunk or the generation will not work properly
+//Chunk size is static, surface unit size is dynamic
 public class RequestSystem : MonoBehaviour 
 {
 	public Planet planet;//the planet the terrainloader is building for, will not be public eventually(curplanet variable or something)
-	TerrainSystem terrain;//the terrain system of the planet
+	//TerrainSystem terrain;//the terrain system of the planet
 
 	//positions of 'chunks' of objects that have already been requested
 	private List<WorldPos> requestedChunks = new List<WorldPos>();
@@ -20,7 +22,20 @@ public class RequestSystem : MonoBehaviour
 	// Use this for initialization
 	void Start() 
 	{
-		terrain = planet.terrain;
+		//surface position test
+		/*for(int i = -4; i<=4; i++)
+		{
+			for(int j = -4; j<=4; j++)
+			{
+
+				SurfacePos sp = new SurfacePos(PSide.TOP, i, j);
+				GameObject sphere = GameObject.CreatePrimitive(PrimitiveType.Sphere);
+				sphere.transform.position = UnitConverter.getWP(sp, 200, 8);
+				
+				
+			}
+		}*/
+		//terrain = planet.terrain;
 	}
 	
 	// Update is called once per frame
@@ -36,6 +51,9 @@ public class RequestSystem : MonoBehaviour
 			requestTerrain(curChunkPos);
 			requestedChunks.Add(curChunkPos);
 		}
+
+		//testing
+		//print(UnitConverter.getSP(transform.position, 8));
 	}
 	
 	//Get the unit chunk position of the current chunk that the player is in
@@ -54,13 +72,17 @@ public class RequestSystem : MonoBehaviour
 	//the size of a terrain chunk is the same as a request chunk to keep it organized, and makes requesting it fairly simple
 	void requestTerrain(WorldPos pos)
 	{
-		terrain.CreateChunk(pos.toVector3());
+		planet.terrain.CreateChunk(pos.toVector3());
 	}
 
 	//this requests the generation of a surface unit that is at the center of the chunk
 	void requestSurface(WorldPos pos)
 	{
+		//convert the worldpos to a surface pos
+		SurfacePos surfp = UnitConverter.getSP(pos.toVector3(), planet.surface.sideLength);
 
+		//convert the surfacepos to a surface unit then request its creation
+		planet.surface.CreateSurfaceObjects(surfp.toUnit());
 	}
 
 	//contains the order that 'chunks' around the player should be loaded

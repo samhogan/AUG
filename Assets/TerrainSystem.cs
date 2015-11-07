@@ -9,18 +9,16 @@ public class TerrainSystem
 	//noise scale and height, these are tests and will be replaces with multiple scales and heights
 	float scale = 20f;
 	float height = 5f;
-	float radius = 50f;
+	float radius;//the planet radius
 	int chunkSize = TerrainObject.chunkSize;//voxels per chunk side
-
-
-	//Loader loader;//the loader
 
 	//the list of the terrain chunks thaat have been loaded and their cooresponding positions
 	public static Dictionary<Vector3, GameObject> chunks = new Dictionary<Vector3, GameObject>();
 
 
-	public TerrainSystem()
+	public TerrainSystem(float r)
 	{
+		radius = r;
 
 	}
 
@@ -71,7 +69,7 @@ public class TerrainSystem
 
 					//NOISE!!!!!!!!!!!!!!!!!!!!!
 
-					float noise = Noise.GetNoise(voxPos.x/scale,voxPos.y/scale,voxPos.z/scale)*height;
+					float noise = 0.0f;//Noise.GetNoise(voxPos.x/scale,voxPos.y/scale,voxPos.z/scale)*height;
 
 					//float mts = (Noise.GetNoise(posX/50, surface.y/mtnScale, surface.z/mtnScale)-(1f-mtnFrequency)) * mtnHeight; //moountain noise 1.0f decrases frequency
 					/*float mts = (Noise.GetNoise(posX/50.0f, posY/50.0f, posZ/50.0f)-0.5f) * 20;
@@ -87,8 +85,8 @@ public class TerrainSystem
 					chunk.voxVals[x,y,z] = distxyz/(radius+noise);//Noise.GetNoise((x+pos.x)/scale,(y+pos.y)/scale,(z+pos.z)/scale);
 
 					//puts a hole in the planet(just for fun
-					if(voxPos.x<10 && voxPos.x>-10 && voxPos.z<10 && voxPos.z>-10)
-						chunk.voxVals[x,y,z] = 2;
+					//if(voxPos.x<10 && voxPos.x>-10 && voxPos.z<10 && voxPos.z>-10)
+						//chunk.voxVals[x,y,z] = 2;
 						
 					
 				}
