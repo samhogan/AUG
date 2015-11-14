@@ -19,7 +19,8 @@ public class WorldHelper
 
 
 		//go.SetActive(false);
-		go.name = "figure out this naming thing sam";
+		//Make its name in the inspector its type name
+		go.name = typeof(T).ToString();
 
 		//set the objects position
 		go.transform.position = pos;

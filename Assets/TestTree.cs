@@ -25,7 +25,9 @@ public class TestTree : MobileObjects
 
 		//load a tree and parent it to this gameobject
 		GameObject go = Resources.Load("Test things/Tree") as GameObject;
-		GameObject.Instantiate(go, transform.position, Quaternion.identity);
+
+		Quaternion rot = Quaternion.FromToRotation(Vector3.up, transform.position);
+		GameObject.Instantiate(go, transform.position, rot);
 		//go.transform.parent = transform;
 		//gameObject.SetActive(true);
 		
