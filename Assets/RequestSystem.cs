@@ -29,6 +29,7 @@ public class RequestSystem : MonoBehaviour
 	// Use this for initialization
 	void Start() 
 	{
+			
 		//surface position test
 		/*for(int i = -4; i<=4; i++)
 		{

@@ -19,9 +19,15 @@ public class TestTree : MobileObjects
 		print("RENDERING OBJECT");
 		//Mesh mesh = MarchingCubes2.CreateMesh(voxVals);
 		//mesh.RecalculateNormals();//not sure what this does at the moment
-		Mesh mesh = Resources.Load("tree", typeof(Mesh)) as Mesh;
-		filter.mesh = mesh;
+		//Mesh mesh = Resources.Load("tree", typeof(Mesh)) as Mesh;
+		//filter.mesh = mesh;
 		//coll.sharedMesh = mesh;
+
+		//load a tree and parent it to this gameobject
+		GameObject go = Resources.Load("Test things/Tree") as GameObject;
+		GameObject.Instantiate(go, transform.position, Quaternion.identity);
+		go.transform.parent = transform;
+		//gameObject.SetActive(true);
 		
 	}
 

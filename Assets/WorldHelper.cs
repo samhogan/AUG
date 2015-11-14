@@ -9,13 +9,26 @@ public class WorldHelper
 	//NOTE: type T MUST derive from WorldObject, nvmd added in constraint
 	public static void buildObject<T>(Vector3 pos) where T : WorldObject
 	{
+		//can instantiate multiple empty gameobjects per frame because i read they have little performance impact
+		//this creates an empty gameobject and intantiates it into the unity game world
 		GameObject go = new GameObject();
+
+		//REMOVE THESE LATER!!!!!!!!!!!
+		//GameObject go = Resources.Load("Test things/Tree") as GameObject;
+		//GameObject.Instantiate(go);
+
+
+		//go.SetActive(false);
 		go.name = "figure out this naming thing sam";
 
 		//set the objects position
 		go.transform.position = pos;
+
+
 		//add the component that is the type passed in the parameter(the type of object)
 		WorldObject wo = go.AddComponent<T>() as WorldObject;
+
+
 		Debug.Log("Tree built at " + pos);
 
 		WorldPos wp = UnitConverter.toWorldPos(pos);
