@@ -53,19 +53,26 @@ public class RequestSystem : MonoBehaviour
 		//the current chunk the player is in
 		WorldPos curChunkPos = UnitConverter.toWorldPos(transform.position);
 
-
-		//if the chunk the player/object is in has not already been requested, request it
-		if(!requestedChunks.Contains(curChunkPos))
+		//loop through all chunkpositions until one is found that has not been requested
+		for(int i = 0; i<chunkPositions.Length; i++)
 		{
-			print("Player is in chunk " + curChunkPos);
-			requestTerrain(curChunkPos);//request terrain chunk generation
-			requestSurface(curChunkPos);//request surface generation
-			renderObjectsInChunk(curChunkPos);//request objects in this position to be rendered
+			//calculates a proposed chunk to render based on order of chunkPositions and chunkSize
+			WorldPos proposedChunk = new WorldPos(curChunkPos.x + chunkPositions[i].x*chunkSize,
+			                                      curChunkPos.y + chunkPositions[i].y*chunkSize,
+			                                      curChunkPos.z + chunkPositions[i].z*chunkSize);
 
-			print("Chunk added to requested chunks " + curChunkPos);
-			requestedChunks.Add(curChunkPos);//add it to the already requested chunks list
+			//if the chunk the player/object is in has not already been requested, request it
+			if(!requestedChunks.Contains(proposedChunk))
+			{
+				//print("Player is in chunk " + curChunkPos);
+				requestTerrain(proposedChunk);//request terrain chunk generation
+				requestSurface(proposedChunk);//request surface generation
+				renderObjectsInChunk(proposedChunk);//request objects in this position to be rendered
+
+				//print("Chunk added to requested chunks " + curChunkPos);
+				requestedChunks.Add(proposedChunk);//add it to the already requested chunks list
+			}
 		}
-
 		//print("objects to render " + objectsToRender.Count);
 		//it the render list contains objects, render the first one in the list and remove it
 		if(objectsToRender.Count > 0)
@@ -115,20 +122,22 @@ public class RequestSystem : MonoBehaviour
 		//reference to list in dictionary
 		List<WorldObject> refList = null;
 		//if the worldpos key exists, render stuff in it
-		print(builtObjects.Count);
+		//print(builtObjects.Count);
 		if(builtObjects.TryGetValue(wp, out refList))
 		{
-			print("builtObjects contains worldpos " + wp);
+			//print("builtObjects contains worldpos " + wp);
 			//adds every object to the render list
 			foreach(WorldObject wo in refList)
 			{
-				print("An object is added to the render list in renderOBjectsinchunk function");
+				//print("An object is added to the render list in renderOBjectsinchunk function");
 				objectsToRender.Add(wo);
 			}
 
 		} 
 		else
-			print("builtObjects does not contain " + wp);
+		{
+			//print("builtObjects does not contain " + wp);
+		}
 	}
 
 	//contains the order that 'chunks' around the player should be loaded

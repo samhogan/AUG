@@ -16,7 +16,7 @@ public class TestTree : MobileObjects
 
 	public override void Render()
 	{
-		print("RENDERING OBJECT");
+		//print("RENDERING OBJECT");
 		//Mesh mesh = MarchingCubes2.CreateMesh(voxVals);
 		//mesh.RecalculateNormals();//not sure what this does at the moment
 		//Mesh mesh = Resources.Load("tree", typeof(Mesh)) as Mesh;
@@ -26,7 +26,7 @@ public class TestTree : MobileObjects
 		//load a tree and parent it to this gameobject
 		GameObject go = Resources.Load("Test things/Tree") as GameObject;
 		GameObject.Instantiate(go, transform.position, Quaternion.identity);
-		go.transform.parent = transform;
+		//go.transform.parent = transform;
 		//gameObject.SetActive(true);
 		
 	}

@@ -29,10 +29,10 @@ public class WorldHelper
 		WorldObject wo = go.AddComponent<T>() as WorldObject;
 
 
-		Debug.Log("Tree built at " + pos);
+		//Debug.Log("Tree built at " + pos);
 
 		WorldPos wp = UnitConverter.toWorldPos(pos);
-		Debug.Log("Tree is in worldpos " + wp);
+		//Debug.Log("Tree is in worldpos " + wp);
 
 		//add the object to the request system object dictionary
 		//NOTE: this can easily be condensed but I am afraid it will lose readabilty
@@ -46,9 +46,9 @@ public class WorldHelper
 		{
 			refList = new List<WorldObject>();//create a new list
 			RequestSystem.builtObjects.Add(wp, refList);//add it to the dictionary at the new worldpos key
-			Debug.Log("WorldPos added to builtobjects " + wp);
+			//Debug.Log("WorldPos added to builtobjects " + wp);
 			refList.Add(wo);
-			Debug.Log("Tree added to builtObjects " + wp);
+			//Debug.Log("Tree added to builtObjects " + wp);
 		}
 
 		/*Debug.Log(wp + " " + RequestSystem.requestedChunks.Contains(wp));
@@ -59,7 +59,7 @@ public class WorldHelper
 		//check if the object is ready to be rendered
 		if(RequestSystem.requestedChunks.Contains(wp))
 		{
-			Debug.Log("An object was added to the render list");
+			//Debug.Log("An object was added to the render list");
 			RequestSystem.objectsToRender.Add(wo);
 		}
 		//wo.Render();

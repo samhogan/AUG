@@ -32,17 +32,20 @@ public class SurfaceSystem
 		if(!surfList.Contains(su))
 		{
 			surfList.Add(su);
-
-			//surfacepos of the tree (middle of unit)
-			SurfacePos treeSurf = new SurfacePos(su.side, su.u + 0.5f, su.v + 0.5f);
-			//convert to world unit
-			Vector3 treeWorld = UnitConverter.getWP(treeSurf, radius, sideLength);
-			//GameObject.Instantiate(tree, treeWorld, Quaternion.identity);
-			//build the tree object(adds it to builtobjects list and maybe eventually add it to the render list
-
-			WorldHelper.buildObject<TestTree>(treeWorld);
-			//WorldHelper.buildObject<TestTree>(new Vector3(5,5,210));
-
+			for(int i = 0; i<10; i++)
+			{
+				for(int j = 0; j<10; j++)
+				{
+					//surfacepos of the tree (middle of unit)
+					SurfacePos treeSurf = new SurfacePos(su.side, su.u + i/10f, su.v + j/10f);
+					//convert to world unit
+					Vector3 treeWorld = UnitConverter.getWP(treeSurf, radius, sideLength);
+					//GameObject.Instantiate(tree, treeWorld, Quaternion.identity);
+					//build the tree object(adds it to builtobjects list and maybe eventually add it to the render list
+					WorldHelper.buildObject<TestTree>(treeWorld);
+					//WorldHelper.buildObject<TestTree>(new Vector3(5,5,210));
+				}
+			}
 		}
 
 	}
