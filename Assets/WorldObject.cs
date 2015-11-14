@@ -14,6 +14,8 @@ public class WorldObject : MonoBehaviour
 	protected MeshFilter filter;//the mesh filter
 	protected MeshRenderer renderer;//the mesh renderer\\
 
+
+
 	//sets the references to the filter and renderer
 	public void setReferences()
 	{

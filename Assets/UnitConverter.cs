@@ -153,4 +153,18 @@ public class UnitConverter
 		//i tried to figure out the inverse function myself but i couldn't
 	}
 
+
+	static int chunkSize = RequestSystem.chunkSize;
+	//returns the worldpos box that the pos is in
+	//this is posToChunk in request system(need to make a change)
+	public static WorldPos toWorldPos(Vector3 pos)
+	{
+	
+		return new WorldPos (
+			Mathf.FloorToInt(pos.x / chunkSize)*chunkSize,
+			Mathf.FloorToInt(pos.y / chunkSize)*chunkSize,
+			Mathf.FloorToInt(pos.z / chunkSize)*chunkSize );
+
+	}
+
 }

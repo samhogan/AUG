@@ -22,7 +22,10 @@ public struct WorldPos
 		return new Vector3(x, y, z);
 	}
 
-
+	public override string ToString()
+	{
+		return x + " " + y + " " + z;
+	}
 	//this was in the tutorial so i guess it will live in here
 	public override bool Equals(object obj)
 	{

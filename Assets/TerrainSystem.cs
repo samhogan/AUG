@@ -36,8 +36,8 @@ public class TerrainSystem
 		chunks.Add (pos, newTerrainObject);
 
 		//add a terrainobject component and assign it to chunk for reference
-		newTerrainObject.AddComponent<TerrainObject>();
-		TerrainObject chunk = newTerrainObject.GetComponent<TerrainObject> ();
+		TerrainObject chunk = newTerrainObject.AddComponent<TerrainObject>();
+		//TerrainObject chunk = newTerrainObject.GetComponent<TerrainObject> ();
 	
 
 
@@ -97,7 +97,7 @@ public class TerrainSystem
 
 		TerrainLoader.addToRender(chunk);
 		//Loader.addToRender(chunk);
-		chunk.Render ();//renders the chunk (be sure to remove later)
+		chunk.Render();//renders the chunk (be sure to remove later)
 
 	}
 
