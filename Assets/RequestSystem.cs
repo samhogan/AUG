@@ -9,7 +9,7 @@ using System.Collections.Generic;
 //Chunk size is static, surface unit size is dynamic
 public class RequestSystem : MonoBehaviour 
 {
-	public Planet planet;//the planet the terrainloader is building for, will not be public eventually(curplanet variable or something)
+	private Planet planet;//the planet the terrainloader is building for, will not be public eventually(curplanet variable or something)
 	//TerrainSystem terrain;//the terrain system of the planet
 
 	//positions of 'chunks' of objects that have already been requested
@@ -29,7 +29,8 @@ public class RequestSystem : MonoBehaviour
 	// Use this for initialization
 	void Start() 
 	{
-			
+		//set planet reference to appropriate planet
+		planet = WorldManager.curPlanet;
 		//surface position test
 		/*for(int i = -4; i<=4; i++)
 		{

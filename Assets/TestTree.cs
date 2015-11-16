@@ -6,6 +6,11 @@ using System.Collections;
 public class TestTree : MobileObjects
 {
 
+	public override void init()
+	{
+
+	}
+
 	void OnEnable()//onenable makes these references immediately after being created instead of in the next frame
 	{
 		setReferences();

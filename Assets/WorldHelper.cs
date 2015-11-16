@@ -58,6 +58,7 @@ public class Build
 		}
 	
 		//if the object being added is a terrain object, add it to the front of the list so it is rendered first
+		//NOTE: may change this later to move every terrain to front of render list rather than front of buildObject list
 		if(wo is TerrainObject)
 			refList.Insert(0, wo);
 		else

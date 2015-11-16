@@ -11,15 +11,14 @@ public class SurfaceSystem
 	private float halfSide;//half the side length used more than once
 	
 	private static List<SurfaceUnit> surfList = new List<SurfaceUnit>();//surface units that have already been loaded
-	public GameObject tree;//used for instantiation testing
+	//public GameObject tree;//used for instantiation testing
 
 
-	public SurfaceSystem(float r, int side, GameObject testobj)
+	public SurfaceSystem(float r, int side)
 	{
 		radius = r;
 		sideLength = side;
 		halfSide = sideLength/2;
-		tree = testobj;//test object
 	}
 
 
@@ -31,11 +30,15 @@ public class SurfaceSystem
 		//and add it to the list so it is not generated again
 		if(!surfList.Contains(su))
 		{
+			//instance a random number generator with seed based on the su position sent through a hash function
+			//NOTE: the last 1 parameter is used as a kind of planet identifier, but this may not be needed
+			System.Random rand = new System.Random((int)WorldManager.hash.GetHash(su.u, su.v, (int)su.side, 1));
+
 			surfList.Add(su);
-			for(int i = 0; i<Random.Range(0,3000); i++)
+			for(int i = 0; i<rand.Next(30); i++)
 			{
 				//surfacepos of the tree (middle of unit)
-				SurfacePos treeSurf = new SurfacePos(su.side, su.u + Random.value, su.v + Random.value);
+				SurfacePos treeSurf = new SurfacePos(su.side, su.u + (float)rand.NextDouble(), su.v + (float)rand.NextDouble());
 				//convert to world unit
 				Vector3 treeWorld = UnitConverter.getWP(treeSurf, radius, sideLength);
 				//GameObject.Instantiate(tree, treeWorld, Quaternion.identity);
