@@ -26,22 +26,9 @@ public class TerrainSystem
 	//NOTE: instantiating a prefab might be faster but i will use this for now
 	public void CreateChunk(Vector3 pos) 
 	{
-		//instantiate an empty gameobject
-		GameObject newTerrainObject = new GameObject();
-		newTerrainObject.name = "Terrain Chunk";
-		//set its position
-		newTerrainObject.transform.position = pos;
-
-		//add it and its position to the chunks list
-		chunks.Add (pos, newTerrainObject);
-
-		//add a terrainobject component and assign it to chunk for reference
-		TerrainObject chunk = newTerrainObject.AddComponent<TerrainObject>();
-		//TerrainObject chunk = newTerrainObject.GetComponent<TerrainObject> ();
-	
-
-
-
+		//build the terrainobject and add its gameobject to the chunks list(may remove this last thing later)
+		TerrainObject chunk = Build.buildObject<TerrainObject>(pos);
+		chunks.Add(pos, chunk.gameObject);
 
 		//loops through every voxel in the chunk
 		for (int x = 0; x<=chunkSize; x++) 
@@ -95,9 +82,9 @@ public class TerrainSystem
 
 		}
 
-		TerrainLoader.addToRender(chunk);
+		//TerrainLoader.addToRender(chunk);
 		//Loader.addToRender(chunk);
-		chunk.Render();//renders the chunk (be sure to remove later)
+		//chunk.Render();//renders the chunk (be sure to remove later)
 
 	}
 

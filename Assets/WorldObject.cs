@@ -27,4 +27,8 @@ public class WorldObject : MonoBehaviour
 	}
 
 	public virtual void Render(){}//renders the object
+
+	public virtual void init(){}//this is basically the constructor for worldObjects, it will set the properties of the object
+
+	//public virtual void organize(){}
 }
