@@ -124,11 +124,11 @@ public class RequestSystem : MonoBehaviour
 		foreach(WorldPos pos in chunksToDelete)
 		{
 			deleteTerrain(pos);
-			//deleteSurface(pos);
+			deleteSurface(pos);
 			requestedChunks.Remove(pos);
 			
 			//the list that contains the objects in the current chunk being deleted
-			/*List<WorldObject> refList = null;
+			List<WorldObject> refList = null;
 			if(builtObjects.TryGetValue(pos, out refList))
 			{
 				//disable all objects withing this chunk(make them invisible in the game world)
@@ -138,7 +138,7 @@ public class RequestSystem : MonoBehaviour
 					wo.gameObject.SetActive(false);
 					//print
 				}
-			}*/
+			}
 		}
 	}
 	
@@ -179,6 +179,16 @@ public class RequestSystem : MonoBehaviour
 		planet.surface.CreateSurfaceObjects(surfp.toUnit());
 	}
 
+	void deleteSurface(WorldPos pos)
+	{
+		//convert the worldpos to a surface pos
+		SurfacePos surfp = UnitConverter.getSP(pos.toVector3(), planet.surface.sideLength);
+		
+		//convert the surfacepos to a surface unit then request its creation
+		planet.surface.deleteSurface(surfp.toUnit());
+
+	}
+
 	//adds all objects in a specified chunk to the objectstoRender list to be rendered later or activates them if they have previously been deactivated
 	void renderObjectsInChunk(WorldPos wp)
 	{ 
@@ -193,11 +203,11 @@ public class RequestSystem : MonoBehaviour
 			foreach(WorldObject wo in refList)
 			{
 				//if the object has previously been rendered but just disabled, activate it, if not, it has never been rendered and add it to the render list
-				/*if(!wo.gameObject.activeSelf)
+				if(!wo.gameObject.activeSelf)
 				{
 					wo.gameObject.SetActive(true);
 				}
-				else*/
+				else
 					objectsToRender.Add(wo);
 			}
 
