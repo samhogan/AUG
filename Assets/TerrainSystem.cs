@@ -13,7 +13,8 @@ public class TerrainSystem
 	int chunkSize = TerrainObject.chunkSize;//voxels per chunk side
 
 	//the list of the terrain chunks thaat have been loaded and their cooresponding positions
-	public static Dictionary<Vector3, GameObject> chunks = new Dictionary<Vector3, GameObject>();
+	//maybe not make static? so each planet can retain its own list of terrain chunks? 
+	public static Dictionary<WorldPos, TerrainObject> chunks = new Dictionary<WorldPos, TerrainObject>();
 
 
 	public TerrainSystem(float r)
@@ -24,13 +25,13 @@ public class TerrainSystem
 
 	//creates and instantiates a terrain chunk (but does not render it yet)
 	//NOTE: instantiating a prefab might be faster but i will use this for now
-	public void CreateChunk(Vector3 pos) 
+	public void CreateChunk(WorldPos pos) 
 	{
 		//build the terrainobject and add its gameobject to the chunks list(may remove this last thing later)
-		TerrainObject chunk = Build.buildObject<TerrainObject>(pos);
-		chunks.Add(pos, chunk.gameObject);
+		TerrainObject chunk = Build.buildObject<TerrainObject>(pos.toVector3());
+		chunks.Add(pos, chunk);
 
-		//loops through every voxel in the chunk
+		//loops through every voxel in the chunk (make own funtion later)
 		for (int x = 0; x<=chunkSize; x++) 
 		{
 			for (int y = 0; y<=chunkSize; y++) 
@@ -89,14 +90,18 @@ public class TerrainSystem
 	}
 
 	//destroys a specified chunk and removes it from the dictionary NOTE: may also have to remove it from the render list
-	public static void DestroyChunk(Vector3 pos)
+	public void DestroyChunk(WorldPos pos)
 	{
-		GameObject chunk;
-		if (chunks.TryGetValue (pos, out chunk)) 
+		TerrainObject chunk;
+		if (chunks.TryGetValue (pos, out chunk)) //will probalby always be true
 		{
-			Object.Destroy(chunk);//destroy the gameobject, unity says not to do this, oh well, i do what i want
+			//destroy the terrain object
+			Build.destroyObject(chunk);
+			//Object.Destroy(chunk.gameObject);//destroy the gameobject, unity says not to do this, oh well, i do what i want
 			chunks.Remove(pos);//remove the reference from the dictionary
 		}
+
+	
 	}
 
 	/*public static TerrainObject getChunk(Vector3 pos)

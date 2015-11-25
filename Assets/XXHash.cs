@@ -1,4 +1,4 @@
-﻿/*
+/*
 C# implementation of xxHash optimized for producing random numbers from one or more input integers.
 Copyright (C) 2015, Rune Skovbo Johansen. (https://bitbucket.org/runevision/random-numbers-testing/)
 
@@ -31,7 +31,8 @@ THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
 OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 */
 
-//NOTE: I found this hash funtion at http://blogs.unity3d.com/2015/01/07/a-primer-on-repeatable-random-numbers/
+
+//NOTE: I found this hash function explained here: http://blogs.unity3d.com/2015/01/07/a-primer-on-repeatable-random-numbers/
 
 using System;
 

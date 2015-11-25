@@ -27,7 +27,9 @@ public class Build
 
 		//Debug.Log("Tree built at " + pos);
 
-		WorldPos wp = UnitConverter.toWorldPos(pos);
+		//gets the chunk that the world object is in
+		WorldPos wp = UnitConverter.getChunk(pos);
+		wo.holdingChunk = wp;
 		//Debug.Log("Tree is in worldpos " + wp);
 
 		//add to all appropriate lists
@@ -71,6 +73,25 @@ public class Build
 		}
 
 
+	}
+
+	public static void destroyObject(WorldObject wo)
+	{
+		//if its in the render list, remove it
+		if(RequestSystem.objectsToRender.Contains(wo))
+			RequestSystem.objectsToRender.Remove(wo);
+
+		List<WorldObject> refList = null;
+		RequestSystem.builtObjects.TryGetValue(wo.holdingChunk, out refList);//this list certainly exists if there is an object in it
+		refList.Remove(wo);//remove it from builtObjects
+
+		//if that was the last object in the list, remove the list from builtObjects
+		if(refList.Count == 0)
+			RequestSystem.builtObjects.Remove(wo.holdingChunk);
+
+		//finally, destroy the gameobject
+		//NOTE: eventually the object will be pooled and reused
+		Object.Destroy(wo.gameObject);
 	}
 
 }

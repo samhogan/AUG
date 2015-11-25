@@ -155,9 +155,9 @@ public class UnitConverter
 
 
 	static int chunkSize = RequestSystem.chunkSize;
-	//returns the worldpos box that the pos is in
+	//returns the worldpos chunk that the pos is in
 	//this is posToChunk in request system(need to make a change)
-	public static WorldPos toWorldPos(Vector3 pos)
+	public static WorldPos getChunk(Vector3 pos)
 	{
 	
 		return new WorldPos (

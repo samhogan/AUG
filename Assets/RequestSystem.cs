@@ -49,10 +49,11 @@ public class RequestSystem : MonoBehaviour
 	
 	// Update is called once per frame
 	//(for now) every frame up to 1 chunk is requested and up to 1 object is rendered
+	//NOTE: lets put this in a coroutine later once I know how one works
 	void Update() 
 	{
 		//the current chunk the player is in
-		WorldPos curChunkPos = UnitConverter.toWorldPos(transform.position);
+		WorldPos curChunkPos = UnitConverter.getChunk(transform.position);
 
 		//loop through all chunkpositions until one is found that has not been requested
 		for(int i = 0; i<chunkPositions.Length; i++)
@@ -65,13 +66,16 @@ public class RequestSystem : MonoBehaviour
 			//if the chunk the player/object is in has not already been requested, request it
 			if(!requestedChunks.Contains(proposedChunk))
 			{
-				//print("Player is in chunk " + curChunkPos);
+				//NOTE: might change back
+				requestChunkGen(proposedChunk);
+				/*//print("Player is in chunk " + curChunkPos);
 				requestTerrain(proposedChunk);//request terrain chunk generation
 				requestSurface(proposedChunk);//request surface generation
 				renderObjectsInChunk(proposedChunk);//request objects in this position to be rendered
 
 				//print("Chunk added to requested chunks " + curChunkPos);
 				requestedChunks.Add(proposedChunk);//add it to the already requested chunks list
+				*/
 			}
 		}
 		//print("objects to render " + objectsToRender.Count);
@@ -82,8 +86,60 @@ public class RequestSystem : MonoBehaviour
 			objectsToRender.RemoveAt(0);
 		}
 
+		//this will eventually happen every tenth frame or so
+		requestChunkDeletion(curChunkPos);
 		//testing
 		//print(UnitConverter.getSP(transform.position, 8));
+	}
+
+	//request chunk generation
+	//requests creation of items in all systems
+	void requestChunkGen(WorldPos chunk)
+	{
+		requestTerrain(chunk);//request terrain chunk generation
+		requestSurface(chunk);//request surface generation
+		renderObjectsInChunk(chunk);//request objects in this position to be rendered
+
+		requestedChunks.Add(chunk);//add it to the already requested chunks list
+	}
+
+	//request chunk deletion of all chunks out of range
+	void requestChunkDeletion(WorldPos curChunk)//cur chunk is the chunk the player is currently in
+	{
+
+		//the list that will gather chunks to be deleted
+		List<WorldPos> chunksToDelete = new List<WorldPos>();
+
+		foreach(WorldPos pos in requestedChunks)
+		{
+			//NOTE: make 100 a definied variable later and change it to not 100
+			//if the distance between the current chunk and one chunk still in the requestedchunks list is greater than an arbitrary value, request its destruction
+			if(Vector3.Distance(curChunk.toVector3(), pos.toVector3()) > 50)
+			{
+				chunksToDelete.Add(pos);
+			}
+		}
+
+		//now deleta all the chunks that were added to the list
+		foreach(WorldPos pos in chunksToDelete)
+		{
+			deleteTerrain(pos);
+			//deleteSurface(pos);
+			requestedChunks.Remove(pos);
+			
+			//the list that contains the objects in the current chunk being deleted
+			/*List<WorldObject> refList = null;
+			if(builtObjects.TryGetValue(pos, out refList))
+			{
+				//disable all objects withing this chunk(make them invisible in the game world)
+				//some objects will be deactivated then reactivated, but some may get deleted
+				foreach(WorldObject wo in refList)
+				{
+					wo.gameObject.SetActive(false);
+					//print
+				}
+			}*/
+		}
 	}
 	
 	//Get the unit chunk position of the current chunk that the player is in
@@ -104,7 +160,13 @@ public class RequestSystem : MonoBehaviour
 	void requestTerrain(WorldPos pos)
 	{
 		//NOTE: NEED to migrate this over to the worldhelper buildobject function
-		planet.terrain.CreateChunk(pos.toVector3());
+		planet.terrain.CreateChunk(pos);
+	}
+
+	void deleteTerrain(WorldPos pos)
+	{
+		//NOTE: NEED to migrate this over to the worldhelper buildobject function
+		planet.terrain.DestroyChunk(pos);
 	}
 
 	//this requests the generation of a surface unit that is at the center of the chunk
@@ -117,7 +179,7 @@ public class RequestSystem : MonoBehaviour
 		planet.surface.CreateSurfaceObjects(surfp.toUnit());
 	}
 
-	//adds all objects in a specified chunk to the objectstoRender list to be rendered later
+	//adds all objects in a specified chunk to the objectstoRender list to be rendered later or activates them if they have previously been deactivated
 	void renderObjectsInChunk(WorldPos wp)
 	{ 
 		//reference to list in dictionary
@@ -130,8 +192,13 @@ public class RequestSystem : MonoBehaviour
 			//adds every object to the render list
 			foreach(WorldObject wo in refList)
 			{
-				//print("An object is added to the render list in renderOBjectsinchunk function");
-				objectsToRender.Add(wo);
+				//if the object has previously been rendered but just disabled, activate it, if not, it has never been rendered and add it to the render list
+				/*if(!wo.gameObject.activeSelf)
+				{
+					wo.gameObject.SetActive(true);
+				}
+				else*/
+					objectsToRender.Add(wo);
 			}
 
 		} 

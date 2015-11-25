@@ -14,7 +14,7 @@ public class WorldObject : MonoBehaviour
 	protected MeshFilter filter;//the mesh filter
 	protected MeshRenderer renderer;//the mesh renderer\\
 
-
+	public WorldPos holdingChunk;//the chunk that the object is inside
 
 	//sets the references to the filter and renderer
 	public void setReferences()
