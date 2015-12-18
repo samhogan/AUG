@@ -9,7 +9,8 @@ public class SurfaceSystem
 	private float radius;//the planet radius
 	public int sideLength;//how many surface units are on one side of a planet face
 	private float halfSide;//half the side length used more than once
-	
+	private float suLength;//the length of one side of a surface unit in world units
+
 	//private static List<SurfaceUnit> surfList = new List<SurfaceUnit>();//surface units that have already been loaded
 
 	//dictionary of all 
@@ -22,6 +23,7 @@ public class SurfaceSystem
 		radius = r;
 		sideLength = side;
 		halfSide = sideLength/2;
+		suLength = (2 * r * Mathf.PI) / (sideLength * 4);//circumference divided by number of sus around the sphere cross section
 	}
 
 
@@ -30,7 +32,7 @@ public class SurfaceSystem
 	public void CreateSurfaceObjects(SurfaceUnit su)
 	{
 
-
+		//creates an empty surface holder
 		SurfaceHolder sh = null;
 
 		//only make the objects in this unit if it has not already been generated
@@ -44,11 +46,54 @@ public class SurfaceSystem
 			//NOTE: the last 1 parameter is used as a kind of planet identifier, but this may not be needed
 			System.Random rand = new System.Random((int)WorldManager.hash.GetHash(su.u, su.v, (int)su.side, 1));
 
+			//NOTE: all objects that are in the rect list are always in the radial list
+			//create a list of radial collisions
+			//(x,y,radius)
+			List<RadialCol> radCols = new List<RadialCol>();
+			//create a list of rectangular collisions
+			//List<Vector4> rectCols = new List<Vector4>();
+			//first add all roads, then buildings, then natural things
+			int count = rand.Next(30);
 
-			for(int i = 0; i<rand.Next(30); i++)
+			for(int i = 0; i<count; i++)
 			{
-				//surfacepos of the tree (middle of unit)
-				SurfacePos treeSurf = new SurfacePos(su.side, su.u + (float)rand.NextDouble(), su.v + (float)rand.NextDouble());
+				//Vector3 pos = new Vector3(
+				//choose random x and y position within the su
+				float u = (float)rand.NextDouble();
+				float v = (float)rand.NextDouble();
+
+				//temp radius of tree used for testing
+				float wuRadius = 2;
+				//radius in world units/length of a surface unit = radius in surface units(less than 1)
+				float suRadius = wuRadius/suLength;
+				Debug.Log("suRadius is " + suRadius);
+
+				bool isColliding = false;
+				foreach(RadialCol oth in radCols)
+				{
+					//distance formula(move to struct later)
+					//if the distance between the two centers - their radii is less than zero, they are colliding
+					if(Mathf.Sqrt((oth.u-u)*(oth.u-u)+(oth.v-v)*(oth.v-v))-suRadius-oth.radius<0)
+					{
+						isColliding = true;
+						//Debug.Log("samwell");
+						break;
+					}
+				}
+				//for the time being, if something is colliding, just discard it
+				//later it may be moved slightly or completely repositioned
+				if(isColliding)
+				{
+					continue;
+				}
+
+				//add this obect to the radial collision list
+				//later, create the RadialCol object initially(replace x y and suRadius)
+				radCols.Add(new RadialCol(u,v,suRadius));
+
+				//surfacepos of the tree
+				SurfacePos treeSurf = new SurfacePos(su.side, su.u + u, su.v + v);
+				//SurfacePos treeSurf = new SurfacePos(su.side, su.u + (float)rand.NextDouble(), su.v + (float)rand.NextDouble());
 				//convert to world unit
 				Vector3 treeWorld = UnitConverter.getWP(treeSurf, radius, sideLength);
 				//GameObject.Instantiate(tree, treeWorld, Quaternion.identity);
@@ -76,6 +121,7 @@ public class SurfaceSystem
 		return wo;
 	}
 
+	//deletes all obects in a surface unit if no more world units are in it
 	public void deleteSurface(SurfaceUnit su)
 	{
 		SurfaceHolder sh = null;
