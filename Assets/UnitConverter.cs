@@ -167,4 +167,18 @@ public class UnitConverter
 
 	}
 
+
+	//converts the surface position of a system with certain side length(sideLength1)
+	//to the surface position of a system with a different side length(sideLength2)
+	//for example, convert the position of the SurfaceSystem to a position in a TransportSystem (actually, this is probably the only use)
+	//banana time
+	public static SurfacePos SPtoSP(SurfacePos pos, int sideLength1, int sideLength2)
+	{
+		//straightforward, divide each coordinate by the first sidelength and multiply it by the second
+		pos.u = (pos.u/sideLength1)*sideLength2;
+		pos.v = (pos.v/sideLength1)*sideLength2;
+
+		return pos;
+	}
+
 }

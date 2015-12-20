@@ -10,9 +10,6 @@ public class Planet
 	public SurfaceSystem surface;//builds the objects that are on the planet surface
 
 	private float radius = 200f;//radius of the planet
-	//private int globalSUWith = 4;//how many large street units are on one(of 6) side of the planet
-	//private int largeSUWith = 8;//how many mid street units are on one side of a large street
-	//private int midSUWith = 8;//how many base street units are on one side of a mid street unit
 
 	private float genScale = 5f;//the perlin scale for general elevation
 
@@ -20,8 +17,9 @@ public class Planet
 	public Planet(float r)
 	{
 		radius = r;
-		terrain = new TerrainSystem (radius);
-		surface = new SurfaceSystem (radius, 8);
+		terrain = new TerrainSystem(radius);
+		surface = new SurfaceSystem(radius, 8);
+
 	}
 
 }
