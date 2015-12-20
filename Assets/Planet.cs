@@ -18,7 +18,7 @@ public class Planet
 	{
 		radius = r;
 		terrain = new TerrainSystem(radius);
-		surface = new SurfaceSystem(radius, 8);
+		surface = new SurfaceSystem(radius, 400);
 
 	}
 

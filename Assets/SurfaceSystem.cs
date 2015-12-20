@@ -29,12 +29,13 @@ public class SurfaceSystem
 		halfSide = sideLength/2;
 		suLength = (2 * r * Mathf.PI) / (sideLength * 4);//circumference divided by number of sus around the sphere cross section
 
-		transport = new TransportSystem(4,8,8);
+		transport = new TransportSystem(8,16,8);
 	}
 
 
 	//a working name
 	//builds all the objects in a certain surface unit
+	//or if it already exists, increase its wuCount
 	public void CreateSurfaceObjects(SurfaceUnit su)
 	{
 
@@ -60,54 +61,12 @@ public class SurfaceSystem
 			//List<Vector4> rectCols = new List<Vector4>();
 			//first add all roads, then buildings, then natural things
 
-			//find transport segments(roads) to generate
-			//SurfaceUnit startTU = UnitConverter.SPtoSP(
-			//surface unit to start the loop in
-
-			//start and ends in the loop
-			//NOTE: make this into a funtion later
-			int tuStartu = Mathf.FloorToInt((float)su.u/sideLength*transport.sideLength);
-			int tuStartv = Mathf.FloorToInt((float)su.v/sideLength*transport.sideLength);
-			int tuEndu = Mathf.FloorToInt(((float)su.u+1)/sideLength*transport.sideLength);
-			int tuEndv = Mathf.FloorToInt(((float)su.v+1)/sideLength*transport.sideLength);
-
-			Debug.Log(tuStartu + " " + tuStartv + " " + tuEndu + " " + tuEndv);
-
-			for(int i = tuStartu; i<tuEndu; i++)
-			{
-				for(int j = tuStartv; j<tuEndv; j++)
-				{
-					//build the road units
-					//Debug.Log("looping");
-					//the trasport unit to examine
-					TransportUnit tu = transport.getBase(su.side, i, j);
-					if(tu.conRight)
-					{
-						//connecting point of the transport unit
-						SurfacePos conPoint1 = new SurfacePos(su.side,i+tu.conPoint.x,j+tu.conPoint.y);//this will be shortened later by making the conpoint global instead of local
-						//the transport unit to the right of this one
-						TransportUnit tu2 = transport.getBase(su.side, i+1, j);
-						// connecting point of the other transport unit
-						SurfacePos conPoint2 = new SurfacePos(su.side,i+1+tu2.conPoint.x,j+tu2.conPoint.y);
-						//world position of the transport units' connecting points
-						Vector3 worldConPoint1 = UnitConverter.getWP(conPoint1, radius, transport.sideLength);
-						Vector3 worldConPoint2 = UnitConverter.getWP(conPoint2, radius, transport.sideLength);
-
-						//Debug.Log(worldConPoint1 + " " + worldConPoint2);
-
-						Debug.DrawLine(worldConPoint1, worldConPoint2, Color.blue, Mathf.Infinity);
-						//Debug.Log("drawing................");
-					}
-					if(tu.conUp)
-					{
-
-					}
-				}
-			}
+			buildTransport(su);
 
 			int count = rand.Next(30);
 
-			for(int i = 0; i<count; i++)
+			MyDebug.placeMarker(UnitConverter.getWP(new SurfacePos(su.side, su.u, su.v), radius, sideLength));
+		/*	for(int i = 0; i<count; i++)
 			{
 				//Vector3 pos = new Vector3(
 				//choose random x and y position within the su
@@ -153,7 +112,8 @@ public class SurfaceSystem
 				buildObject<TestTree>(treeWorld, sh).init();
 				//WorldHelper.buildObject<TestTree>(new Vector3(5,5,210));
 			
-			}
+			}*/
+
 		}
 
 
@@ -162,9 +122,64 @@ public class SurfaceSystem
 
 	}
 
+	//builds all the appropriate transportation segments in the surface unit
+	private void buildTransport(SurfaceUnit su)
+	{
+		//find transport segments(roads) to generate
+		//SurfaceUnit startTU = UnitConverter.SPtoSP(
+		//surface unit to start the loop in
+		
+		//start and ends in the loop
+		//convert the top right and bottom right corners of the su to the transport units they lie in
+		int tuStartu = SUtoTU(su.u);
+		int tuStartv = SUtoTU(su.v);
+		int tuEndu = SUtoTU(su.u+1);
+		int tuEndv = SUtoTU(su.v+1);
+		
+		Debug.Log(tuStartu + " " + tuStartv + " " + tuEndu + " " + tuEndv);
+		
+		for(int i = tuStartu; i<=tuEndu; i++)
+		{
+			for(int j = tuStartv; j<=tuEndv; j++)
+			{
+				//build the road units
+				//Debug.Log("looping");
+				//the trasport unit to examine
+				TransportUnit tu = transport.getBase(su.side, i, j);
+				if(tu.conRight)
+				{
+					//connecting point of the transport unit
+					SurfacePos conPoint1 = new SurfacePos(su.side,i+tu.conPoint.x,j+tu.conPoint.y);//this will be shortened later by making the conpoint global instead of local
+					//the transport unit to the right of this one
+					TransportUnit tu2 = transport.getBase(su.side, i+1, j);
+					// connecting point of the other transport unit
+					SurfacePos conPoint2 = new SurfacePos(su.side,i+1+tu2.conPoint.x,j+tu2.conPoint.y);
+					//world position of the transport units' connecting points
+					Vector3 worldConPoint1 = UnitConverter.getWP(conPoint1, radius, transport.sideLength);
+					Vector3 worldConPoint2 = UnitConverter.getWP(conPoint2, radius, transport.sideLength);
+					
+					//Debug.Log(worldConPoint1 + " " + worldConPoint2);
+					
+					Debug.DrawLine(worldConPoint1, worldConPoint2, Color.blue, Mathf.Infinity);
+					//Debug.Log("drawing................");
+				}
+				if(tu.conUp)
+				{
+					
+				}
+			}
+		}
+	}
 
+	//converts between surface units(from surfacesystem to transportsystem) for a single value 
+	//to optimize for looping in buildTransport()
+	private int SUtoTU(float pos)
+	{
+		return Mathf.FloorToInt(pos/sideLength*transport.sideLength);
+	}
 
 	//a wrapper function for the Build class build object that also adds the objects generated by the surface system to the surfList
+	//probably remove later
 	private WorldObject buildObject<T>(Vector3 pos, SurfaceHolder sh) where T : WorldObject
 	{
 		WorldObject wo = Build.buildObject<T>(pos);

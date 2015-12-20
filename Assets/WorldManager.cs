@@ -21,7 +21,7 @@ public class WorldManager : MonoBehaviour
 
 		hash = new XXHash(1);//using seed 1 for testing(will later be randomly chosen
 
-		Planet earth = new Planet(200);
+		Planet earth = new Planet(10000);
 		curPlanet = earth;
 	}
 	
