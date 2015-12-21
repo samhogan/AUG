@@ -16,22 +16,23 @@ public class UnitConverter
 		Vector3 cubePos;
 		
 		//converts surface position to a world position on a cube(not on a sphere yet)
+		//NOTE: the u v axes on the front, bottom, and left are inverted, so one of the values is made negative to flip it
 		switch(sp.side)
 		{
 		case PSide.TOP:
 			cubePos = new Vector3(sp.u, halfSide, sp.v);//halfside in the y component means this point is on the top of the cube
 			break;
 		case PSide.BOTTOM:
-			cubePos = new Vector3(sp.u, -halfSide, sp.v);
+			cubePos = new Vector3(sp.u, -halfSide, -sp.v);//negative sp.v because on the bottom the z/v axis is reversed so the coordinate system for this side is not backwards
 			break;
 		case PSide.RIGHT:
 			cubePos = new Vector3(halfSide, sp.v, sp.u);
 			break;
 		case PSide.LEFT:
-			cubePos = new Vector3(-halfSide, sp.v, sp.u);
+			cubePos = new Vector3(-halfSide, sp.v, -sp.u);//negative sp.u for same reason as the bottom
 			break;
 		case PSide.FRONT:
-			cubePos = new Vector3(sp.u, sp.v, halfSide);
+			cubePos = new Vector3(-sp.u, sp.v, halfSide);//negative sp.u for same reason as the left and bottom
 			break;
 		case PSide.BACK:
 			cubePos = new Vector3(sp.u, sp.v, -halfSide);
@@ -92,7 +93,10 @@ public class UnitConverter
 			if(pos.y >= 0)
 				sp.side = PSide.TOP;//if positive y value, it is the top
 			else
+			{
 				sp.side = PSide.BOTTOM;
+				sp.v*=-1;//take opposite of sp.v because the uv axes on the bottom are reversed, so this flips the v axis back
+			}
 		}
 		else if(absx > absy && absx > absz) //if the x value is the farthest it will be the Right or left
 		{
@@ -102,19 +106,27 @@ public class UnitConverter
 			if(pos.x >= 0)
 				sp.side = PSide.RIGHT;//if positive x value, it is the right
 			else
+			{
 				sp.side = PSide.LEFT;
+				sp.u*=-1;//uv axes on the left are reversed, so this flips the u axis back
+
+			}
 		}
 		else if(absz > absy && absz > absx) //if the z value is the farthest it will be the front or back
 		{
 			//calculate the remaining cube components
 			cubify(pos.x, pos.y, out sp.u, out sp.v);
-			
+
+			//NOTE: the front is pretty much the back in terms of where right and left are
 			if(pos.z >= 0)
+			{
 				sp.side = PSide.FRONT;//if positive z value, it is the front
+				sp.u*=-1;//uv axes on the 'front' are reversed, so this flips the u axis back
+			}
 			else
 				sp.side = PSide.BACK;
 		}
-		else //shouldn't happen
+		else //shouldn't happen, actually it could happen
 		{
 			sp.x = 0;
 			sp.y = 0;

@@ -220,7 +220,7 @@ public class SurfaceSystem
 			fromRot = Vector3.right;
 			startRot = Quaternion.Euler(-90,-90,0);//could be any other combination of 90 idk
 			break;
-		case PSide.LEFT: //probalby final
+		case PSide.LEFT: //probalby final, pseudo-solved!
 			fromRot = Vector3.left;
 			startRot = Quaternion.Euler(90,0,90);//could be any other combination of 90 idk
 			break;

@@ -89,7 +89,7 @@ public class RequestSystem : MonoBehaviour
 		//this will eventually happen every tenth frame or so
 		requestChunkDeletion(curChunkPos);
 		//testing
-		//print(UnitConverter.getSP(transform.position, 8));
+		print(UnitConverter.getSP(transform.position, 8));
 	}
 
 	//request chunk generation
