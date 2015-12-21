@@ -238,10 +238,17 @@ public class SurfaceSystem
 			break;
 		}
 
-		//Quaternion rot = Quaternion.FromToRotation(Vector3.up, worldPos);
-		Quaternion rot = Quaternion.FromToRotation(fromRot, worldPos);
+		//rotation from the normal of the side to the normal of the surface
+		//think of it like sticking a squerer in the object at a 90 degree angle and then aligning that squerer with
+		//the vector that stretches from the origin through the object's position
+		Quaternion sphereRot = Quaternion.FromToRotation(fromRot, worldPos);
 
-		return rot * startRot;
+		//multiplying Quaternions adds the rotations to each other and order matters
+		//to figure out the order, i used trial and error but should probably figure out what the order means
+		//basically, this rotates the object how it would be in a standard 3d system(surfRot), then
+		//rotates it 90 or 180 degress to properly align with its side as if it were on the surface of a cube, then
+		//rotates it from the normal of its cube side to the normal of the part of the planet it is on
+		return sphereRot * startRot * surfRot;
 
 	}
 
