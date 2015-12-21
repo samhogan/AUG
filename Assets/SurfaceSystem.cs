@@ -212,25 +212,25 @@ public class SurfaceSystem
 			fromRot = Vector3.up; 
 			startRot = Quaternion.Euler(0,0,0);//final!
 			break;
-		case PSide.BOTTOM: //not final, ok this is weird, keep an eye on this
+		case PSide.BOTTOM: 
 			fromRot = Vector3.down; 
 			startRot = Quaternion.Euler(180,0,0);
 			break;
-		case PSide.RIGHT: //final
+		case PSide.RIGHT:
 			fromRot = Vector3.right;
 			startRot = Quaternion.Euler(-90,-90,0);//could be any other combination of 90 idk
 			break;
-		case PSide.LEFT: //probalby final, pseudo-solved!
+		case PSide.LEFT: 
 			fromRot = Vector3.left;
-			startRot = Quaternion.Euler(90,0,90);//could be any other combination of 90 idk
+			startRot = Quaternion.Euler(-90,90,0);//could be any other combination of 90 idk
 			break;
-		case PSide.FRONT: //not final
+		case PSide.FRONT: 
 			fromRot = Vector3.forward;
-			startRot = Quaternion.Euler(90,180,0);//WHAT ORDER DO THE COMPONENTS ROTATE IN?, oh got it(refer to comment above)
+			startRot = Quaternion.Euler(-90,180,0);//WHAT ORDER DO THE COMPONENTS ROTATE IN?, oh got it(refer to comment above)
 			break;
 		case PSide.BACK: 
 			fromRot = Vector3.back;
-			startRot = Quaternion.Euler(-90,0,0); //final!
+			startRot = Quaternion.Euler(-90,0,0);
 			break;
 		default: //will never happen hopefully.......,......wwww
 			fromRot = Vector3.zero; 
