@@ -29,7 +29,13 @@ public class SurfaceSystem
 		halfSide = sideLength/2;
 		suLength = (2 * r * Mathf.PI) / (sideLength * 4);//circumference divided by number of sus around the sphere cross section
 
-		transport = new TransportSystem(8,16,8);
+		//transport = new TransportSystem(8,16,8);
+		transport = new TransportSystem(2,3,2);
+
+		GameObject go = Resources.Load("Test things/rottest") as GameObject;
+		Vector3 pos = UnitConverter.getWP(new SurfacePos(PSide.TOP, 0, 0), radius, sideLength);
+		Quaternion rot = getWorldRot(pos, Quaternion.identity, PSide.TOP);
+		GameObject.Instantiate(go, pos, rot);
 	}
 
 
@@ -61,7 +67,7 @@ public class SurfaceSystem
 			//List<Vector4> rectCols = new List<Vector4>();
 			//first add all roads, then buildings, then natural things
 
-			buildTransport(su);
+			//buildTransport(su);
 
 			int count = rand.Next(30);
 
@@ -114,6 +120,12 @@ public class SurfaceSystem
 			
 			}*/
 
+			GameObject go = Resources.Load("Test things/rottest") as GameObject;
+			Vector3 pos = UnitConverter.getWP(new SurfacePos(su.side, su.u+0.5f, su.v+0.5f), radius, sideLength);
+			Quaternion rot = getWorldRot(pos, Quaternion.identity, su.side);
+		
+			GameObject.Instantiate(go, pos, rot);
+
 		}
 
 
@@ -148,27 +160,32 @@ public class SurfaceSystem
 				TransportUnit tu = transport.getBase(su.side, i, j);
 				if(tu.conRight)
 				{
-					//connecting point of the transport unit
-					SurfacePos conPoint1 = new SurfacePos(su.side,i+tu.conPoint.x,j+tu.conPoint.y);//this will be shortened later by making the conpoint global instead of local
 					//the transport unit to the right of this one
 					TransportUnit tu2 = transport.getBase(su.side, i+1, j);
-					// connecting point of the other transport unit
-					SurfacePos conPoint2 = new SurfacePos(su.side,i+1+tu2.conPoint.x,j+tu2.conPoint.y);
-					//world position of the transport units' connecting points
-					Vector3 worldConPoint1 = UnitConverter.getWP(conPoint1, radius, transport.sideLength);
-					Vector3 worldConPoint2 = UnitConverter.getWP(conPoint2, radius, transport.sideLength);
-					
-					//Debug.Log(worldConPoint1 + " " + worldConPoint2);
-					
-					Debug.DrawLine(worldConPoint1, worldConPoint2, Color.blue, Mathf.Infinity);
-					//Debug.Log("drawing................");
+					buildTransportSegment(tu,tu2);
 				}
 				if(tu.conUp)
 				{
-					
+					//the transport unit above this one
+					TransportUnit tu2 = transport.getBase(su.side, i, j+1);
+					buildTransportSegment(tu,tu2);
 				}
+				//if(tu.conUpRight)//add this in later
 			}
 		}
+	}
+
+	//builds a transport(road) segment between two transport units
+	private void buildTransportSegment(TransportUnit t1, TransportUnit t2 )
+	{
+		//Debug.DrawLine(t1.conPointWorld, t2.conPointWorld, Color.blue, Mathf.Infinity);
+		GameObject road = GameObject.CreatePrimitive (PrimitiveType.Cube);
+		//position of the segment is halfway between each point(makes sense huh?)
+		road.transform.position = (t1.conPointWorld+t2.conPointWorld)/2;
+
+		//z scale is distance between the two points
+		road.transform.localScale = new Vector3(3f, 0.5f, Vector3.Distance(t1.conPointWorld, t2.conPointWorld));
+		//road.transform.LookAt(t1.conPointWorld);
 	}
 
 	//converts between surface units(from surfacesystem to transportsystem) for a single value 
@@ -176,6 +193,56 @@ public class SurfaceSystem
 	private int SUtoTU(float pos)
 	{
 		return Mathf.FloorToInt(pos/sideLength*transport.sideLength);
+	}
+
+	//returns the proper world rotation for an object
+	private Quaternion getWorldRot(Vector3 worldPos, Quaternion surfRot, PSide side)
+	{
+		//initial rotation to match side(as if placing it on the side of a cube)
+		Quaternion startRot;
+
+		//the axis that the start rot will be rotated from to align with the vector from the origin to the object's position
+		//top is standard side so y rotation in surfrot cooresponds to spinning left or right
+		Vector3 fromRot;
+
+		//NOTE: Euler rotation order is important, and unity does x, y, then z rotation
+		switch(side)
+		{
+		case PSide.TOP: 
+			fromRot = Vector3.up; 
+			startRot = Quaternion.Euler(0,0,0);//final!
+			break;
+		case PSide.BOTTOM: //not final, ok this is weird, keep an eye on this
+			fromRot = Vector3.down; 
+			startRot = Quaternion.Euler(180,0,0);
+			break;
+		case PSide.RIGHT: //final
+			fromRot = Vector3.right;
+			startRot = Quaternion.Euler(-90,-90,0);//could be any other combination of 90 idk
+			break;
+		case PSide.LEFT: //probalby final
+			fromRot = Vector3.left;
+			startRot = Quaternion.Euler(90,0,90);//could be any other combination of 90 idk
+			break;
+		case PSide.FRONT: //not final
+			fromRot = Vector3.forward;
+			startRot = Quaternion.Euler(90,180,0);//WHAT ORDER DO THE COMPONENTS ROTATE IN?, oh got it(refer to comment above)
+			break;
+		case PSide.BACK: 
+			fromRot = Vector3.back;
+			startRot = Quaternion.Euler(-90,0,0); //final!
+			break;
+		default: //will never happen hopefully.......,......wwww
+			fromRot = Vector3.zero; 
+			startRot = Quaternion.Euler(0,0,0);
+			break;
+		}
+
+		//Quaternion rot = Quaternion.FromToRotation(Vector3.up, worldPos);
+		Quaternion rot = Quaternion.FromToRotation(fromRot, worldPos);
+
+		return rot * startRot;
+
 	}
 
 	//a wrapper function for the Build class build object that also adds the objects generated by the surface system to the surfList

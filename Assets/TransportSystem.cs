@@ -44,6 +44,12 @@ public class TransportSystem
 		tu.conPoint = new Vector2(0.5f, 0.5f);
 		tu.conUp = true;
 		tu.conRight = true;
+
+		//set this unit's con point world position 
+		//radius will later take things like elevation into account using a terrainsystem method
+		tu.conPointWorld = UnitConverter.getWP(new SurfacePos(side, upos+tu.conPoint.x, vpos+tu.conPoint.y), 
+		                                       WorldManager.curPlanet.radius, sideLength);
+
 		return tu;
 	}
 

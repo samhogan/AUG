@@ -9,7 +9,7 @@ public class Planet
 	public TerrainSystem terrain;//builds the terrain with voxels and marching cubes
 	public SurfaceSystem surface;//builds the objects that are on the planet surface
 
-	private float radius = 200f;//radius of the planet
+	public float radius = 200f;//radius of the planet
 
 	private float genScale = 5f;//the perlin scale for general elevation
 
@@ -18,7 +18,8 @@ public class Planet
 	{
 		radius = r;
 		terrain = new TerrainSystem(radius);
-		surface = new SurfaceSystem(radius, 400);
+		//surface = new SurfaceSystem(radius, 400);
+		surface = new SurfaceSystem(radius, 2);
 
 	}
 
