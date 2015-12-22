@@ -26,9 +26,9 @@ public class WorldObject : MonoBehaviour
 		renderer.material = mat;
 	}
 
-	public virtual void Render(){}//renders the object
+	public virtual void Render(){}//renders the object(builds the meshes and such)
 
-	public virtual void init(){}//this is basically the constructor for worldObjects, it will set the properties of the object
+	//public virtual void init(){};//this is basically the constructor for worldObjects, it will set the properties of the object
 
 	//public virtual void organize(){}
 }

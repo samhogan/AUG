@@ -6,7 +6,8 @@ using System.Collections;
 public class TestTree : MobileObjects
 {
 
-	public override void init()
+	//public override void init()
+	public void init()
 	{
 
 	}
