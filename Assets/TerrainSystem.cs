@@ -28,7 +28,7 @@ public class TerrainSystem
 	public void CreateChunk(WorldPos pos) 
 	{
 		//build the terrainobject and add its gameobject to the chunks list(may remove this last thing later)
-		TerrainObject chunk = Build.buildObject<TerrainObject>(pos.toVector3());
+		TerrainObject chunk = Build.buildObject<TerrainObject>(pos.toVector3(), Quaternion.identity);
 		chunks.Add(pos, chunk);
 
 		//loops through every voxel in the chunk (make own funtion later)

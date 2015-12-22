@@ -8,7 +8,8 @@ public class Build
 {
 	//builds a specific object and adds it to the appropriate lists(rendered later)
 	//NOTE: type T MUST derive from WorldObject, nvmd added in constraint
-	public static T buildObject<T>(Vector3 pos) where T : WorldObject
+	//NOTE: pos and rot might be moved to the init function of each object later possibly
+	public static T buildObject<T>(Vector3 pos, Quaternion rot) where T : WorldObject
 	{
 		//can instantiate multiple empty gameobjects per frame because i read they have little performance impact
 		//this creates an empty gameobject and intantiates it into the unity game world
@@ -20,7 +21,7 @@ public class Build
 
 		//set the objects position
 		go.transform.position = pos;
-
+		go.transform.rotation = rot;
 
 		//add the component that is the type passed in the parameter(the type of object)
 		WorldObject wo = go.AddComponent<T>() as WorldObject;

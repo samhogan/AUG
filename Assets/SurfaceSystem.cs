@@ -67,18 +67,22 @@ public class SurfaceSystem
 			//List<Vector4> rectCols = new List<Vector4>();
 			//first add all roads, then buildings, then natural things
 
-			//buildTransport(su);
+			buildTransport(su);
 
 			int count = rand.Next(30);
 
-			MyDebug.placeMarker(UnitConverter.getWP(new SurfacePos(su.side, su.u, su.v), radius, sideLength));
-		/*	for(int i = 0; i<count; i++)
+			//MyDebug.placeMarker(UnitConverter.getWP(new SurfacePos(su.side, su.u, su.v), radius, sideLength));
+			/*for(int i = 0; i<count; i++)
 			{
 				//Vector3 pos = new Vector3(
 				//choose random x and y position within the su
+				//Vector2 surfPos = new Vector2((float)rand.NextDouble(), (float)rand.NextDouble());
 				float u = (float)rand.NextDouble();
 				float v = (float)rand.NextDouble();
 
+				//choose random rotation(will not be random for things like buildings later)
+				Quaternion surfRot = Quaternion.Euler(0, (float)rand.NextDouble()*360, 0); 
+				Debug.Log(surfRot.eulerAngles);
 				//temp radius of tree used for testing
 				float wuRadius = 2;
 				//radius in world units/length of a surface unit = radius in surface units(less than 1)
@@ -110,21 +114,27 @@ public class SurfaceSystem
 
 				//surfacepos of the tree
 				SurfacePos treeSurf = new SurfacePos(su.side, su.u + u, su.v + v);
-				//SurfacePos treeSurf = new SurfacePos(su.side, su.u + (float)rand.NextDouble(), su.v + (float)rand.NextDouble());
-				//convert to world unit
-				Vector3 treeWorld = UnitConverter.getWP(treeSurf, radius, sideLength);
+
+				//convert to world unit and rotation
+				Vector3 worldPos = UnitConverter.getWP(treeSurf, radius, sideLength);
+				Quaternion worldRot = getWorldRot(worldPos, surfRot, su.side);
+
 				//GameObject.Instantiate(tree, treeWorld, Quaternion.identity);
 				//build the tree object(adds it to builtobjects list and maybe eventually add it to the render list
-				buildObject<TestTree>(treeWorld, sh).init();
-				//WorldHelper.buildObject<TestTree>(new Vector3(5,5,210));
-			
+				//buildObject<TestTree>(worldPos, worldRot, sh).init();
+
+				//build(intantiate) the object
+				WorldObject wo = Build.buildObject<TestTree>(worldPos, worldRot);
+				sh.objects.Add(wo);//add it to the surface holder list
+				wo.init();//initailize it (normally has parameters)
+
 			}*/
 
-			GameObject go = Resources.Load("Test things/rottest") as GameObject;
+			/*GameObject go = Resources.Load("Test things/rottest") as GameObject;
 			Vector3 pos = UnitConverter.getWP(new SurfacePos(su.side, su.u+0.5f, su.v+0.5f), radius, sideLength);
 			Quaternion rot = getWorldRot(pos, Quaternion.identity, su.side);
 		
-			GameObject.Instantiate(go, pos, rot);
+			GameObject.Instantiate(go, pos, rot);*/
 
 		}
 
@@ -148,7 +158,7 @@ public class SurfaceSystem
 		int tuEndu = SUtoTU(su.u+1);
 		int tuEndv = SUtoTU(su.v+1);
 		
-		Debug.Log(tuStartu + " " + tuStartv + " " + tuEndu + " " + tuEndv);
+		//Debug.Log(tuStartu + " " + tuStartv + " " + tuEndu + " " + tuEndv);
 		
 		for(int i = tuStartu; i<=tuEndu; i++)
 		{
@@ -162,13 +172,13 @@ public class SurfaceSystem
 				{
 					//the transport unit to the right of this one
 					TransportUnit tu2 = transport.getBase(su.side, i+1, j);
-					buildTransportSegment(tu,tu2);
+					buildTransportSegment(tu,tu2,su.side);
 				}
 				if(tu.conUp)
 				{
 					//the transport unit above this one
 					TransportUnit tu2 = transport.getBase(su.side, i, j+1);
-					buildTransportSegment(tu,tu2);
+					buildTransportSegment(tu,tu2,su.side);
 				}
 				//if(tu.conUpRight)//add this in later
 			}
@@ -176,7 +186,7 @@ public class SurfaceSystem
 	}
 
 	//builds a transport(road) segment between two transport units
-	private void buildTransportSegment(TransportUnit t1, TransportUnit t2 )
+	private void buildTransportSegment(TransportUnit t1, TransportUnit t2, PSide side )
 	{
 		//Debug.DrawLine(t1.conPointWorld, t2.conPointWorld, Color.blue, Mathf.Infinity);
 		GameObject road = GameObject.CreatePrimitive (PrimitiveType.Cube);
@@ -184,7 +194,21 @@ public class SurfaceSystem
 		road.transform.position = (t1.conPointWorld+t2.conPointWorld)/2;
 
 		//z scale is distance between the two points
-		road.transform.localScale = new Vector3(3f, 0.5f, Vector3.Distance(t1.conPointWorld, t2.conPointWorld));
+		road.transform.localScale = new Vector3(0.7f, 0.5f, Vector3.Distance(t1.conPointWorld, t2.conPointWorld));
+		//road.transform.LookAt(t1.conPointWorld);
+
+		//find the angle the road should be at using arctan
+		float xdist = t2.conPoint.x - t1.conPoint.x;
+		float zdist = t2.conPoint.y - t1.conPoint.y;
+		float surfRot = Mathf.Atan(xdist/zdist) * Mathf.Rad2Deg;//this rotation should be used in collision detection
+	
+		//aligns the segment with the two points(not rotated away from the surface yet)
+		Quaternion pointAlignRot = Quaternion.FromToRotation(Vector3.forward, t2.conPointWorld - t1.conPointWorld);
+		//rotation required to face the segment away from the surface
+		Quaternion surfAlignRot = Quaternion.FromToRotation(pointAlignRot*Vector3.up, road.transform.position);
+		//road.transform.rotation = getWorldRot(road.transform.position, Quaternion.Euler(0,surfRot,0), side);
+		road.transform.rotation = surfAlignRot * pointAlignRot;
+
 		//road.transform.LookAt(t1.conPointWorld);
 	}
 
@@ -254,7 +278,7 @@ public class SurfaceSystem
 
 	//a wrapper function for the Build class build object that also adds the objects generated by the surface system to the surfList
 	//probably remove later
-	private WorldObject buildObject<T>(Vector3 pos, SurfaceHolder sh) where T : WorldObject
+	/*private WorldObject buildObject<T>(Vector3 pos, SurfaceHolder sh) where T : WorldObject
 	{
 		WorldObject wo = Build.buildObject<T>(pos);
 
@@ -262,7 +286,7 @@ public class SurfaceSystem
 
 
 		return wo;
-	}
+	}*/
 
 	//deletes all obects in a surface unit if no more world units are in it
 	public void deleteSurface(SurfaceUnit su)
