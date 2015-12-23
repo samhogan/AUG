@@ -11,6 +11,6 @@ public class TransportUnit
 	public bool conUpRight = false;//is the streetPoint connected to the street to the top right of it(forming a street) ?
 	public bool conUpLeft = false;
 
-
+	public bool populated = false;//for mid and large tus,has teh transport unit been populated with smaller transport units?
 
 }

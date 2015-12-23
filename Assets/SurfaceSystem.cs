@@ -171,17 +171,17 @@ public class SurfaceSystem
 				//build the road units
 				//Debug.Log("looping");
 				//the trasport unit to examine
-				TransportUnit tu = transport.getBase(su.side, i, j);
+				TransportUnit tu = transport.getBase(new SurfaceUnit(su.side, i, j));
 				if(tu.conRight)
 				{
 					//the transport unit to the right of this one
-					TransportUnit tu2 = transport.getBase(su.side, i+1, j);
+					TransportUnit tu2 = transport.getBase(new SurfaceUnit(su.side, i+1, j));
 					buildTransportSegment(tu,tu2);
 				}
 				if(tu.conUp)
 				{
 					//the transport unit above this one
-					TransportUnit tu2 = transport.getBase(su.side, i, j+1);
+					TransportUnit tu2 = transport.getBase(new SurfaceUnit(su.side, i, j+1));
 					buildTransportSegment(tu,tu2);
 				}
 				//if(tu.conUpRight)//add this in later
