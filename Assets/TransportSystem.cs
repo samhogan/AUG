@@ -56,108 +56,125 @@ public class TransportSystem
 		}
 
 
-		//if the base unit is not in the list, check if a mid unit is 
-		TransportUnit mu = null;
+		//if the base unit is not in the list, check if a mid unit is
 
 		//the coordinates of the mid unit
-		SurfaceUnit mus = getMid(su);
+		SurfaceUnit mus = getMidSU(su);
 
-		if(midTUs.TryGetValue(mus, out mu))
+		//retrieve the actual mid unit (or not if it will never exist)
+		TransportUnit mu = getMid(mus);
+
+		//if the mid unit will never exist, the base unit will never exist
+		if(mu==null)
+			return null;
+
+		//if the mu has already been populated, the base unit will never exist
+		if(mu.populated)
+			return null;
+		else
 		{
-			//if the mu has already been populated, the bu will never exist
-			if(mu.populated)
-				return null;
-			else
+			//populate it
+			int startu = mus.u*midTUWidth;
+			int startv = mus.v*midTUWidth;
+			for(int i = startu; i<startu+midTUWidth; i++)
 			{
-				//populate it
-				int startu = mus.u*midTUWidth;
-				int startv = mus.v*midTUWidth;
-				for(int i = startu; i<startu+midTUWidth; i++)
+				for(int j = startv; j<startv+midTUWidth; j++)
 				{
-					for(int j = startv; j<startv+midTUWidth; j++)
-					{
-						//create a new base unit, set its properties, and add it to the base list
-						TransportUnit newTU = new TransportUnit();
-						newTU.conUp = true;
-						newTU.conRight = false;
-						newTU.conPoint = new Vector2(i + 0.5f, j + 0.5f);
-						newTU.conPointWorld = UnitConverter.getWP(new SurfacePos(su.side, newTU.conPoint.x, newTU.conPoint.y), 
-						                                       WorldManager.curPlanet.radius, sideLength);
+					//create a new base unit, set its properties, and add it to the base list
+					TransportUnit newTU = new TransportUnit();
+					newTU.conUp = Random.value>0.5f;
+					newTU.conRight = Random.value>0.5f;
+					newTU.conPoint = new Vector2(i + Random.value, j + Random.value);
+					newTU.conPointWorld = UnitConverter.getWP(new SurfacePos(su.side, newTU.conPoint.x, newTU.conPoint.y), 
+					                                       WorldManager.curPlanet.radius, sideLength);
 
-						baseTUs.Add(new SurfaceUnit(su.side, i, j), newTU);
-					}
+					baseTUs.Add(new SurfaceUnit(su.side, i, j), newTU);
 				}
-				mu.populated = true;
-
-				//use recursion to return to the top of the function
-				//NOTE: need to optimize later and probably not use recursion :(
-				return getBase(su);
 			}
+			//TUMidFiller.getBases(
+			mu.populated = true;
+
+			//use recursion to return to the top of the function and get the base unit from the list(or not if it was not generated)
+			return getBase(su);
 		}
 
-		//if the mid unit is not in the list, check if a large unit is
-		TransportUnit lu = null;
+	}
+
+	//returns the mid unit at the specified su or null if one does not exist
+	public TransportUnit getMid(SurfaceUnit su)
+	{
+		TransportUnit mu = null;
+
+		//if it is in the mid list, return it
+		if(midTUs.TryGetValue(su, out mu))
+		{
+			return mu;
+		}
+		//if it's not in the mid list, check if a large unit will contain it
+
 		//the coordinates of the proposed large unit
-		SurfaceUnit lus = getLarge(su);
-		if(largeTUs.TryGetValue(lus, out lu))
+		SurfaceUnit lus = getLargeSU(su);
+		//retrieve the large unit
+		TransportUnit lu = getLarge(lus);
+	
+		//if the lu has already been populated, the mu will never exist, so return null
+		if(lu.populated)
+			return null;
+		else
 		{
-			//if the lu has already been populated, the mu will never exist, so the bu will never exist
-			if(lu.populated)
-				return null;
-			else
+			//populate it with mid units(later will be moved to a separate function)
+			int startu = lus.u*largeTUWidth;
+			int startv = lus.v*largeTUWidth;
+			//loop through all mid units in the large unit and create them
+			for(int i = startu; i<startu+largeTUWidth; i++)
 			{
-				//populate it with mid units
-				int startu = lus.u*largeTUWidth;
-				int startv = lus.v*largeTUWidth;
-				//loop through all mid units in the large unit and create them
-				for(int i = startu; i<startu+largeTUWidth; i++)
+				for(int j = startv; j<startv+largeTUWidth; j++)
 				{
-					for(int j = startv; j<startv+largeTUWidth; j++)
-					{
-						//create a new base unit, set its properties, and add it to the base list
-						TransportUnit newTU = new TransportUnit();
-						newTU.conUp = true;
-						newTU.conRight = false;
-						newTU.conPoint = new Vector2(i + 0.5f, j + 0.5f);
-						midTUs.Add(new SurfaceUnit(su.side, i, j), newTU);
-					}
+					//create a new base unit, set its properties, and add it to the base list
+					TransportUnit newTU = new TransportUnit();
+					newTU.conUp = Random.value>0.5f;
+					newTU.conRight = Random.value>0.5f;
+					newTU.conPoint = new Vector2(i + 0.5f, j + 0.5f);
+					midTUs.Add(new SurfaceUnit(su.side, i, j), newTU);
 				}
-				lu.populated = true;
-				//use recursion to return to the top of the function
-				return getBase(su);
 			}
+			lu.populated = true;
+			//use recursion to return to the top of the function and return the newly created(or not) mid unit
+			return getMid(su);
 		}
 
-		//if no large unit exists, build one (every possible large unit will exist)
-		largeTUs.Add(lus, new TransportUnit());
-		return getBase(su);
+	}
 
-		/*TransportUnit tu = new TransportUnit();
-		tu.conPoint = new Vector2(su.u + 0.5f, su.v + 0.5f);
-		tu.conUp = true;
-		tu.conRight = true;
+	//returns the large unit at a specified su, creates one if it does not exist(every large unit will exist)
+	public TransportUnit getLarge(SurfaceUnit su)
+	{
+		TransportUnit lu = null;
 
-		//set this unit's con point world position 
-		//radius will later take things like elevation into account using a terrainsystem method
-		tu.conPointWorld = UnitConverter.getWP(new SurfacePos(su.side, tu.conPoint.x, tu.conPoint.y), 
-		                                       WorldManager.curPlanet.radius, sideLength);
+		//if it is in the list, return it
+		if(largeTUs.TryGetValue(su, out lu))
+		{
+			return lu;
+		}
 
-		return tu;*/
+		//if not, build one and return it
+		TransportUnit tu = new TransportUnit();
+		largeTUs.Add(su, tu);
+		return tu;
 	}
 
 	//returns the coordinates of a mid unit that contain the base unit whose coordinates are given
-	private SurfaceUnit getMid(SurfaceUnit bsu)
+	private SurfaceUnit getMidSU(SurfaceUnit bsu)
 	{
 		return new SurfaceUnit(bsu.side, 
 		                       Mathf.FloorToInt((float)bsu.u/midTUWidth),
 		                       Mathf.FloorToInt((float)bsu.v/midTUWidth));
 	}
 
-	//returns the coordinates of a large unit that contain the base unit whose coordinates are given
-	private SurfaceUnit getLarge(SurfaceUnit bsu)
+	//returns the coordinates of a large unit that contain the mid unit whose coordinates are given
+	private SurfaceUnit getLargeSU(SurfaceUnit bsu)
 	{
 		return new SurfaceUnit(bsu.side, 
-		                       Mathf.FloorToInt((float)bsu.u/sideLengthLarge),
-		                       Mathf.FloorToInt((float)bsu.v/sideLengthLarge));
+		                       Mathf.FloorToInt((float)bsu.u/largeTUWidth),
+		                       Mathf.FloorToInt((float)bsu.v/largeTUWidth));
 	}
 }
