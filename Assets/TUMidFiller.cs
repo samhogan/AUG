@@ -52,11 +52,12 @@ public class TUMidFiller
 		//set the conPoint of the base unit that contains the mid unit's conPoint
 		int powIndexX = Mathf.FloorToInt(mu.conPoint.x);
 		int powIndexY = Mathf.FloorToInt(mu.conPoint.y);
-		TransportUnit powUnit = getBase(powIndexX, powIndexY);
+		TUBase powUnit = getBase(powIndexX, powIndexY);
 		powUnit.conPoint = mu.conPoint;
+		powUnit.conSet = true;
 
 		MyDebug.placeMarker(UnitConverter.getWP(new SurfacePos(su.side, powUnit.conPoint.x, powUnit.conPoint.y), 
-		                     WorldManager.curPlanet.radius, 64*16));
+		                     WorldManager.curPlanet.radius, 64*16), 3);
 		                    
 		//Debug.Log(mu.conPoint + " " + powUnit.conPoint);
 		//Debug.Log(powIndexX + " " + powIndexY);
@@ -198,7 +199,7 @@ public class TUMidFiller
 		Vector2 buildDir = (outsideConPoint - mu.conPoint).normalized * 1f;//1 is the lenght of the build vector(distance between checked street points
 		
 
-		Debug.Log(outsideConPoint+ " " +  targetSlope + " " +  buildToSide+ " " + startIndexX + " " + startIndexY + " " + mu.conPoint);
+		//Debug.Log(outsideConPoint+ " " +  targetSlope + " " +  buildToSide+ " " + startIndexX + " " + startIndexY + " " + mu.conPoint);
 		//goal line slope 
 		float gps = findSlope(mu.conPoint, outsideConPoint);
 		float gpx, gpy;//the x and y coordinate of the goal point
@@ -211,14 +212,15 @@ public class TUMidFiller
 			gpx = (gpy - mu.conPoint.y + gps * mu.conPoint.x) / gps;//finds x point from y point
 			
 			findBaseIndexfromConPoint(new Vector2(gpx, gpy - 0.5f), out gix, out giy);//finds index of base unit right below the goal point, 0.5 gets the point inside the base unit for sure
-			
-			getBase(gix, giy).conUp = true;//this top unit will connect to the one above it in the topp mid unit
 
 			TUBase goalBU = getBase(gix,giy);
+			goalBU.conUp = true;//this top unit will connect to the one above it in the topp mid unit
+
 			if(!goalBU.conSet)
 				goalBU.conPoint = new Vector2(gpx, gpy - 0.0001f);//sets the bl point of this goal base unit in case it is not later set
 			
-		} else if(buildToSide == Dir.DOWN)
+		} 
+		else if(buildToSide == Dir.DOWN)
 		{
 			gpy = (mu.indexJ) * midTUWidth;//IF FACING DOWN!!! goal point y value , touches the bottom of the mid unit
 			gpx = (gpy - mu.conPoint.y + gps * mu.conPoint.x) / gps;//finds x point from y point
@@ -229,7 +231,8 @@ public class TUMidFiller
 			if(!goalBU.conSet)
 				goalBU.conPoint = new Vector2(gpx, gpy + 0.0001f);//sets the bl point of this goal base unit in case it is not later set
 			
-		} else if(buildToSide == Dir.RIGHT)
+		} 
+		else if(buildToSide == Dir.RIGHT)
 		{
 			gpx = (mu.indexI + 1) * midTUWidth; //+1 includes the width of the current unit to find the right goal point
 			
@@ -240,14 +243,15 @@ public class TUMidFiller
 			//y=m(x-x1)+y1
 			
 			findBaseIndexfromConPoint( new Vector2(gpx - 0.5f, gpy), out gix, out giy);//finds index of base unit right to the left the goal point
-			
-			getBase(gix, giy).conRight = true;//this right unit will connect to the one next to it in the right mid unit
 
 			TUBase goalBU = getBase(gix,giy);
+			goalBU.conRight = true;//this right unit will connect to the one next to it in the right mid unit
+
 			if(!goalBU.conSet)
 				goalBU.conPoint = new Vector2(gpx - 0.0001f, gpy);//sets the bl point of this goal base unit in case it is not later set
 			
-		} else if(buildToSide == Dir.LEFT)
+		} 
+		else if(buildToSide == Dir.LEFT)
 		{
 			gpx = (mu.indexI) * midTUWidth; //+1 includes the width of the current unit to find the right goal point
 			
@@ -264,7 +268,8 @@ public class TUMidFiller
 				goalBU.conPoint = new Vector2(gpx + 0.0001f, gpy);//sets the bl point of this goal base unit in case it is not later set
 			
 			//makeMarker(blToWorldUnits(baseList[gix, giy].streetPointBL));
-		} else //will never happen
+		} 
+		else //will never happen
 		{
 			gpx = 0;
 			gpy = 0;
@@ -273,8 +278,8 @@ public class TUMidFiller
 		}
 
 		//Debug.Log(gpx + " " + gpy + " " + getBase(gix, giy).conPoint);
-		MyDebug.placeMarker(UnitConverter.getWP(new SurfacePos(PSide.TOP, gpx, gpy), 
-		                                        WorldManager.curPlanet.radius, 64*16));
+		//MyDebug.placeMarker(UnitConverter.getWP(new SurfacePos(PSide.TOP, gpx, gpy), 
+		  //                                      WorldManager.curPlanet.radius, 64*16));
 		//the point on the buildDir line that is on the edge of the mid unit, used to calculate interpolation percents
 		Vector2 goalPoint = new Vector2(gpx, gpy);
 		
@@ -312,8 +317,8 @@ public class TUMidFiller
 
 			findBaseIndexfromConPoint(finalPoint, out fIndexX, out fIndexY);//finds index of base unit right below the goal point
 
-			//MyDebug.placeMarker(UnitConverter.getWP(new SurfacePos(PSide.TOP, finalPoint.x, finalPoint.y), 
-			  //                                      WorldManager.curPlanet.radius, 64*16));
+			MyDebug.placeMarker(UnitConverter.getWP(new SurfacePos(PSide.TOP, finalPoint.x, finalPoint.y), 
+			                                        WorldManager.curPlanet.radius, 64*16));
 
 			//if the final point is out of range in the current mid unit, stop the loop
 			//also, this means that the goal base unit was never reached, so the last base unit needs to be connected to it
@@ -334,6 +339,8 @@ public class TUMidFiller
 				curBaseUnit.conSet = true; //can no longer set the street point of this base unit
 				
 				connectBases(curBaseUnit, lastBaseUnit);//connect the current base unit to the last one
+				//lastBaseUnit = curBaseUnit;//set the new last base unit for reference in the next loop
+				
 				
 			}
 

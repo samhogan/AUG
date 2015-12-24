@@ -13,7 +13,7 @@ public class SurfaceSystem
 
 	//the transport system that holds road data and stuff like that
 	//will eventually be a list of potentially multiple or no transport systems
-	private TransportSystem transport;
+	public TransportSystem transport;
 
 	//private static List<SurfaceUnit> surfList = new List<SurfaceUnit>();//surface units that have already been loaded
 
@@ -188,6 +188,21 @@ public class SurfaceSystem
 						if(bu2!=null)
 							buildTransportSegment(bu,bu2);
 					}
+					if(bu.conUpRight)
+					{
+						//the transport unit above this one
+						TUBase bu2 = transport.getBase(new SurfaceUnit(su.side, i+1, j+1));
+						if(bu2!=null)
+							buildTransportSegment(bu,bu2);
+					}
+					if(bu.conUpLeft)
+					{
+						//the transport unit above this one
+						TUBase bu2 = transport.getBase(new SurfaceUnit(su.side, i-1, j+1));
+						if(bu2!=null)
+							buildTransportSegment(bu,bu2);
+					}
+					
 					//if(tu.conUpRight)//add this in later
 				}
 			}

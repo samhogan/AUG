@@ -89,7 +89,17 @@ public class RequestSystem : MonoBehaviour
 		//this will eventually happen every tenth frame or so
 		requestChunkDeletion(curChunkPos);
 		//testing
-		//print(UnitConverter.getSP(transform.position, 8));
+
+		/*SurfacePos pos = UnitConverter.getSP(transform.position, 1024);
+		//pos.toUnit();
+		MyDebug.placeMarker(UnitConverter.getWP(new SurfacePos(pos.side, pos.toUnit().u, pos.toUnit().v), 10000, 1024), 2);
+		TUBase baseU = WorldManager.curPlanet.surface.transport.getBase(pos.toUnit());
+		if(baseU!=null)
+			print(baseU.indexI + " " + baseU.indexJ + " conUp:" + baseU.conUp + " conRight:" + baseU.conRight + 
+		  	   " conUpRight:" + baseU.conUpRight + " conUpLeft" + baseU.conUpLeft);
+		else
+			print(pos.toUnit().u + " " + pos.toUnit().u + " base is null");
+		//print(UnitConverter.getSP(transform.position, 64*16));*/
 	}
 
 	//request chunk generation
