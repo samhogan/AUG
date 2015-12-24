@@ -13,7 +13,7 @@ public class TransportSystem
 
 	//NOTE: transport units and surface units are the same thing but on different scales(usually)
 	//stores all base t units that have been generated
-	private Dictionary<SurfaceUnit, TransportUnit> baseTUs = new Dictionary<SurfaceUnit, TransportUnit>();
+	private Dictionary<SurfaceUnit, TUBase> baseTUs = new Dictionary<SurfaceUnit, TUBase>();
 
 	//stores all mid t units that have been generated
 	private Dictionary<SurfaceUnit, TransportUnit> midTUs = new Dictionary<SurfaceUnit, TransportUnit>();
@@ -21,7 +21,8 @@ public class TransportSystem
 	//stores all large t units that have been generated
 	private Dictionary<SurfaceUnit, TransportUnit> largeTUs = new Dictionary<SurfaceUnit, TransportUnit>();
 
-
+	//used to fill mid units with base units(too much code, had to break it off into its own class)
+	private TUMidFiller midfill;
 
 	public TransportSystem(int gtu, int ltu, int mtu)
 	{
@@ -31,30 +32,22 @@ public class TransportSystem
 
 		sideLength = gtu * ltu * mtu;
 		sideLengthLarge = ltu*mtu;
+
+		midfill = new TUMidFiller(this, mtu);
 	}
 
 	//will return a TransportUnit object from the requested a base unit
 	//OH YES THIS USES RECURSION OH MAN!!!!!!!!!!!!!!!! I'M SO PROUD OF MYSELF!!!!!
-	public TransportUnit getBase(SurfaceUnit su)
+	public TUBase getBase(SurfaceUnit su)
 	{
-		/*pseudo code
-		 *if base unit exists in baseTUs, return it
-		 *else generate it or discover it will never exist
-		 *
-        */
-
-		//the parameters made into a surface unit of the base unit, will probably just make the paramter a surfaceunit later
-		//SurfaceUnit su = new SurfaceUnit(side, upos, vpos);
-
 		//the base unit to be returned eventually
-		TransportUnit bu = null;
+		TUBase bu = null;
 
 		//if the base unit exists in the list, return it
 		if(baseTUs.TryGetValue(su, out bu))
 		{
 			return bu;
 		}
-
 
 		//if the base unit is not in the list, check if a mid unit is
 
@@ -74,14 +67,14 @@ public class TransportSystem
 		else
 		{
 			//populate it
-			int startu = mus.u*midTUWidth;
+			/*int startu = mus.u*midTUWidth;
 			int startv = mus.v*midTUWidth;
 			for(int i = startu; i<startu+midTUWidth; i++)
 			{
 				for(int j = startv; j<startv+midTUWidth; j++)
 				{
 					//create a new base unit, set its properties, and add it to the base list
-					TransportUnit newTU = new TransportUnit();
+					TUBase newTU = new TUBase();
 					newTU.conUp = Random.value>0.5f;
 					newTU.conRight = Random.value>0.5f;
 					newTU.conPoint = new Vector2(i + Random.value, j + Random.value);
@@ -90,8 +83,16 @@ public class TransportSystem
 
 					baseTUs.Add(new SurfaceUnit(su.side, i, j), newTU);
 				}
+			}*/
+			Dictionary<SurfaceUnit, TUBase> bases = midfill.populate(mu, mus);
+			foreach(KeyValuePair<SurfaceUnit, TUBase> pair in bases)
+			{
+				pair.Value.conPointWorld = UnitConverter.getWP(new SurfacePos(su.side, pair.Value.conPoint.x, pair.Value.conPoint.y), 
+				                                    WorldManager.curPlanet.radius, sideLength);
+				baseTUs.Add(new SurfaceUnit(su.side, pair.Key.u, pair.Key.v), pair.Value);
+				//Debug.Log(pair.Key);
 			}
-			//TUMidFiller.getBases(
+
 			mu.populated = true;
 
 			//use recursion to return to the top of the function and get the base unit from the list(or not if it was not generated)
@@ -132,9 +133,11 @@ public class TransportSystem
 				{
 					//create a new base unit, set its properties, and add it to the base list
 					TransportUnit newTU = new TransportUnit();
-					newTU.conUp = Random.value>0.5f;
-					newTU.conRight = Random.value>0.5f;
-					newTU.conPoint = new Vector2(i + 0.5f, j + 0.5f);
+					newTU.conUp = true;//Random.value>0.5f;
+					newTU.conRight = true;//Random.value>0.5f;
+					newTU.indexI = i;
+					newTU.indexJ = j;
+					newTU.conPoint = new Vector2((i+0.5f)*midTUWidth + Random.value*4-2,(j+0.5f)*midTUWidth + Random.value*4-2);
 					midTUs.Add(new SurfaceUnit(su.side, i, j), newTU);
 				}
 			}

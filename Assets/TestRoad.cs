@@ -21,7 +21,7 @@ public class TestRoad : MobileObjects
 	public override void Render()
 	{
 		GameObject goInst = GameObject.CreatePrimitive(PrimitiveType.Cube);
-		goInst.transform.localScale = new Vector3(0.7f, 0.5f, length);
+		goInst.transform.localScale = new Vector3(5f, 0.5f, length);
 		//GameObject goInst = GameObject.Instantiate(go, transform.position, Quaternion.identity) as GameObject;
 		goInst.transform.parent = transform;
 		goInst.transform.localRotation = Quaternion.identity;//make sure this child obj has 0 rotation relative to the parent
