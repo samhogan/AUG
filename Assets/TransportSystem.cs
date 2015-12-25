@@ -133,12 +133,13 @@ public class TransportSystem
 				{
 					//create a new base unit, set its properties, and add it to the base list
 					TransportUnit newTU = new TransportUnit();
-					newTU.conUp = Random.value>0.5f;
-					newTU.conRight = Random.value>0.5f;
+					newTU.conUp = true;//Random.value>0.5f;
+					newTU.conRight = true;//Random.value>0.5f;
 					newTU.indexI = i;
 					newTU.indexJ = j;
 					//newTU.conPoint = new Vector2((i+0.5f)*midTUWidth + Random.value*4-2,(j+0.5f)*midTUWidth + Random.value*4-2);
-					newTU.conPoint = new Vector2((i+Random.value)*midTUWidth,(j+Random.value)*midTUWidth);
+					newTU.conPoint = new Vector2((i+0.5f)*midTUWidth,(j+0.5f)*midTUWidth);
+					//newTU.conPoint = new Vector2((i+Random.value)*midTUWidth,(j+Random.value)*midTUWidth);
 					midTUs.Add(new SurfaceUnit(su.side, i, j), newTU);
 				}
 			}
