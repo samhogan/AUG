@@ -13,6 +13,10 @@ public class TransportUnit
 
 	public int indexI;//the I index of the street unit in its container transport unit
 	public int indexJ;
+
+	//the level of transport segment that is built(level 1 is highest, nondependent, ex. highways would be 1, smaller streets 2)
+	public int rightLev;
+	public int upLev;
 }
 
 public enum Dir //enum of absolute directions

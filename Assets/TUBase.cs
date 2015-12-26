@@ -10,4 +10,8 @@ public class TUBase : TransportUnit
 
 	//has the conPoint been officially set yet?
 	public bool conSet = false;
+
+	public int upRightLev;
+	public int upLeftLev;
+
 }

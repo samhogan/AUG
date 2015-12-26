@@ -65,20 +65,47 @@ public class TUMidFiller
 		//the mid transport units to the left and bottom of the current mid unit
 		TransportUnit leftTU = tran.getMid(new SurfaceUnit(su.side,su.u - 1, su.v));
 		TransportUnit downTU = tran.getMid(new SurfaceUnit(su.side,su.u, su.v - 1));
+		TransportUnit rightTU = tran.getMid(new SurfaceUnit(su.side,su.u+1, su.v));
+		TransportUnit upTU = tran.getMid(new SurfaceUnit(su.side,su.u, su.v + 1));
+
+		//the directions a street will connect to from the center
+		bool conRight = false;
+		bool conLeft = false;
+		bool conUp = false;
+		bool conDown = false;
+
 
 		//the conPoint of the mid unit above, below, to the right and left of this one
-		Vector2 conPointRight = tran.getMid(new SurfaceUnit(su.side,su.u + 1, su.v)).conPoint;
-		Vector2 conPointLeft = leftTU.conPoint;
-		Vector2 conPointUp = tran.getMid(new SurfaceUnit(su.side,su.u, su.v + 1)).conPoint;
-		Vector2 conPointDown = downTU.conPoint;
+		//have to initially set them to something whether they are used or not
+		Vector2 conPointRight = Vector2.zero;
+		Vector2 conPointLeft = Vector2.zero;
+		Vector2 conPointUp = Vector2.zero;
+		Vector2 conPointDown = Vector2.zero;
+
+		//check if each mid unit exists, and set connections as necesary HOW DO YOU SPELL NECESSARY?!?!?!?!?!?!??!???!
+		if(rightTU!=null)
+		{
+			conPointRight = rightTU.conPoint;
+			conRight = mu.conRight;
+		}
+		if(leftTU!=null)
+		{
+			conPointLeft = leftTU.conPoint;
+			conLeft = leftTU.conRight;//if the unit to the left connects to the right, then this unit will connect to the left
+		}
+		if(upTU!=null)
+		{
+			conPointUp = upTU.conPoint;
+			conUp = mu.conUp;
+		}
+		if(downTU!=null)
+		{
+			conPointDown = downTU.conPoint;
+			conDown = downTU.conUp;
+		}
 
 		//Debug.Log(conPointUp + " " + conPointRight + " " + conPointLeft + " " + conPointDown);
 
-		//the directions a street will connect to from the center
-		bool conRight = mu.conRight;
-		bool conLeft = leftTU.conRight;//if the unit to the left connects to the right, then this unit will connect to the left
-		bool conUp = mu.conUp;
-		bool conDown = downTU.conUp;
 
 		//the slope that all streets aim for when they converge in the middle
 		float targetSlopeRight = 0;
@@ -107,10 +134,11 @@ public class TUMidFiller
 
 			float targetSlopeUpDown = targetVecUpDown.y / targetVecUpDown.x;
 
-			Debug.Log(targetSlopeUpDown);
+		//	Debug.Log(targetSlopeUpDown);
+			//adjust the slope if infinite
 			if(targetSlopeUpDown==Mathf.Infinity)
-				targetSlopeUpDown = -100000f;//float.MinValue;
-			Debug.Log(targetSlopeUpDown);
+				targetSlopeUpDown = 100;//float.MinValue;
+		//	Debug.Log(targetSlopeUpDown);
 			
 			//float targetSlopeUpDown = findSlope(conPointUp, conPointDown);
 			float targetSlopeLeftRight = -1 / targetSlopeUpDown;//perpindicular to vertical target slope
@@ -121,53 +149,53 @@ public class TUMidFiller
 		} 
 		else if(conUp && conDown)//if the top and bottom are connected but all four sides are not
 		{
-			targetSlopeUp = targetSlopeDown = findSlope(conPointUp, conPointDown);
+			targetSlopeUp = targetSlopeDown = GridMath.findSlope(conPointUp, conPointDown);
 			
 			if(conRight)
-				targetSlopeRight = perp(targetSlopeUp);//this street will come in aand connect perpindicular to the up and down street
+				targetSlopeRight = GridMath.perp(targetSlopeUp);//this street will come in aand connect perpindicular to the up and down street
 			else if(conLeft)
-				targetSlopeLeft = perp(targetSlopeUp);
+				targetSlopeLeft = GridMath.perp(targetSlopeUp);
 		} 
 		else if(conRight && conLeft)//if the left and right are connected but all four sides are not
 		{
-			targetSlopeRight = targetSlopeLeft = findSlope(conPointRight, conPointLeft);
+			targetSlopeRight = targetSlopeLeft = GridMath.findSlope(conPointRight, conPointLeft);
 			
 			if(conUp)
-				targetSlopeUp = perp(targetSlopeRight);//this street will come in aand connect perpindicular to the right and left street(has no influence on the slope)
+				targetSlopeUp = GridMath.perp(targetSlopeRight);//this street will come in aand connect perpindicular to the right and left street(has no influence on the slope)
 			else if(conDown)
-				targetSlopeDown = perp(targetSlopeRight);
+				targetSlopeDown = GridMath.perp(targetSlopeRight);
 		} 
 		else if(conUp && conRight)//if the street connects up and right but nowhere else
 		{
-			targetSlopeUp = targetSlopeRight = findSlope(conPointUp, conPointRight);
+			targetSlopeUp = targetSlopeRight = GridMath.findSlope(conPointUp, conPointRight);
 		} 
 		else if(conUp && conLeft)
 		{
-			targetSlopeUp = targetSlopeLeft = findSlope(conPointUp, conPointLeft);
+			targetSlopeUp = targetSlopeLeft = GridMath.findSlope(conPointUp, conPointLeft);
 		} 
 		else if(conDown && conRight)
 		{
-			targetSlopeDown = targetSlopeRight = findSlope(conPointDown, conPointRight);
+			targetSlopeDown = targetSlopeRight = GridMath.findSlope(conPointDown, conPointRight);
 		} 
 		else if(conDown && conLeft)//if the street connects down and left but nowhere else
 		{
-			targetSlopeDown = targetSlopeLeft = findSlope(conPointDown, conPointLeft);
+			targetSlopeDown = targetSlopeLeft = GridMath.findSlope(conPointDown, conPointLeft);
 		} 
 		else if(conUp)//if it only connects to the top mid unit, make slope between the top bl point and this bl point
 		{
-			targetSlopeUp = findSlope(conPointUp, mu.conPoint);
+			targetSlopeUp = GridMath.findSlope(conPointUp, mu.conPoint);
 		} 
 		else if(conDown)
 		{
-			targetSlopeDown = findSlope(conPointDown, mu.conPoint);
+			targetSlopeDown = GridMath.findSlope(conPointDown, mu.conPoint);
 		} 
 		else if(conRight)
 		{
-			targetSlopeRight = findSlope(conPointRight, mu.conPoint);
+			targetSlopeRight = GridMath.findSlope(conPointRight, mu.conPoint);
 		} 
 		else if(conLeft)
 		{
-			targetSlopeLeft = findSlope(conPointLeft, mu.conPoint);
+			targetSlopeLeft = GridMath.findSlope(conPointLeft, mu.conPoint);
 		}
 
 		//Debug.Log(targetSlopeUp + " " + targetSlopeRight + " " + targetSlopeLeft + " " + targetSlopeDown);
@@ -180,6 +208,15 @@ public class TUMidFiller
 		MyDebug.placeMarker(UnitConverter.getWP(new SurfacePos(PSide.TOP, conPointLeft.x, conPointLeft.y), 
 		                                        WorldManager.curPlanet.radius, 64*16));
 			*/
+
+		/*if(targetSlopeUp==Mathf.Infinity || targetSlopeUp==float.NaN)
+			targetSlopeUp=500;
+		if(targetSlopeDown==Mathf.Infinity || targetSlopeDown==float.NaN)
+			targetSlopeDown=-500;
+		if(targetSlopeRight==float.NaN)
+			targetSlopeRight=0;
+		if(targetSlopeLeft==float.NaN)
+			targetSlopeLeft=0;*/
 
 		//actually build the streets
 		if(conUp)
@@ -204,12 +241,12 @@ public class TUMidFiller
 	public void buildStreetCurve(Vector2 outsideConPoint, float targetSlope, Dir buildToSide, int startIndexX, int startIndexY, TransportUnit mu)
 	{
 		//the direction to build the road, adjacent street point - cur street point normalized, might need to change distance for a higher sample rate
-		Vector2 buildDir = (outsideConPoint - mu.conPoint).normalized * 0.7f;//1 is the lenght of the build vector(distance between checked street points
+		Vector2 buildDir = (outsideConPoint - mu.conPoint).normalized * 1f;//1 is the lenght of the build vector(distance between checked street points
 		
 
 		//Debug.Log(outsideConPoint+ " " +  targetSlope + " " +  buildToSide+ " " + startIndexX + " " + startIndexY + " " + mu.conPoint);
 		//goal line slope 
-		float gps = findSlope(mu.conPoint, outsideConPoint);
+		float gps = GridMath.findSlope(mu.conPoint, outsideConPoint);
 		float gpx, gpy;//the x and y coordinate of the goal point
 		int gix, giy;//the goal base unit that is touching the edge and the goal point
 
@@ -217,9 +254,9 @@ public class TUMidFiller
 		if(buildToSide == Dir.UP)//if a street is being build to connect to the up side
 		{
 			gpy = (mu.indexJ + 1) * midTUWidth;//IF FACING UP!!! goal point y value , touches the top of the mid unit
-			gpx = (gpy - mu.conPoint.y + gps * mu.conPoint.x) / gps;//finds x point from y point
+			gpx = GridMath.findX(gpy, mu.conPoint, gps);//finds x point from y point
 			
-			findBaseIndexfromConPoint(new Vector2(gpx, gpy - 0.5f), out gix, out giy);//finds index of base unit right below the goal point, 0.5 gets the point inside the base unit for sure
+			GridMath.findBaseIndexfromPoint(new Vector2(gpx, gpy - 0.5f), out gix, out giy);//finds index of base unit right below the goal point, 0.5 gets the point inside the base unit for sure
 
 			TUBase goalBU = getBase(gix,giy);
 			goalBU.conUp = true;//this top unit will connect to the one above it in the topp mid unit
@@ -231,9 +268,8 @@ public class TUMidFiller
 		else if(buildToSide == Dir.DOWN)
 		{
 			gpy = (mu.indexJ) * midTUWidth;//IF FACING DOWN!!! goal point y value , touches the bottom of the mid unit
-			gpx = (gpy - mu.conPoint.y + gps * mu.conPoint.x) / gps;//finds x point from y point
-			
-			findBaseIndexfromConPoint(new Vector2(gpx, gpy + 0.5f), out gix, out giy);//finds index of base unit right above the goal point
+			gpx = GridMath.findX(gpy, mu.conPoint, gps);
+			GridMath.findBaseIndexfromPoint(new Vector2(gpx, gpy + 0.5f), out gix, out giy);//finds index of base unit right above the goal point
 
 			TUBase goalBU = getBase(gix,giy);
 			if(!goalBU.conSet)
@@ -243,14 +279,14 @@ public class TUMidFiller
 		else if(buildToSide == Dir.RIGHT)
 		{
 			gpx = (mu.indexI + 1) * midTUWidth; //+1 includes the width of the current unit to find the right goal point
-			
+			gpy = GridMath.findY(gpx, mu.conPoint, gps);
 			//need to change this probably!!
-			gpy = gps * (gpx - mu.conPoint.x) + mu.conPoint.y;//finds y point from x point using point slope
+			//gpy = gps * (gpx - mu.conPoint.x) + mu.conPoint.y;//finds y point from x point using point slope
 			
 			//y-y1=m(x-x1)
 			//y=m(x-x1)+y1
 			
-			findBaseIndexfromConPoint( new Vector2(gpx - 0.5f, gpy), out gix, out giy);//finds index of base unit right to the left the goal point
+			GridMath.findBaseIndexfromPoint( new Vector2(gpx - 0.5f, gpy), out gix, out giy);//finds index of base unit right to the left the goal point
 
 			TUBase goalBU = getBase(gix,giy);
 			goalBU.conRight = true;//this right unit will connect to the one next to it in the right mid unit
@@ -264,12 +300,12 @@ public class TUMidFiller
 			gpx = (mu.indexI) * midTUWidth; //+1 includes the width of the current unit to find the right goal point
 			
 			//need to change this probably!!
-			gpy = gps * (gpx - mu.conPoint.x) + mu.conPoint.y;//finds y point from x point using point slope
+			gpy = GridMath.findY(gpx, mu.conPoint, gps);//finds y point from x point using point slope
 			
 			//y-y1=m(x-x1)
 			//y=m(x-x1)+y1
 			
-			findBaseIndexfromConPoint(new Vector2(gpx + 0.5f, gpy), out gix, out giy);//finds index of base unit right to the right the goal point
+			GridMath.findBaseIndexfromPoint(new Vector2(gpx + 0.5f, gpy), out gix, out giy);//finds index of base unit right to the right the goal point
 
 			TUBase goalBU = getBase(gix,giy);
 			if(!goalBU.conSet)
@@ -305,7 +341,7 @@ public class TUMidFiller
 			Vector2 buildDirPoint = mu.conPoint + buildDir * i;
 			
 			//finds the point on the target slope line that forms a perpindicular line with the buildDirPoint so they can be interpolated between
-			Vector2 pointOnTarget = findPoint(mu.conPoint.x, mu.conPoint.y, targetSlope, buildDirPoint.x, buildDirPoint.y, -1 / targetSlope);//targetSlopeUpDown
+			Vector2 pointOnTarget = GridMath.findPoint(mu.conPoint.x, mu.conPoint.y, targetSlope, buildDirPoint.x, buildDirPoint.y, -1 / targetSlope);//targetSlopeUpDown
 			
 			//distance from the build dir point and goal point on edge (less than total dist)
 			float curDist = Vector2.Distance(buildDirPoint, goalPoint);
@@ -323,8 +359,9 @@ public class TUMidFiller
 			
 			int fIndexX, fIndexY;//index of the base unit that contains the final point
 
-			findBaseIndexfromConPoint(finalPoint, out fIndexX, out fIndexY);//finds index of base unit right below the goal point
+			GridMath.findBaseIndexfromPoint(finalPoint, out fIndexX, out fIndexY);//finds index of base unit right below the goal point
 
+			//Debug.Log(targetSlope + " " + finalPoint);
 			MyDebug.placeMarker(UnitConverter.getWP(new SurfacePos(PSide.TOP, finalPoint.x, finalPoint.y), 
 			                                        WorldManager.curPlanet.radius, 64*16));
 
@@ -414,50 +451,7 @@ public class TUMidFiller
 
 
 
-	//finds the base unit that a bl point falls in given the current mid unit
-	public void findBaseIndexfromConPoint(Vector2 conPoint, out int indexX, out int indexY)
-	{
-		//rounds down to an integer to find the index
-		indexX = Mathf.FloorToInt(conPoint.x);
-		indexY = Mathf.FloorToInt(conPoint.y);
-		//indexX = Mathf.FloorToInt(conPoint.x - midTUWidth * midU.indexI);
-		//indexY = Mathf.FloorToInt(conPoint.y - midTUWidth * midU.indexJ);
 
-	}
-
-	public float findSlope(Vector2 v1, Vector2 v2)
-	{
-		if(v1.x - v2.x == 0)
-		{
-			Debug.Log("infinite slope");
-			return 10000000f;
-			//return Mathf.Infinity;//i don't know what this will do but hopefully it will work
-		}
-		return (v1.y - v2.y) / (v1.x - v2.x);
-		
-	}
-	
-	//returns the slope perpindicular to the given slope
-	public float perp(float slope)
-	{
-		if(slope == 0f || slope == 0)
-		{
-			Debug.Log("infinite slope from perp function");
-			return 1000009f;
-			//return Mathf.Infinity;//again i don't know what this will do but hopefully it will work
-		}
-		return -1 / slope;
-	}
-	
-	//finds a point given 2 points and 2 slopes (uses a modifies point slope form)
-	public Vector2 findPoint(float x1, float y1, float s1, float x2, float y2, float s2)
-	{
-		float x3 = (s1 * x1 - s2 * x2 - y1 + y2) / (s1 - s2);//two equations in point slope form solved for y set equal to each other and solved for x
-		
-		float y3 = s1 * (x3 - x1) + y1; //point slope of y1 set equal to y
-		
-		return new Vector2(x3, y3);
-	}
 
 
 }

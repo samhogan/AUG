@@ -117,13 +117,87 @@ public class TransportSystem
 		SurfaceUnit lus = getLargeSU(su);
 		//retrieve the large unit
 		TransportUnit lu = getLarge(lus);
-	
+		Debug.Log("proposed " + lus);
 		//if the lu has already been populated, the mu will never exist, so return null
 		if(lu.populated)
 			return null;
 		else
 		{
-			//populate it with mid units(later will be moved to a separate function)
+			Debug.Log("built " + lus);
+
+			//find the mid unit that the large unit's conpoint falls in 
+			int powIndexX, powIndexY;
+			GridMath.findMidIndexfromPoint(lu.conPoint, largeTUWidth, out powIndexX, out powIndexY);
+			TransportUnit powMid = buildMid(powIndexX, powIndexY, su.side);
+			powMid.conPoint = lu.conPoint;//same conpoint, or could change to not be, doesn't really  matter
+
+			//build out right for testing
+			Vector2 conPointRight = getLarge(new SurfaceUnit(su.side,su.u + 1, su.v)).conPoint;
+
+			//find the index of the goal mid unit
+			float slopeRight = GridMath.findSlope(lu.conPoint, conPointRight);//find the average slope of the street going right
+			float goalPosX = (lu.indexI+1)*largeTUWidth;//the x value of the very right side of the large unit in mid units
+			float goalPosY = GridMath.findY(goalPosX, lu.conPoint, slopeRight);//the y value on the line between teh two conpoints
+			int gix, giy; //goal index x and y of the goal mid unit
+			GridMath.findMidIndexfromPoint(new Vector2(goalPosX-0.5f, goalPosY), largeTUWidth, out gix, out giy);
+
+			//the x and y index of the mid unit last created in the loop(starts as if pows were last created)
+			//int lastix = powIndexX, lastiy = powIndexY;
+			TransportUnit lastMid = powMid;
+
+			while(true)
+			{
+
+				//the difference in indexes between the current and goal mid units
+				int xdif = gix - lastMid.indexI;
+				int ydif = giy - lastMid.indexJ;
+
+				//the direction to move in this loop iteration(1=x 2=y)
+				int movedir;
+
+				//if they are both not on the goal index, pick a random one to change
+				if(xdif!=0 && ydif!=0)
+					movedir = Random.value>0.5f ? 1:2;
+				else if(xdif!=0)
+					movedir = 1;
+				else if(ydif!=0)
+					movedir = 2;
+				else//if they are both zero we are done maybe?
+					break;//?
+
+				//the index of the mid unit to be created
+				int curix = lastMid.indexI, curiy = lastMid.indexJ;
+
+				//if moving in the x direction
+				if(movedir==1)
+				{
+					if(xdif>0)
+						curix++;
+					else
+						curix--;
+				}
+				else//movedir==2
+				{
+					if(ydif>0)
+						curiy++;
+					else
+						curiy--;
+				}
+
+				//create or retrieve the new mid unit
+				TransportUnit curMid = buildMid(curix, curiy, su.side);
+				curMid.conPoint = new Vector2((curix+Random.value)*midTUWidth,(curiy+Random.value)*midTUWidth);
+
+				MyDebug.placeMarker(UnitConverter.getWP(new SurfacePos(PSide.TOP, curMid.conPoint.x, curMid.conPoint.y), 10000, 1024), 5);
+
+				connectUnits(curMid, lastMid);
+
+				lastMid = curMid;
+			}
+
+
+
+			/*//populate it with mid units(later will be moved to a separate function)
 			int startu = lus.u*largeTUWidth;
 			int startv = lus.v*largeTUWidth;
 			//loop through all mid units in the large unit and create them
@@ -133,16 +207,17 @@ public class TransportSystem
 				{
 					//create a new base unit, set its properties, and add it to the base list
 					TransportUnit newTU = new TransportUnit();
-					newTU.conUp = true;//Random.value>0.5f;
-					newTU.conRight = true;//Random.value>0.5f;
+					newTU.conUp = Random.value>0.5f;
+					newTU.conRight = Random.value>0.5f;
 					newTU.indexI = i;
 					newTU.indexJ = j;
 					//newTU.conPoint = new Vector2((i+0.5f)*midTUWidth + Random.value*4-2,(j+0.5f)*midTUWidth + Random.value*4-2);
-					newTU.conPoint = new Vector2((i+0.5f)*midTUWidth,(j+0.5f)*midTUWidth);
-					//newTU.conPoint = new Vector2((i+Random.value)*midTUWidth,(j+Random.value)*midTUWidth);
+					//newTU.conPoint = new Vector2((i+0.5f)*midTUWidth,(j+0.5f)*midTUWidth);
+					//newTU.conPoint = new Vector2((i+0.5f)*midTUWidth+Random.value*0.00001f,(j+0.5f)*midTUWidth+Random.value*0.00001f);
+					newTU.conPoint = new Vector2((i+Random.value)*midTUWidth,(j+Random.value)*midTUWidth);
 					midTUs.Add(new SurfaceUnit(su.side, i, j), newTU);
 				}
-			}
+			}*/
 			lu.populated = true;
 			//use recursion to return to the top of the function and return the newly created(or not) mid unit
 			return getMid(su);
@@ -163,6 +238,9 @@ public class TransportSystem
 
 		//if not, build one and return it
 		TransportUnit tu = new TransportUnit();
+		tu.conPoint = new Vector2((su.u+Random.value)*sideLengthLarge,(su.v+Random.value)*sideLengthLarge);
+		tu.conUp = true;
+		tu.conRight = true;
 		largeTUs.Add(su, tu);
 		return tu;
 	}
@@ -181,5 +259,46 @@ public class TransportSystem
 		return new SurfaceUnit(bsu.side, 
 		                       Mathf.FloorToInt((float)bsu.u/largeTUWidth),
 		                       Mathf.FloorToInt((float)bsu.v/largeTUWidth));
+	}
+
+
+	//returns the mid unit from midTUs at index u,v and creates one if necessary
+	private TransportUnit buildMid(int i, int j, PSide side)
+	{
+
+		TransportUnit mu = null;
+		SurfaceUnit su = new SurfaceUnit(side, i, j);
+		//Debug.Log(su);
+		if(!midTUs.TryGetValue(su, out mu))
+		{
+			mu = new TransportUnit();
+			mu.indexI = i;
+			mu.indexJ = j;
+			midTUs.Add(su, mu);
+		}
+		return mu;
+	}
+
+	//connects two transport units based on their relation to each other
+	public void connectUnits(TransportUnit u1, TransportUnit u2)//the two units to set connectivity
+	{
+		if(u1.indexI + 1 == u2.indexI && u1.indexJ == u2.indexJ)//if the second unit is directly to the right of the first one
+		{
+			u1.conRight = true;//connect the first u to the right because the second u is on the right
+		} else if(u1.indexI - 1 == u2.indexI && u1.indexJ == u2.indexJ)//if the second u unit is directly to the left of the first one
+		{
+			u2.conRight = true;
+		} else if(u1.indexI == u2.indexI && u1.indexJ + 1 == u2.indexJ)//if the second u unit is directly to the top of the first one
+		{
+			u1.conUp = true;
+		} else if(u1.indexI == u2.indexI && u1.indexJ - 1 == u2.indexJ)//if the second u unit is directly to the bottom of the first one
+		{
+			u2.conUp = true;
+		}
+	}
+
+	private void fillLarge()
+	{
+
 	}
 }
