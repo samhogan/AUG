@@ -241,7 +241,7 @@ public class TUMidFiller
 	public void buildStreetCurve(Vector2 outsideConPoint, float targetSlope, Dir buildToSide, int startIndexX, int startIndexY, TransportUnit mu)
 	{
 		//the direction to build the road, adjacent street point - cur street point normalized, might need to change distance for a higher sample rate
-		Vector2 buildDir = (outsideConPoint - mu.conPoint).normalized * 1f;//1 is the lenght of the build vector(distance between checked street points
+		Vector2 buildDir = (outsideConPoint - mu.conPoint).normalized * 0.6f;//1 is the lenght of the build vector(distance between checked street points
 		
 
 		//Debug.Log(outsideConPoint+ " " +  targetSlope + " " +  buildToSide+ " " + startIndexX + " " + startIndexY + " " + mu.conPoint);

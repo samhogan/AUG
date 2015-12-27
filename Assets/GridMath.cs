@@ -17,10 +17,10 @@ public class GridMath
 	}
 
 	//finds the mid unit that a point falls in 
-	public static void findMidIndexfromPoint(Vector2 conPoint, int largeTUWidth, out int indexX, out int indexY)
+	public static void findMidIndexfromPoint(Vector2 conPoint, int midTUWidth, out int indexX, out int indexY)
 	{
-		indexX = Mathf.FloorToInt(conPoint.x/largeTUWidth);
-		indexY = Mathf.FloorToInt(conPoint.y/largeTUWidth);
+		indexX = Mathf.FloorToInt(conPoint.x/midTUWidth);
+		indexY = Mathf.FloorToInt(conPoint.y/midTUWidth);
 	}
 	
 	public static float findSlope(Vector2 v1, Vector2 v2)

@@ -17,6 +17,9 @@ public class TransportUnit
 	//the level of transport segment that is built(level 1 is highest, nondependent, ex. highways would be 1, smaller streets 2)
 	public int rightLev;
 	public int upLev;
+
+	//has the conPoint been officially set yet?
+	public bool conSet = false;
 }
 
 public enum Dir //enum of absolute directions

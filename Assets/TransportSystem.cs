@@ -123,16 +123,17 @@ public class TransportSystem
 			return null;
 		else
 		{
-			Debug.Log("built " + lus);
+			populateLarge(lu, lus);
+			/*Debug.Log("built " + lus);
 
 			//find the mid unit that the large unit's conpoint falls in 
 			int powIndexX, powIndexY;
-			GridMath.findMidIndexfromPoint(lu.conPoint, largeTUWidth, out powIndexX, out powIndexY);
+			GridMath.findMidIndexfromPoint(lu.conPoint, midTUWidth, out powIndexX, out powIndexY);
 			TransportUnit powMid = buildMid(powIndexX, powIndexY, su.side);
 			powMid.conPoint = lu.conPoint;//same conpoint, or could change to not be, doesn't really  matter
 
 			//build out right for testing
-			Vector2 conPointRight = getLarge(new SurfaceUnit(su.side,su.u + 1, su.v)).conPoint;
+			Vector2 conPointRight = getLarge(new SurfaceUnit(lus.side,lus.u + 1, lus.v)).conPoint;
 
 			//find the index of the goal mid unit
 			float slopeRight = GridMath.findSlope(lu.conPoint, conPointRight);//find the average slope of the street going right
@@ -196,7 +197,7 @@ public class TransportSystem
 			}
 
 
-
+*/
 			/*//populate it with mid units(later will be moved to a separate function)
 			int startu = lus.u*largeTUWidth;
 			int startv = lus.v*largeTUWidth;
@@ -241,6 +242,8 @@ public class TransportSystem
 		tu.conPoint = new Vector2((su.u+Random.value)*sideLengthLarge,(su.v+Random.value)*sideLengthLarge);
 		tu.conUp = true;
 		tu.conRight = true;
+		tu.indexI = su.u;
+		tu.indexJ = su.v;
 		largeTUs.Add(su, tu);
 		return tu;
 	}
@@ -254,11 +257,11 @@ public class TransportSystem
 	}
 
 	//returns the coordinates of a large unit that contain the mid unit whose coordinates are given
-	private SurfaceUnit getLargeSU(SurfaceUnit bsu)
+	private SurfaceUnit getLargeSU(SurfaceUnit msu)
 	{
-		return new SurfaceUnit(bsu.side, 
-		                       Mathf.FloorToInt((float)bsu.u/largeTUWidth),
-		                       Mathf.FloorToInt((float)bsu.v/largeTUWidth));
+		return new SurfaceUnit(msu.side, 
+		                       Mathf.FloorToInt((float)msu.u/largeTUWidth),
+		                       Mathf.FloorToInt((float)msu.v/largeTUWidth));
 	}
 
 
@@ -278,6 +281,164 @@ public class TransportSystem
 		}
 		return mu;
 	}
+
+	//populates a large unit with mid units
+	private void populateLarge(TransportUnit lu, SurfaceUnit lus)
+	{
+		Debug.Log("built " + lus);
+		
+		//find the mid unit that the large unit's conpoint falls in 
+		int powIndexX, powIndexY;
+		GridMath.findMidIndexfromPoint(lu.conPoint, midTUWidth, out powIndexX, out powIndexY);
+		TransportUnit powMid = buildMid(powIndexX, powIndexY, lus.side);
+		powMid.conPoint = lu.conPoint;//same conpoint, or could change to not be, doesn't really  matter
+		powMid.conSet=true;
+
+		TransportUnit rightLU = getLarge(new SurfaceUnit(lus.side,lus.u + 1, lus.v));
+		TransportUnit leftLU = getLarge(new SurfaceUnit(lus.side,lus.u - 1, lus.v));
+		TransportUnit upLU = getLarge(new SurfaceUnit(lus.side,lus.u, lus.v+1));
+		TransportUnit downLU = getLarge(new SurfaceUnit(lus.side,lus.u, lus.v-1));
+		//Vector2 conPointRight = rightLU.conPoint;
+
+		//determine in which direction the streets should be built
+		bool conRight = lu.conRight;
+		bool conLeft = leftLU.conRight;
+		bool conUp = lu.conUp;
+		bool conDown = downLU.conUp;
+
+		if(conRight)
+			buildMidCurve(lu, rightLU.conPoint, Dir.RIGHT, powMid, lus.side);
+		if(conLeft)
+			buildMidCurve(lu, leftLU.conPoint, Dir.LEFT, powMid, lus.side);
+		if(conUp)
+			buildMidCurve(lu, upLU.conPoint, Dir.UP, powMid, lus.side);
+		if(conDown)
+			buildMidCurve(lu, downLU.conPoint, Dir.DOWN, powMid, lus.side);
+
+		Vector3 topright = UnitConverter.getWP(new SurfacePos(PSide.TOP, (lu.indexI+1)*sideLengthLarge, (lu.indexJ+1)*sideLengthLarge), 10000, 1024);
+		Vector3 topleft = UnitConverter.getWP(new SurfacePos(PSide.TOP, (lu.indexI)*sideLengthLarge, (lu.indexJ+1)*sideLengthLarge), 10000, 1024);
+		Vector3 botright = UnitConverter.getWP(new SurfacePos(PSide.TOP, (lu.indexI+1)*sideLengthLarge, (lu.indexJ)*sideLengthLarge), 10000, 1024);
+		Vector3 botleft = UnitConverter.getWP(new SurfacePos(PSide.TOP, (lu.indexI)*sideLengthLarge, (lu.indexJ)*sideLengthLarge), 10000, 1024);
+		Debug.DrawLine(topleft, botleft, Color.red, Mathf.Infinity);
+		Debug.DrawLine(topleft, topright, Color.red, Mathf.Infinity);
+		Debug.DrawLine(topright, botright, Color.red, Mathf.Infinity);
+		Debug.DrawLine(botright, botleft, Color.red, Mathf.Infinity);
+
+
+		lu.populated = true;
+
+	}
+
+	//builds a street from the center of a large unit to the edge in the given direction
+	private void buildMidCurve(TransportUnit lu, Vector2 outsideConPoint, Dir dir, TransportUnit powMid, PSide side)//powmid is the mid unit that contains the large's conpoint
+	{
+
+
+		int gix = 0, giy = 0;//goal index x and y of the goal mid unit
+
+		float outSlope = GridMath.findSlope(lu.conPoint, outsideConPoint);//find the average slope from this conPoint to the outsideConPoint
+
+		Debug.DrawLine(UnitConverter.getWP(new SurfacePos(PSide.TOP, lu.conPoint.x, lu.conPoint.y), 10000, 1024), 
+		               UnitConverter.getWP(new SurfacePos(PSide.TOP, outsideConPoint.x, outsideConPoint.y), 10000, 1024), Color.blue, Mathf.Infinity);
+		//determine the goal mid unit
+		if(dir==Dir.RIGHT)
+		{
+			//find the index of the goal mid unit
+			float goalPosX = (lu.indexI+1)*sideLengthLarge;//the x value of the very right side of the large unit in mid units
+			float goalPosY = GridMath.findY(goalPosX, lu.conPoint, outSlope);//the y value on the line between teh two conpoints
+			GridMath.findMidIndexfromPoint(new Vector2(goalPosX-0.5f, goalPosY), midTUWidth, out gix, out giy);
+
+			buildMid(gix, giy, side).conRight=true;
+			//Debug.DrawLine(UnitConverter.getWP(new SurfacePos(PSide.TOP, lu.conPoint.x, lu.conPoint.y), 10000, 1024), 
+			  //             UnitConverter.getWP(new SurfacePos(PSide.TOP, goalPosX, goalPosY), 10000, 1024), Color.blue, Mathf.Infinity);
+		}
+		else if(dir==Dir.LEFT)
+		{
+			//find the index of the goal mid unit
+			float goalPosX = (lu.indexI)*sideLengthLarge;//the x value of the very right side of the large unit in mid units
+			float goalPosY = GridMath.findY(goalPosX, lu.conPoint, outSlope);//the y value on the line between teh two conpoints
+			GridMath.findMidIndexfromPoint(new Vector2(goalPosX+0.5f, goalPosY), midTUWidth, out gix, out giy);
+			//buildMid(gix, giy, side).conLeft=true;
+			
+		}
+		else if(dir==Dir.UP)
+		{
+			//find the index of the goal mid unit
+			float goalPosY = (lu.indexJ+1)*sideLengthLarge;//the x value of the very right side of the large unit in mid units
+			float goalPosX = GridMath.findX(goalPosY, lu.conPoint, outSlope);//the y value on the line between teh two conpoints
+			GridMath.findMidIndexfromPoint(new Vector2(goalPosX, goalPosY-0.5f), midTUWidth, out gix, out giy);
+			buildMid(gix, giy, side).conUp=true;
+			
+		}
+		else if(dir==Dir.DOWN)
+		{
+			//find the index of the goal mid unit
+			float goalPosY = (lu.indexJ)*sideLengthLarge;//the x value of the very right side of the large unit in mid units
+			float goalPosX = GridMath.findX(goalPosY, lu.conPoint, outSlope);//the y value on the line between teh two conpoints
+			GridMath.findMidIndexfromPoint(new Vector2(goalPosX, goalPosY+0.5f), midTUWidth, out gix, out giy);
+		}
+		//the x and y index of the mid unit last created in the loop(starts as if pows were last created)
+		//int lastix = powIndexX, lastiy = powIndexY;
+		TransportUnit lastMid = powMid;
+		
+		while(true)
+		{
+			
+			//the difference in indexes between the current and goal mid units
+			int xdif = gix - lastMid.indexI;
+			int ydif = giy - lastMid.indexJ;
+			
+			//the direction to move in this loop iteration(1=x 2=y)
+			int movedir;
+			
+			//if they are both not on the goal index, pick a random one to change
+			if(xdif!=0 && ydif!=0)
+				movedir = Random.value>0.5f ? 1:2;
+			else if(xdif!=0)
+				movedir = 1;
+			else if(ydif!=0)
+				movedir = 2;
+			else//if they are both zero we are done maybe?
+				break;//?
+			
+			//the index of the mid unit to be created
+			int curix = lastMid.indexI, curiy = lastMid.indexJ;
+			
+			//if moving in the x direction
+			if(movedir==1)
+			{
+				if(xdif>0)
+					curix++;
+				else
+					curix--;
+			}
+			else//movedir==2
+			{
+				if(ydif>0)
+					curiy++;
+				else
+					curiy--;
+			}
+			
+			//create or retrieve the new mid unit
+			TransportUnit curMid = buildMid(curix, curiy, side);
+
+			if(!curMid.conSet)
+			{
+				curMid.conPoint = new Vector2((curix+Random.value)*midTUWidth,(curiy+Random.value)*midTUWidth);
+				curMid.conSet=true;
+			}
+			MyDebug.placeMarker(UnitConverter.getWP(new SurfacePos(PSide.TOP, curMid.conPoint.x, curMid.conPoint.y), 10000, 1024), 5);
+			
+			connectUnits(curMid, lastMid);
+			
+			lastMid = curMid;
+		}
+		
+
+
+	}
+
 
 	//connects two transport units based on their relation to each other
 	public void connectUnits(TransportUnit u1, TransportUnit u2)//the two units to set connectivity
