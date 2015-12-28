@@ -15,8 +15,9 @@ public class TransportUnit
 	public int indexJ;
 
 	//the level of transport segment that is built(level 1 is highest, nondependent, ex. highways would be 1, smaller streets 2)
-	public int rightLev;
-	public int upLev;
+	//0 cooresponds to not yet set
+	public int rightLev = 0;
+	public int upLev = 0;
 
 	//has the conPoint been officially set yet?
 	public bool conSet = false;

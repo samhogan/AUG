@@ -82,26 +82,38 @@ public class TUMidFiller
 		Vector2 conPointUp = Vector2.zero;
 		Vector2 conPointDown = Vector2.zero;
 
+
+		//initialize street levels
+		int rightLev = 0;
+		int leftLev = 0;
+		int upLev = 0;
+		int downLev = 0;
+
 		//check if each mid unit exists, and set connections as necesary HOW DO YOU SPELL NECESSARY?!?!?!?!?!?!??!???!
 		if(rightTU!=null)
 		{
 			conPointRight = rightTU.conPoint;
 			conRight = mu.conRight;
+			rightLev = mu.rightLev;
 		}
 		if(leftTU!=null)
 		{
 			conPointLeft = leftTU.conPoint;
 			conLeft = leftTU.conRight;//if the unit to the left connects to the right, then this unit will connect to the left
+			leftLev = leftTU.rightLev;
 		}
 		if(upTU!=null)
 		{
 			conPointUp = upTU.conPoint;
 			conUp = mu.conUp;
+			upLev = mu.upLev;
+			
 		}
 		if(downTU!=null)
 		{
 			conPointDown = downTU.conPoint;
 			conDown = downTU.conUp;
+			downLev = downTU.upLev;
 		}
 
 		//Debug.Log(conPointUp + " " + conPointRight + " " + conPointLeft + " " + conPointDown);
@@ -220,16 +232,16 @@ public class TUMidFiller
 
 		//actually build the streets
 		if(conUp)
-			buildStreetCurve(conPointUp, targetSlopeUp, Dir.UP, powIndexX, powIndexY, mu);
+			buildStreetCurve(conPointUp, targetSlopeUp, Dir.UP, powIndexX, powIndexY, mu, upLev);
 		
 		if(conDown)//if the mid unit below connects up, make a street down
-			buildStreetCurve(conPointDown, targetSlopeDown, Dir.DOWN, powIndexX, powIndexY, mu);
+			buildStreetCurve(conPointDown, targetSlopeDown, Dir.DOWN, powIndexX, powIndexY, mu, downLev);
 		
 		if(conRight)
-			buildStreetCurve(conPointRight, targetSlopeRight, Dir.RIGHT, powIndexX, powIndexY, mu);
+			buildStreetCurve(conPointRight, targetSlopeRight, Dir.RIGHT, powIndexX, powIndexY, mu, rightLev);
 		
 		if(conLeft)//if the mid unit below connects up, make a street down
-			buildStreetCurve(conPointLeft, targetSlopeLeft, Dir.LEFT, powIndexX, powIndexY, mu);
+			buildStreetCurve(conPointLeft, targetSlopeLeft, Dir.LEFT, powIndexX, powIndexY, mu, leftLev);
 
 
 	}
@@ -238,7 +250,7 @@ public class TUMidFiller
 	//outsideConPoint is the conPoint of the streetpoint that is outside of the mid unit (left, right up down), targetSlope is the slope the road tries to have at the mid street point
 	//buildToSide is the side the street will be built and connected to
 	//startIndex x and y is the index of the base unit that contains the mid unit conPoint and the roads will be build from
-	public void buildStreetCurve(Vector2 outsideConPoint, float targetSlope, Dir buildToSide, int startIndexX, int startIndexY, TransportUnit mu)
+	public void buildStreetCurve(Vector2 outsideConPoint, float targetSlope, Dir buildToSide, int startIndexX, int startIndexY, TransportUnit mu, int lev)
 	{
 		//the direction to build the road, adjacent street point - cur street point normalized, might need to change distance for a higher sample rate
 		Vector2 buildDir = (outsideConPoint - mu.conPoint).normalized * 0.6f;//1 is the lenght of the build vector(distance between checked street points
@@ -260,6 +272,7 @@ public class TUMidFiller
 
 			TUBase goalBU = getBase(gix,giy);
 			goalBU.conUp = true;//this top unit will connect to the one above it in the topp mid unit
+			goalBU.upLev = lev;
 
 			if(!goalBU.conSet)
 				goalBU.conPoint = new Vector2(gpx, gpy - 0.0001f);//sets the bl point of this goal base unit in case it is not later set
@@ -290,7 +303,8 @@ public class TUMidFiller
 
 			TUBase goalBU = getBase(gix,giy);
 			goalBU.conRight = true;//this right unit will connect to the one next to it in the right mid unit
-
+			goalBU.rightLev = lev;
+			
 			if(!goalBU.conSet)
 				goalBU.conPoint = new Vector2(gpx - 0.0001f, gpy);//sets the bl point of this goal base unit in case it is not later set
 			
@@ -369,7 +383,7 @@ public class TUMidFiller
 			//also, this means that the goal base unit was never reached, so the last base unit needs to be connected to it
 			if(fIndexX >= baseIndexI+midTUWidth || fIndexY >= baseIndexJ+midTUWidth || fIndexX < baseIndexI || fIndexY < baseIndexJ)
 			{
-				connectBases(getBase(gix, giy), lastBaseUnit);//connect the last used base unit to the goal base unit because they were not connected automaticaly
+				connectBases(getBase(gix, giy), lastBaseUnit, lev);//connect the last used base unit to the goal base unit because they were not connected automaticaly
 				break;
 			}
 			
@@ -383,7 +397,7 @@ public class TUMidFiller
 				curBaseUnit.conPoint = finalPoint;//make bl point of the base that contains the final point the final point
 				curBaseUnit.conSet = true; //can no longer set the street point of this base unit
 				
-				connectBases(curBaseUnit, lastBaseUnit);//connect the current base unit to the last one
+				connectBases(curBaseUnit, lastBaseUnit, lev);//connect the current base unit to the last one
 				//lastBaseUnit = curBaseUnit;//set the new last base unit for reference in the next loop
 				
 				
@@ -400,32 +414,49 @@ public class TUMidFiller
 
 	//checks where two bases are in relation to each other and sets their connection variables as necesarry
 	//will not connect at all if they are too far apart
-	public void connectBases(TUBase base1, TUBase base2)//the two units to set connectivity
+	//NOTE: migrate this to the transport system function connectUnits although I can see that never happening...
+	public void connectBases(TUBase base1, TUBase base2, int lev)//the two units to set connectivity
 	{
 		if(base1.indexI + 1 == base2.indexI && base1.indexJ == base2.indexJ)//if the second base unit is directly to the right of the first one
 		{
 			base1.conRight = true;//connect the first base to the right because the second base is on the right
+			if(base1.rightLev==0)
+				base1.rightLev = lev;
 		} else if(base1.indexI - 1 == base2.indexI && base1.indexJ == base2.indexJ)//if the second base unit is directly to the left of the first one
 		{
 			base2.conRight = true;
+			if(base2.rightLev==0)
+				base2.rightLev = lev;
 		} else if(base1.indexI == base2.indexI && base1.indexJ + 1 == base2.indexJ)//if the second base unit is directly to the top of the first one
 		{
 			base1.conUp = true;
+			if(base1.upLev==0)
+				base1.upLev = lev;
 		} else if(base1.indexI == base2.indexI && base1.indexJ - 1 == base2.indexJ)//if the second base unit is directly to the bottom of the first one
 		{
 			base2.conUp = true;
+			if(base2.upLev==0)
+				base2.upLev = lev;
 		} else if(base1.indexI + 1 == base2.indexI && base1.indexJ + 1 == base2.indexJ)//if the second base unit is to the top right of the first one
 		{
 			base1.conUpRight = true;
+			if(base1.upRightLev==0)
+				base1.upRightLev = lev;
 		} else if(base1.indexI - 1 == base2.indexI && base1.indexJ + 1 == base2.indexJ)//if the second base unit is to the top left of the first one
 		{
 			base1.conUpLeft = true;
+			if(base1.upLeftLev==0)
+				base1.upLeftLev = lev;
 		} else if(base1.indexI + 1 == base2.indexI && base1.indexJ - 1 == base2.indexJ)//if the second base unit is to the bottom right of the first one
 		{
 			base2.conUpLeft = true;
+			if(base2.upLeftLev==0)
+				base2.upLeftLev = lev;
 		} else if(base1.indexI - 1 == base2.indexI && base1.indexJ - 1 == base2.indexJ)//if the second base unit is to the bottom left of the first one
 		{
 			base2.conUpRight = true;
+			if(base2.upRightLev==0)
+				base2.upRightLev = lev;
 		}
 	}
 

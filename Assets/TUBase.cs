@@ -10,7 +10,7 @@ public class TUBase : TransportUnit
 
 
 
-	public int upRightLev;
-	public int upLeftLev;
+	public int upRightLev = 0;
+	public int upLeftLev = 0;
 
 }

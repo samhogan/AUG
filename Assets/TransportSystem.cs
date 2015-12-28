@@ -117,108 +117,14 @@ public class TransportSystem
 		SurfaceUnit lus = getLargeSU(su);
 		//retrieve the large unit
 		TransportUnit lu = getLarge(lus);
-		Debug.Log("proposed " + lus);
+		//Debug.Log("proposed " + lus);
 		//if the lu has already been populated, the mu will never exist, so return null
 		if(lu.populated)
 			return null;
 		else
 		{
 			populateLarge(lu, lus);
-			/*Debug.Log("built " + lus);
 
-			//find the mid unit that the large unit's conpoint falls in 
-			int powIndexX, powIndexY;
-			GridMath.findMidIndexfromPoint(lu.conPoint, midTUWidth, out powIndexX, out powIndexY);
-			TransportUnit powMid = buildMid(powIndexX, powIndexY, su.side);
-			powMid.conPoint = lu.conPoint;//same conpoint, or could change to not be, doesn't really  matter
-
-			//build out right for testing
-			Vector2 conPointRight = getLarge(new SurfaceUnit(lus.side,lus.u + 1, lus.v)).conPoint;
-
-			//find the index of the goal mid unit
-			float slopeRight = GridMath.findSlope(lu.conPoint, conPointRight);//find the average slope of the street going right
-			float goalPosX = (lu.indexI+1)*largeTUWidth;//the x value of the very right side of the large unit in mid units
-			float goalPosY = GridMath.findY(goalPosX, lu.conPoint, slopeRight);//the y value on the line between teh two conpoints
-			int gix, giy; //goal index x and y of the goal mid unit
-			GridMath.findMidIndexfromPoint(new Vector2(goalPosX-0.5f, goalPosY), largeTUWidth, out gix, out giy);
-
-			//the x and y index of the mid unit last created in the loop(starts as if pows were last created)
-			//int lastix = powIndexX, lastiy = powIndexY;
-			TransportUnit lastMid = powMid;
-
-			while(true)
-			{
-
-				//the difference in indexes between the current and goal mid units
-				int xdif = gix - lastMid.indexI;
-				int ydif = giy - lastMid.indexJ;
-
-				//the direction to move in this loop iteration(1=x 2=y)
-				int movedir;
-
-				//if they are both not on the goal index, pick a random one to change
-				if(xdif!=0 && ydif!=0)
-					movedir = Random.value>0.5f ? 1:2;
-				else if(xdif!=0)
-					movedir = 1;
-				else if(ydif!=0)
-					movedir = 2;
-				else//if they are both zero we are done maybe?
-					break;//?
-
-				//the index of the mid unit to be created
-				int curix = lastMid.indexI, curiy = lastMid.indexJ;
-
-				//if moving in the x direction
-				if(movedir==1)
-				{
-					if(xdif>0)
-						curix++;
-					else
-						curix--;
-				}
-				else//movedir==2
-				{
-					if(ydif>0)
-						curiy++;
-					else
-						curiy--;
-				}
-
-				//create or retrieve the new mid unit
-				TransportUnit curMid = buildMid(curix, curiy, su.side);
-				curMid.conPoint = new Vector2((curix+Random.value)*midTUWidth,(curiy+Random.value)*midTUWidth);
-
-				MyDebug.placeMarker(UnitConverter.getWP(new SurfacePos(PSide.TOP, curMid.conPoint.x, curMid.conPoint.y), 10000, 1024), 5);
-
-				connectUnits(curMid, lastMid);
-
-				lastMid = curMid;
-			}
-
-
-*/
-			/*//populate it with mid units(later will be moved to a separate function)
-			int startu = lus.u*largeTUWidth;
-			int startv = lus.v*largeTUWidth;
-			//loop through all mid units in the large unit and create them
-			for(int i = startu; i<startu+largeTUWidth; i++)
-			{
-				for(int j = startv; j<startv+largeTUWidth; j++)
-				{
-					//create a new base unit, set its properties, and add it to the base list
-					TransportUnit newTU = new TransportUnit();
-					newTU.conUp = Random.value>0.5f;
-					newTU.conRight = Random.value>0.5f;
-					newTU.indexI = i;
-					newTU.indexJ = j;
-					//newTU.conPoint = new Vector2((i+0.5f)*midTUWidth + Random.value*4-2,(j+0.5f)*midTUWidth + Random.value*4-2);
-					//newTU.conPoint = new Vector2((i+0.5f)*midTUWidth,(j+0.5f)*midTUWidth);
-					//newTU.conPoint = new Vector2((i+0.5f)*midTUWidth+Random.value*0.00001f,(j+0.5f)*midTUWidth+Random.value*0.00001f);
-					newTU.conPoint = new Vector2((i+Random.value)*midTUWidth,(j+Random.value)*midTUWidth);
-					midTUs.Add(new SurfaceUnit(su.side, i, j), newTU);
-				}
-			}*/
 			lu.populated = true;
 			//use recursion to return to the top of the function and return the newly created(or not) mid unit
 			return getMid(su);
@@ -265,6 +171,9 @@ public class TransportSystem
 	}
 
 
+	//list of all the mid transport units that are in a single large unit, connected in some way for building new level 2 roads, cleared for every new large unit
+	private List<TransportUnit> indexList = new List<TransportUnit>();
+
 	//returns the mid unit from midTUs at index u,v and creates one if necessary
 	private TransportUnit buildMid(int i, int j, PSide side)
 	{
@@ -278,6 +187,7 @@ public class TransportSystem
 			mu.indexI = i;
 			mu.indexJ = j;
 			midTUs.Add(su, mu);
+			indexList.Add(mu);
 		}
 		return mu;
 	}
@@ -286,7 +196,10 @@ public class TransportSystem
 	private void populateLarge(TransportUnit lu, SurfaceUnit lus)
 	{
 		Debug.Log("built " + lus);
-		
+
+		//clear the index list
+		indexList.Clear();
+
 		//find the mid unit that the large unit's conpoint falls in 
 		int powIndexX, powIndexY;
 		GridMath.findMidIndexfromPoint(lu.conPoint, midTUWidth, out powIndexX, out powIndexY);
@@ -306,6 +219,8 @@ public class TransportSystem
 		bool conUp = lu.conUp;
 		bool conDown = downLU.conUp;
 
+
+		//list of the index of all the mid transport units that are connected in some way
 		if(conRight)
 			buildMidCurve(lu, rightLU.conPoint, Dir.RIGHT, powMid, lus.side);
 		if(conLeft)
@@ -314,6 +229,16 @@ public class TransportSystem
 			buildMidCurve(lu, upLU.conPoint, Dir.UP, powMid, lus.side);
 		if(conDown)
 			buildMidCurve(lu, downLU.conPoint, Dir.DOWN, powMid, lus.side);
+
+		//build some level 2 streets coming off the level 1 streets or other level 2 streets
+		int numStreets = 20;//(int)(Random.value*5);
+		for(int i=0; i<numStreets; i++)
+		{
+			int startNum = Random.Range(0, indexList.Count);
+			TransportUnit startMid = indexList[startNum];
+			buildLev2(lu, startMid, Random.Range(2,20), lus.side);
+		}
+
 
 		Vector3 topright = UnitConverter.getWP(new SurfacePos(PSide.TOP, (lu.indexI+1)*sideLengthLarge, (lu.indexJ+1)*sideLengthLarge), 10000, 1024);
 		Vector3 topleft = UnitConverter.getWP(new SurfacePos(PSide.TOP, (lu.indexI)*sideLengthLarge, (lu.indexJ+1)*sideLengthLarge), 10000, 1024);
@@ -327,6 +252,79 @@ public class TransportSystem
 
 		lu.populated = true;
 
+	}
+
+	//builds a level 2 street of length from startMid within curLarge transport unit
+	private void buildLev2(TransportUnit curLarge, TransportUnit startMid, int length, PSide side)
+	{
+		//the max and min indexes that the street can be built to(stay within the large unit)
+		//move out of this function so it is not recalculated every time
+		int maxI = (curLarge.indexI+1)*largeTUWidth-1;
+		int minI = (curLarge.indexI)*largeTUWidth;
+		int maxJ = (curLarge.indexJ+1)*largeTUWidth-1;
+		int minJ = (curLarge.indexJ)*largeTUWidth;
+
+		//the last mid unit to build away from
+		TransportUnit lastMid = startMid;
+		Dir lastDir;
+		for(int i=0; i<length; i++)
+		{
+			//the direction to build
+			//NOTE: modify later to not build back from the same direction
+			Dir dir = (Dir)(Random.Range(1,5));
+
+			//the index of the new mid unit to modify
+			int curix = lastMid.indexI;
+			int curiy = lastMid.indexJ;
+
+			if(dir==Dir.RIGHT)
+			{
+				curix++;
+				if(curix>maxI)
+				{
+					//lastMid.conRight=true;
+					//set lev as well
+					break;
+				}
+			}
+			if(dir==Dir.LEFT)
+			{
+				curix--;
+				if(curix<minI)
+					break;
+			}
+			if(dir==Dir.UP)
+			{
+				curiy++;
+				if(curiy>maxJ)
+				{
+					//lastMid.conUp=true;
+					//set lev as well
+					break;
+				}
+			}
+			if(dir==Dir.DOWN)
+			{
+				curiy--;
+				if(curiy<minJ)
+					break;
+			}
+
+			//build (or just retrieve) the mid unit at the new indexes
+			TransportUnit curMid = buildMid(curix, curiy, side);
+			if(!curMid.conSet)
+			{
+				curMid.conPoint = new Vector2((curix+Random.value)*midTUWidth,(curiy+Random.value)*midTUWidth);
+				curMid.conSet=true;
+				
+			}
+			MyDebug.placeMarker(UnitConverter.getWP(new SurfacePos(PSide.TOP, curMid.conPoint.x, curMid.conPoint.y), 10000, 1024), 10);
+
+			//connect on level 2
+			connectUnits(curMid, lastMid, 2);
+
+			lastMid = curMid;
+		}
 	}
 
 	//builds a street from the center of a large unit to the edge in the given direction
@@ -348,7 +346,9 @@ public class TransportSystem
 			float goalPosY = GridMath.findY(goalPosX, lu.conPoint, outSlope);//the y value on the line between teh two conpoints
 			GridMath.findMidIndexfromPoint(new Vector2(goalPosX-0.5f, goalPosY), midTUWidth, out gix, out giy);
 
-			buildMid(gix, giy, side).conRight=true;
+			TransportUnit goalMid = buildMid(gix, giy, side);
+			goalMid.conRight=true;
+			goalMid.rightLev = 1;
 			//Debug.DrawLine(UnitConverter.getWP(new SurfacePos(PSide.TOP, lu.conPoint.x, lu.conPoint.y), 10000, 1024), 
 			  //             UnitConverter.getWP(new SurfacePos(PSide.TOP, goalPosX, goalPosY), 10000, 1024), Color.blue, Mathf.Infinity);
 		}
@@ -367,7 +367,10 @@ public class TransportSystem
 			float goalPosY = (lu.indexJ+1)*sideLengthLarge;//the x value of the very right side of the large unit in mid units
 			float goalPosX = GridMath.findX(goalPosY, lu.conPoint, outSlope);//the y value on the line between teh two conpoints
 			GridMath.findMidIndexfromPoint(new Vector2(goalPosX, goalPosY-0.5f), midTUWidth, out gix, out giy);
-			buildMid(gix, giy, side).conUp=true;
+			TransportUnit goalMid = buildMid(gix, giy, side);
+			goalMid.conUp=true;
+			goalMid.upLev = 1;
+
 			
 		}
 		else if(dir==Dir.DOWN)
@@ -427,10 +430,11 @@ public class TransportSystem
 			{
 				curMid.conPoint = new Vector2((curix+Random.value)*midTUWidth,(curiy+Random.value)*midTUWidth);
 				curMid.conSet=true;
+
 			}
 			MyDebug.placeMarker(UnitConverter.getWP(new SurfacePos(PSide.TOP, curMid.conPoint.x, curMid.conPoint.y), 10000, 1024), 5);
 			
-			connectUnits(curMid, lastMid);
+			connectUnits(curMid, lastMid, 1);
 			
 			lastMid = curMid;
 		}
@@ -441,20 +445,28 @@ public class TransportSystem
 
 
 	//connects two transport units based on their relation to each other
-	public void connectUnits(TransportUnit u1, TransportUnit u2)//the two units to set connectivity
+	public void connectUnits(TransportUnit u1, TransportUnit u2, int lev)//the two units to set connectivity, lev is basically street size(1 is largest)
 	{
 		if(u1.indexI + 1 == u2.indexI && u1.indexJ == u2.indexJ)//if the second unit is directly to the right of the first one
 		{
 			u1.conRight = true;//connect the first u to the right because the second u is on the right
+			if(u1.rightLev==0)
+				u1.rightLev = lev;
 		} else if(u1.indexI - 1 == u2.indexI && u1.indexJ == u2.indexJ)//if the second u unit is directly to the left of the first one
 		{
 			u2.conRight = true;
+			if(u2.rightLev==0)
+				u2.rightLev = lev;
 		} else if(u1.indexI == u2.indexI && u1.indexJ + 1 == u2.indexJ)//if the second u unit is directly to the top of the first one
 		{
 			u1.conUp = true;
+			if(u1.upLev==0)
+				u1.upLev = lev;
 		} else if(u1.indexI == u2.indexI && u1.indexJ - 1 == u2.indexJ)//if the second u unit is directly to the bottom of the first one
 		{
 			u2.conUp = true;
+			if(u2.upLev==0)
+				u2.upLev = lev;
 		}
 	}
 

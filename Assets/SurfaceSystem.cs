@@ -179,28 +179,28 @@ public class SurfaceSystem
 						//the transport unit to the right of this one
 						TUBase bu2 = transport.getBase(new SurfaceUnit(su.side, i+1, j));
 						if(bu2!=null)//only build it if both base units exist
-							buildTransportSegment(bu,bu2);
+							buildTransportSegment(bu,bu2,bu.rightLev);
 					}
 					if(bu.conUp)
 					{
 						//the transport unit above this one
 						TUBase bu2 = transport.getBase(new SurfaceUnit(su.side, i, j+1));
 						if(bu2!=null)
-							buildTransportSegment(bu,bu2);
+							buildTransportSegment(bu,bu2,bu.upLev);
 					}
 					if(bu.conUpRight)
 					{
 						//the transport unit above this one
 						TUBase bu2 = transport.getBase(new SurfaceUnit(su.side, i+1, j+1));
 						if(bu2!=null)
-							buildTransportSegment(bu,bu2);
+							buildTransportSegment(bu,bu2,bu.upRightLev);
 					}
 					if(bu.conUpLeft)
 					{
 						//the transport unit above this one
 						TUBase bu2 = transport.getBase(new SurfaceUnit(su.side, i-1, j+1));
 						if(bu2!=null)
-							buildTransportSegment(bu,bu2);
+							buildTransportSegment(bu,bu2,bu.upLeftLev);
 					}
 					
 					//if(tu.conUpRight)//add this in later
@@ -209,8 +209,8 @@ public class SurfaceSystem
 		}
 	}
 
-	//builds a transport(road) segment between two transport units
-	private void buildTransportSegment(TransportUnit t1, TransportUnit t2)
+	//builds a transport(road) segment between two transport units, lev is the segment level(lower number is usually bigger)
+	private void buildTransportSegment(TransportUnit t1, TransportUnit t2, int lev)
 	{
 		//Debug.DrawLine(t1.conPointWorld, t2.conPointWorld, Color.blue, Mathf.Infinity);
 		//GameObject road = GameObject.CreatePrimitive (PrimitiveType.Cube);
@@ -240,9 +240,19 @@ public class SurfaceSystem
 
 		Quaternion finalRot =  elevAlignRot * surfAlignRot * pointAlignRot;
 
+		//find the road width
+		float width;
+		switch(lev)
+		{
+		case 1: width=10; break;
+		case 2: width=6; break;
+		case 3: width=3; break;
+		default: width = .3f; break;
+		}
+
 		//build the object and initialize it
 		TestRoad road = buildObject<TestRoad>(pos,finalRot) as TestRoad;
-		road.init(length);
+		road.init(length, width);
 
 	}
 
