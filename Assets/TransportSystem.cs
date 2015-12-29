@@ -312,12 +312,10 @@ public class TransportSystem
 
 			//build (or just retrieve) the mid unit at the new indexes
 			TransportUnit curMid = buildMid(curix, curiy, side);
-			if(!curMid.conSet)
-			{
-				curMid.conPoint = new Vector2((curix+Random.value)*midTUWidth,(curiy+Random.value)*midTUWidth);
-				curMid.conSet=true;
-				
-			}
+
+			//set its conpoint if it has not already been set
+			curMid.setConPoint(new Vector2((curix+Random.value)*midTUWidth,(curiy+Random.value)*midTUWidth));
+
 			MyDebug.placeMarker(UnitConverter.getWP(new SurfacePos(PSide.TOP, curMid.conPoint.x, curMid.conPoint.y), 10000, 1024), 10);
 
 			//connect on level 2
@@ -348,7 +346,7 @@ public class TransportSystem
 
 			TransportUnit goalMid = buildMid(gix, giy, side);
 			goalMid.conRight=true;
-			goalMid.rightLev = 1;
+			goalMid.RightLev = 1;
 			//Debug.DrawLine(UnitConverter.getWP(new SurfacePos(PSide.TOP, lu.conPoint.x, lu.conPoint.y), 10000, 1024), 
 			  //             UnitConverter.getWP(new SurfacePos(PSide.TOP, goalPosX, goalPosY), 10000, 1024), Color.blue, Mathf.Infinity);
 		}
@@ -369,7 +367,7 @@ public class TransportSystem
 			GridMath.findMidIndexfromPoint(new Vector2(goalPosX, goalPosY-0.5f), midTUWidth, out gix, out giy);
 			TransportUnit goalMid = buildMid(gix, giy, side);
 			goalMid.conUp=true;
-			goalMid.upLev = 1;
+			goalMid.UpLev = 1;
 
 			
 		}
@@ -426,12 +424,9 @@ public class TransportSystem
 			//create or retrieve the new mid unit
 			TransportUnit curMid = buildMid(curix, curiy, side);
 
-			if(!curMid.conSet)
-			{
-				curMid.conPoint = new Vector2((curix+Random.value)*midTUWidth,(curiy+Random.value)*midTUWidth);
-				curMid.conSet=true;
+			//set its conpoint if it has not already been set
+			curMid.setConPoint(new Vector2((curix+Random.value)*midTUWidth,(curiy+Random.value)*midTUWidth));
 
-			}
 			MyDebug.placeMarker(UnitConverter.getWP(new SurfacePos(PSide.TOP, curMid.conPoint.x, curMid.conPoint.y), 10000, 1024), 5);
 			
 			connectUnits(curMid, lastMid, 1);
@@ -444,34 +439,28 @@ public class TransportSystem
 	}
 
 
+
+
 	//connects two transport units based on their relation to each other
 	public void connectUnits(TransportUnit u1, TransportUnit u2, int lev)//the two units to set connectivity, lev is basically street size(1 is largest)
 	{
 		if(u1.indexI + 1 == u2.indexI && u1.indexJ == u2.indexJ)//if the second unit is directly to the right of the first one
 		{
 			u1.conRight = true;//connect the first u to the right because the second u is on the right
-			if(u1.rightLev==0)
-				u1.rightLev = lev;
+			u1.RightLev = lev;
 		} else if(u1.indexI - 1 == u2.indexI && u1.indexJ == u2.indexJ)//if the second u unit is directly to the left of the first one
 		{
 			u2.conRight = true;
-			if(u2.rightLev==0)
-				u2.rightLev = lev;
+			u2.RightLev = lev;
 		} else if(u1.indexI == u2.indexI && u1.indexJ + 1 == u2.indexJ)//if the second u unit is directly to the top of the first one
 		{
 			u1.conUp = true;
-			if(u1.upLev==0)
-				u1.upLev = lev;
+			u1.UpLev = lev;
 		} else if(u1.indexI == u2.indexI && u1.indexJ - 1 == u2.indexJ)//if the second u unit is directly to the bottom of the first one
 		{
 			u2.conUp = true;
-			if(u2.upLev==0)
-				u2.upLev = lev;
+			u2.UpLev = lev;
 		}
 	}
-
-	private void fillLarge()
-	{
-
-	}
+	
 }

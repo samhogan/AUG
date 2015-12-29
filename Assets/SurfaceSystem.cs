@@ -179,28 +179,28 @@ public class SurfaceSystem
 						//the transport unit to the right of this one
 						TUBase bu2 = transport.getBase(new SurfaceUnit(su.side, i+1, j));
 						if(bu2!=null)//only build it if both base units exist
-							buildTransportSegment(bu,bu2,bu.rightLev);
+							buildTransportSegment(bu,bu2,bu.RightLev);
 					}
 					if(bu.conUp)
 					{
 						//the transport unit above this one
 						TUBase bu2 = transport.getBase(new SurfaceUnit(su.side, i, j+1));
 						if(bu2!=null)
-							buildTransportSegment(bu,bu2,bu.upLev);
+							buildTransportSegment(bu,bu2,bu.UpLev);
 					}
 					if(bu.conUpRight)
 					{
 						//the transport unit above this one
 						TUBase bu2 = transport.getBase(new SurfaceUnit(su.side, i+1, j+1));
 						if(bu2!=null)
-							buildTransportSegment(bu,bu2,bu.upRightLev);
+							buildTransportSegment(bu,bu2,bu.UpRightLev);
 					}
 					if(bu.conUpLeft)
 					{
 						//the transport unit above this one
 						TUBase bu2 = transport.getBase(new SurfaceUnit(su.side, i-1, j+1));
 						if(bu2!=null)
-							buildTransportSegment(bu,bu2,bu.upLeftLev);
+							buildTransportSegment(bu,bu2,bu.UpLeftLev);
 					}
 					
 					//if(tu.conUpRight)//add this in later

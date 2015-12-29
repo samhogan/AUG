@@ -16,11 +16,45 @@ public class TransportUnit
 
 	//the level of transport segment that is built(level 1 is highest, nondependent, ex. highways would be 1, smaller streets 2)
 	//0 cooresponds to not yet set
-	public int rightLev = 0;
-	public int upLev = 0;
+	private int rightLev = 0;
+	private int upLev = 0;
+
+	public int RightLev
+	{
+		get{return rightLev;} 
+		set{
+
+			if(rightLev==0)//you can only set a level if it has not already been set
+			{
+				rightLev=value;
+			}
+		}
+	}
+
+	public int UpLev
+	{
+		get{return upLev;} 
+		set{
+			if(upLev==0)
+			{
+				upLev=value;
+			}
+		}
+	}
 
 	//has the conPoint been officially set yet?
 	public bool conSet = false;
+
+	//set the conpoint of the unit
+	public void setConPoint(Vector2 point)
+	{
+		if(!conSet)
+		{
+			conPoint = point;
+			conSet=true;
+			
+		}
+	}
 }
 
 public enum Dir //enum of absolute directions

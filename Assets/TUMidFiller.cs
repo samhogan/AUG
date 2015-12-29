@@ -94,26 +94,26 @@ public class TUMidFiller
 		{
 			conPointRight = rightTU.conPoint;
 			conRight = mu.conRight;
-			rightLev = mu.rightLev;
+			rightLev = mu.RightLev;
 		}
 		if(leftTU!=null)
 		{
 			conPointLeft = leftTU.conPoint;
 			conLeft = leftTU.conRight;//if the unit to the left connects to the right, then this unit will connect to the left
-			leftLev = leftTU.rightLev;
+			leftLev = leftTU.RightLev;
 		}
 		if(upTU!=null)
 		{
 			conPointUp = upTU.conPoint;
 			conUp = mu.conUp;
-			upLev = mu.upLev;
+			upLev = mu.UpLev;
 			
 		}
 		if(downTU!=null)
 		{
 			conPointDown = downTU.conPoint;
 			conDown = downTU.conUp;
-			downLev = downTU.upLev;
+			downLev = downTU.UpLev;
 		}
 
 		//Debug.Log(conPointUp + " " + conPointRight + " " + conPointLeft + " " + conPointDown);
@@ -253,7 +253,7 @@ public class TUMidFiller
 	public void buildStreetCurve(Vector2 outsideConPoint, float targetSlope, Dir buildToSide, int startIndexX, int startIndexY, TransportUnit mu, int lev)
 	{
 		//the direction to build the road, adjacent street point - cur street point normalized, might need to change distance for a higher sample rate
-		Vector2 buildDir = (outsideConPoint - mu.conPoint).normalized * 0.6f;//1 is the lenght of the build vector(distance between checked street points
+		Vector2 buildDir = (outsideConPoint - mu.conPoint).normalized * 0.8f;//1 is the lenght of the build vector(distance between checked street points
 		
 
 		//Debug.Log(outsideConPoint+ " " +  targetSlope + " " +  buildToSide+ " " + startIndexX + " " + startIndexY + " " + mu.conPoint);
@@ -272,7 +272,7 @@ public class TUMidFiller
 
 			TUBase goalBU = getBase(gix,giy);
 			goalBU.conUp = true;//this top unit will connect to the one above it in the topp mid unit
-			goalBU.upLev = lev;
+			goalBU.UpLev = lev;
 
 			if(!goalBU.conSet)
 				goalBU.conPoint = new Vector2(gpx, gpy - 0.0001f);//sets the bl point of this goal base unit in case it is not later set
@@ -303,7 +303,7 @@ public class TUMidFiller
 
 			TUBase goalBU = getBase(gix,giy);
 			goalBU.conRight = true;//this right unit will connect to the one next to it in the right mid unit
-			goalBU.rightLev = lev;
+			goalBU.RightLev = lev;
 			
 			if(!goalBU.conSet)
 				goalBU.conPoint = new Vector2(gpx - 0.0001f, gpy);//sets the bl point of this goal base unit in case it is not later set
@@ -420,43 +420,35 @@ public class TUMidFiller
 		if(base1.indexI + 1 == base2.indexI && base1.indexJ == base2.indexJ)//if the second base unit is directly to the right of the first one
 		{
 			base1.conRight = true;//connect the first base to the right because the second base is on the right
-			if(base1.rightLev==0)
-				base1.rightLev = lev;
+			base1.RightLev = lev;
 		} else if(base1.indexI - 1 == base2.indexI && base1.indexJ == base2.indexJ)//if the second base unit is directly to the left of the first one
 		{
 			base2.conRight = true;
-			if(base2.rightLev==0)
-				base2.rightLev = lev;
+			base2.RightLev = lev;
 		} else if(base1.indexI == base2.indexI && base1.indexJ + 1 == base2.indexJ)//if the second base unit is directly to the top of the first one
 		{
 			base1.conUp = true;
-			if(base1.upLev==0)
-				base1.upLev = lev;
+			base1.UpLev = lev;
 		} else if(base1.indexI == base2.indexI && base1.indexJ - 1 == base2.indexJ)//if the second base unit is directly to the bottom of the first one
 		{
 			base2.conUp = true;
-			if(base2.upLev==0)
-				base2.upLev = lev;
+			base2.UpLev = lev;
 		} else if(base1.indexI + 1 == base2.indexI && base1.indexJ + 1 == base2.indexJ)//if the second base unit is to the top right of the first one
 		{
 			base1.conUpRight = true;
-			if(base1.upRightLev==0)
-				base1.upRightLev = lev;
+			base1.UpRightLev = lev;
 		} else if(base1.indexI - 1 == base2.indexI && base1.indexJ + 1 == base2.indexJ)//if the second base unit is to the top left of the first one
 		{
 			base1.conUpLeft = true;
-			if(base1.upLeftLev==0)
-				base1.upLeftLev = lev;
+			base1.UpLeftLev = lev;
 		} else if(base1.indexI + 1 == base2.indexI && base1.indexJ - 1 == base2.indexJ)//if the second base unit is to the bottom right of the first one
 		{
 			base2.conUpLeft = true;
-			if(base2.upLeftLev==0)
-				base2.upLeftLev = lev;
+			base2.UpLeftLev = lev;
 		} else if(base1.indexI - 1 == base2.indexI && base1.indexJ - 1 == base2.indexJ)//if the second base unit is to the bottom left of the first one
 		{
 			base2.conUpRight = true;
-			if(base2.upRightLev==0)
-				base2.upRightLev = lev;
+			base2.UpRightLev = lev;
 		}
 	}
 
