@@ -247,9 +247,15 @@ public class TransportSystem
 			return lu;
 		}
 
+
 		//if not, build one and return it
 		TransportUnit tu = new TransportUnit();
-		tu.conPoint = new Vector2((su.u+Random.value)*sideLengthLarge,(su.v+Random.value)*sideLengthLarge);
+
+		//get this large unit's rng
+		tu.rng = RandomHandler.transportRandom(su, TLev.LARGE);
+
+		tu.conPoint = new Vector2((su.u+(float)tu.rng.NextDouble())*sideLengthLarge,
+		                          (su.v+(float)tu.rng.NextDouble())*sideLengthLarge);
 		tu.conUp = true;
 		tu.conRight = true;
 		tu.indexI = su.u;
@@ -344,9 +350,9 @@ public class TransportSystem
 		int numStreets = 20;//(int)(Random.value*5);
 		for(int i=0; i<numStreets; i++)
 		{
-			int startNum = Random.Range(0, indexList.Count);
+			int startNum = lu.rng.Next(0, indexList.Count);
 			TransportUnit startMid = indexList[startNum];
-			buildLev2(lu, startMid, Random.Range(2,20), lus.side);
+			buildLev2(lu, startMid, lu.rng.Next(2,20), lus.side);
 		}
 
 
@@ -381,7 +387,7 @@ public class TransportSystem
 		{
 			//the direction to build
 			//NOTE: modify later to not build back from the same direction
-			Dir dir = (Dir)(Random.Range(1,5));
+			Dir dir = (Dir)(curLarge.rng.Next(1,5));
 
 			//the index of the new mid unit to modify
 			int curix = lastMid.indexI;
@@ -424,7 +430,7 @@ public class TransportSystem
 			TransportUnit curMid = buildMid(curix, curiy, side);
 
 			//set its conpoint if it has not already been set
-			curMid.setConPoint(new Vector2((curix+Random.value)*midTUWidth,(curiy+Random.value)*midTUWidth));
+			curMid.setConPoint(new Vector2((curix+(float)curLarge.rng.NextDouble())*midTUWidth,(curiy+(float)curLarge.rng.NextDouble())*midTUWidth));
 
 			//MyDebug.placeMarker(UnitConverter.getWP(new SurfacePos(PSide.TOP, curMid.conPoint.x, curMid.conPoint.y), 10000, 1024), 10);
 
@@ -504,7 +510,7 @@ public class TransportSystem
 			
 			//if they are both not on the goal index, pick a random one to change
 			if(xdif!=0 && ydif!=0)
-				movedir = Random.value>0.5f ? 1:2;
+				movedir = lu.rng.NextDouble()>0.5 ? 1:2;
 			else if(xdif!=0)
 				movedir = 1;
 			else if(ydif!=0)
@@ -535,7 +541,7 @@ public class TransportSystem
 			TransportUnit curMid = buildMid(curix, curiy, side);
 
 			//set its conpoint if it has not already been set
-			curMid.setConPoint(new Vector2((curix+Random.value)*midTUWidth,(curiy+Random.value)*midTUWidth));
+			curMid.setConPoint(new Vector2((curix+(float)lu.rng.NextDouble())*midTUWidth,(curiy+(float)lu.rng.NextDouble())*midTUWidth));
 
 			//MyDebug.placeMarker(UnitConverter.getWP(new SurfacePos(PSide.TOP, curMid.conPoint.x, curMid.conPoint.y), 10000, 1024), 5);
 			

@@ -28,6 +28,8 @@ public class TestRoad : MobileObjects
 		goInst.transform.parent = transform;
 		goInst.transform.localRotation = Quaternion.identity;//make sure this child obj has 0 rotation relative to the parent
 		goInst.transform.localPosition = Vector3.zero;
+
+		goInst.GetComponent<MeshRenderer>().material = Resources.Load("TestRoad") as Material;
 	}
 	
 

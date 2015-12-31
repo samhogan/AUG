@@ -61,7 +61,8 @@ public class SurfaceSystem
 			surfList.Add(su, sh);
 			//instance a random number generator with seed based on the su position sent through a hash function
 			//NOTE: the last 1 parameter is used as a kind of planet identifier, but this may not be needed
-			System.Random rand = new System.Random((int)WorldManager.hash.GetHash(su.u, su.v, (int)su.side, 1));
+			//System.Random rand = new System.Random((int)WorldManager.hash.GetHash(su.u, su.v, (int)su.side, 1));
+			System.Random rand = RandomHandler.surfaceRandom(su);
 
 			//NOTE: all objects that are in the rect list are always in the radial list
 			//create a list of radial collisions
@@ -158,7 +159,7 @@ public class SurfaceSystem
 	//builds all the appropriate transportation segments in the surface unit
 	private void buildTransport(SurfaceUnit su)
 	{
-		Debug.Log("what??");
+		//Debug.Log("what??");
 		//find transport segments(roads) to generate
 		//SurfaceUnit startTU = UnitConverter.SPtoSP(
 		//surface unit to start the loop in

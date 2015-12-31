@@ -18,6 +18,8 @@ public class TransportUnit
 	private int rightLev = 0;
 	private int upLev = 0;
 
+	public System.Random rng;//the random number generator for the unit
+
 	public int RightLev
 	{
 		get{return rightLev;} 
@@ -63,3 +65,15 @@ public enum Dir //enum of absolute directions
 	RIGHT,
 	LEFT
 };
+
+//levels of transport unit
+public enum TLev
+{
+	BASE,
+	MID,
+	LARGE,
+	GLOBAL
+}
+
+
+
