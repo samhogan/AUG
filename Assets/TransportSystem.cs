@@ -162,9 +162,9 @@ public class TransportSystem
 			return null;
 		else
 		{
-			//populateLarge(lu, lus);
+			populateLarge(lu, lus);
 			//populate it with mid units(later will be moved to a separate function)
-			int startu = lus.u*largeTUWidth;
+			/*int startu = lus.u*largeTUWidth;
 			int startv = lus.v*largeTUWidth;
 			//loop through all mid units in the large unit and create them
 			for(int i = startu; i<startu+largeTUWidth; i++)
@@ -182,7 +182,7 @@ public class TransportSystem
 					//newTU.conPoint = new Vector2((i+Random.value)*midTUWidth,(j+Random.value)*midTUWidth);
 					midTUs.Add(new SurfaceUnit(su.side, i, j), newTU);
 				}
-			}
+			}*/
 			lu.populated = true;
 			//use recursion to return to the top of the function and return the newly created(or not) mid unit
 			return getMid(su);
