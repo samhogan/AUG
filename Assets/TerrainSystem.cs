@@ -6,6 +6,8 @@ using System.Collections.Generic;
 //NOTE: a chunk is the same thing as a terrainobject
 public class TerrainSystem
 {
+	private Planet planet;//a reference to its planet
+
 	//noise scale and height, these are tests and will be replaces with multiple scales and heights
 	float scale = 20f;
 	float height = 5f;
@@ -17,10 +19,10 @@ public class TerrainSystem
 	public static Dictionary<WorldPos, TerrainObject> chunks = new Dictionary<WorldPos, TerrainObject>();
 
 
-	public TerrainSystem(float r)
+	public TerrainSystem(Planet p, float r)
 	{
 		radius = r;
-
+		planet = p;
 	}
 
 	//creates and instantiates a terrain chunk (but does not render it yet)
@@ -57,7 +59,8 @@ public class TerrainSystem
 
 					//NOISE!!!!!!!!!!!!!!!!!!!!!
 
-					float noise = 0.0f;//Noise.GetNoise(voxPos.x/scale,voxPos.y/scale,voxPos.z/scale)*height;
+					//float noise = 0.0f;//Noise.GetNoise(voxPos.x/scale,voxPos.y/scale,voxPos.z/scale)*height;
+					float altitude = planet.noise.getAltitude(voxPos);
 
 					//float mts = (Noise.GetNoise(posX/50, surface.y/mtnScale, surface.z/mtnScale)-(1f-mtnFrequency)) * mtnHeight; //moountain noise 1.0f decrases frequency
 					/*float mts = (Noise.GetNoise(posX/50.0f, posY/50.0f, posZ/50.0f)-0.5f) * 20;
@@ -70,7 +73,7 @@ public class TerrainSystem
 						//gen = 0;
 					}*/
 
-					chunk.voxVals[x,y,z] = distxyz/(radius+noise);//Noise.GetNoise((x+pos.x)/scale,(y+pos.y)/scale,(z+pos.z)/scale);
+					chunk.voxVals[x,y,z] = distxyz/altitude;//Noise.GetNoise((x+pos.x)/scale,(y+pos.y)/scale,(z+pos.z)/scale);
 
 					//puts a hole in the planet(just for fun
 					//if(voxPos.x<10 && voxPos.x>-10 && voxPos.z<10 && voxPos.z>-10)

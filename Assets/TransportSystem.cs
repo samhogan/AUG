@@ -4,6 +4,8 @@ using System.Collections.Generic;
 
 public class TransportSystem
 {
+	private Planet planet;//reference to its planet
+
 	private int globalTUWidth = 4;//how many large transport units are on one(of 6) side of the planet
 	private int largeTUWidth = 8;//how many mid transport units are on one side of a large street
 	private int midTUWidth = 8;//how many base transport units are on one side of a mid street unit
@@ -30,8 +32,10 @@ public class TransportSystem
 	//used to fill mid units with base units(too much code, had to break it off into its own class)
 	private TUMidFiller midfill;
 
-	public TransportSystem(int gtu, int ltu, int mtu)
+	public TransportSystem(Planet p, int gtu, int ltu, int mtu)
 	{
+		planet = p;
+
 		globalTUWidth = gtu;
 		largeTUWidth = ltu;
 		midTUWidth = mtu;
@@ -110,15 +114,18 @@ public class TransportSystem
 			Dictionary<SurfaceUnit, TUBase> bases = midfill.populate(mu, mus);
 			foreach(KeyValuePair<SurfaceUnit, TUBase> pair in bases)
 			{
-				pair.Value.conPointWorld = UnitConverter.getWP(new SurfacePos(su.side, pair.Value.conPoint.x, pair.Value.conPoint.y), 
-				                                    WorldManager.curPlanet.radius, sideLength);
+
 				//Debug.Log(su.side+" " + pair.Key.u + " " + pair.Key.v);
 				SurfaceUnit newKey = new SurfaceUnit(su.side, pair.Key.u, pair.Key.v);
 				//if the key is not already in the list, add it
 				if(!baseTUs.ContainsKey(newKey))
 				{
+					//find the world connection point
+					Vector3 conPointWorld = UnitConverter.getWP(new SurfacePos(su.side, pair.Value.conPoint.x, pair.Value.conPoint.y), 
+					                                               WorldManager.curPlanet.radius, sideLength);
+					conPointWorld = planet.noise.altitudePos(conPointWorld);
 					//Debug.Log(su.side+" " + pair.Key.u + " " + pair.Key.v + " ");
-					
+					pair.Value.conPointWorld = conPointWorld;
 					baseTUs.Add(newKey, pair.Value);
 				}
 				//Debug.Log(pair.Key);
@@ -162,9 +169,9 @@ public class TransportSystem
 			return null;
 		else
 		{
-			//populateLarge(lu, lus);
+			populateLarge(lu, lus);
 			//populate it with mid units(later will be moved to a separate function)
-			int startu = lus.u*largeTUWidth;
+		/*	int startu = lus.u*largeTUWidth;
 			int startv = lus.v*largeTUWidth;
 			//loop through all mid units in the large unit and create them
 			for(int i = startu; i<startu+largeTUWidth; i++)
@@ -182,7 +189,7 @@ public class TransportSystem
 					//newTU.conPoint = new Vector2((i+Random.value)*midTUWidth,(j+Random.value)*midTUWidth);
 					midTUs.Add(new SurfaceUnit(su.side, i, j), newTU);
 				}
-			}
+			}*/
 			lu.populated = true;
 			//use recursion to return to the top of the function and return the newly created(or not) mid unit
 			return getMid(su);
@@ -313,10 +320,15 @@ public class TransportSystem
 
 		//determine in which direction the streets should be built
 		bool conRight = lu.conRight;
-		bool conLeft = leftLU.conRight;
+		bool conLeft = false;
 		bool conUp = lu.conUp;
-		bool conDown = downLU.conUp;
+		bool conDown = false;
 
+		//check for null large units
+		if(leftLU!=null)
+			conLeft = leftLU.conRight;
+		if(downLU!=null)
+			conDown = downLU.conUp;
 
 		//list of the index of all the mid transport units that are connected in some way
 		if(conRight)

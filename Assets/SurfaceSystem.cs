@@ -5,6 +5,7 @@ using System.Collections.Generic;
 //an instance of this will belong to a planet instance
 public class SurfaceSystem
 {
+	private Planet planet;//a reference to its planet
 
 	private float radius;//the planet radius
 	public int sideLength;//how many surface units are on one side of a planet face
@@ -23,15 +24,16 @@ public class SurfaceSystem
 
 	private SurfaceHolder curSH;//a reference to the surface holder currently being used so it doesn't have to be used as a parameter everywhere
 
-	public SurfaceSystem(float r, int side)
+	public SurfaceSystem(Planet p, float r, int side)
 	{
+		planet = p;
 		radius = r;
 		sideLength = side;
 		halfSide = sideLength/2;
 		suLength = (2 * r * Mathf.PI) / (sideLength * 4);//circumference divided by number of sus around the sphere cross section
 
-		//transport = new TransportSystem(8,16,8);
-		transport = new TransportSystem(2,4,4);
+		transport = new TransportSystem(p,8,16,8);
+		//transport = new TransportSystem(p,2,4,4);
 
 		GameObject go = Resources.Load("Test things/rottest") as GameObject;
 		Vector3 pos = UnitConverter.getWP(new SurfacePos(PSide.TOP, 0, 0), radius, sideLength);
@@ -74,8 +76,8 @@ public class SurfaceSystem
 
 			int count = rand.Next(30);
 
-			//MyDebug.placeMarker(UnitConverter.getWP(new SurfacePos(su.side, su.u, su.v), radius, sideLength));
-			/*for(int i = 0; i<count; i++)
+			MyDebug.placeMarker(UnitConverter.getWP(new SurfacePos(su.side, su.u, su.v), radius, sideLength));
+			for(int i = 0; i<count; i++)
 			{
 				//Vector3 pos = new Vector3(
 				//choose random x and y position within the su
@@ -85,7 +87,7 @@ public class SurfaceSystem
 
 				//choose random rotation(will not be random for things like buildings later)
 				Quaternion surfRot = Quaternion.Euler(0, (float)rand.NextDouble()*360, 0); 
-				Debug.Log(surfRot.eulerAngles);
+				//Debug.Log(surfRot.eulerAngles);
 				//temp radius of tree used for testing
 				float wuRadius = 2;
 				//radius in world units/length of a surface unit = radius in surface units(less than 1)
@@ -122,6 +124,11 @@ public class SurfaceSystem
 				Vector3 worldPos = UnitConverter.getWP(treeSurf, radius, sideLength);
 				Quaternion worldRot = getWorldRot(worldPos, surfRot, su.side);
 
+
+				//adjust the pos to the correct altitude, later move to function
+				//worldPos = worldPos.normalized*planet.noise.getAltitude(worldPos);
+				worldPos = planet.noise.altitudePos(worldPos);
+				
 				//GameObject.Instantiate(tree, treeWorld, Quaternion.identity);
 				//build the tree object(adds it to builtobjects list and maybe eventually add it to the render list
 				//buildObject<TestTree>(worldPos, worldRot, sh).init();
@@ -129,9 +136,9 @@ public class SurfaceSystem
 				//build(intantiate) the object
 				WorldObject wo = Build.buildObject<TestTree>(worldPos, worldRot);
 				sh.objects.Add(wo);//add it to the surface holder list
-				wo.init();//initailize it (normally has parameters)
+				//wo.init();//initailize it (normally has parameters)
 
-			}*/
+			}
 
 			/*GameObject go = Resources.Load("Test things/rottest") as GameObject;
 			Vector3 pos = UnitConverter.getWP(new SurfacePos(su.side, su.u+0.5f, su.v+0.5f), radius, sideLength);
@@ -151,6 +158,7 @@ public class SurfaceSystem
 	//builds all the appropriate transportation segments in the surface unit
 	private void buildTransport(SurfaceUnit su)
 	{
+		Debug.Log("what??");
 		//find transport segments(roads) to generate
 		//SurfaceUnit startTU = UnitConverter.SPtoSP(
 		//surface unit to start the loop in
