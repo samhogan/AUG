@@ -8,6 +8,7 @@ public class TUBase : TransportUnit
 	public bool conUpRight = false;//is the streetPoint connected to the street to the top right of it(forming a street) ?
 	public bool conUpLeft = false;
 
+	public Vector3 conPointWorld;//the connecting point in its world position
 
 
 	private int upRightLev = 0;
@@ -35,4 +36,11 @@ public class TUBase : TransportUnit
 		}
 	}
 
+	/*public override void setConPoint(Vector2 point)
+	{
+		base.setConPoint(point);
+		conPointWorld = UnitConverter.getWP(new SurfacePos(su.side, point.x, point.y), 
+		                                    WorldManager.curPlanet.radius, sideLength);
+	}*/
+	                                                                                        
 }

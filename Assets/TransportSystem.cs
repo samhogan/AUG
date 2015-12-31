@@ -11,9 +11,15 @@ public class TransportSystem
 	public int sideLength;//how many base units are on one side of a global transport unit
 	public int sideLengthLarge;//how many base units are on one side of a large transport unit(for conversions)
 
+	public int midperglob;//how many mid units are on one side of a global unit
+
+	private int halfmidperglob;
+	private int halfSideLength;
+	private int halfgtuw;
+
 	//NOTE: transport units and surface units are the same thing but on different scales(usually)
 	//stores all base t units that have been generated
-	private Dictionary<SurfaceUnit, TUBase> baseTUs = new Dictionary<SurfaceUnit, TUBase>();
+	public Dictionary<SurfaceUnit, TUBase> baseTUs = new Dictionary<SurfaceUnit, TUBase>();
 
 	//stores all mid t units that have been generated
 	private Dictionary<SurfaceUnit, TransportUnit> midTUs = new Dictionary<SurfaceUnit, TransportUnit>();
@@ -32,6 +38,13 @@ public class TransportSystem
 
 		sideLength = gtu * ltu * mtu;
 		sideLengthLarge = ltu*mtu;
+		midperglob = gtu*ltu;
+
+		//i don't feel like writing a helpful comment on this one so hopefully i will remember what these are used for.....
+		halfmidperglob = midperglob/2;//*0.5f;
+		halfSideLength = sideLength/2;
+		halfgtuw = globalTUWidth/2;
+
 
 		midfill = new TUMidFiller(this, mtu);
 	}
@@ -40,6 +53,16 @@ public class TransportSystem
 	//OH YES THIS USES RECURSION OH MAN!!!!!!!!!!!!!!!! I'M SO PROUD OF MYSELF!!!!!
 	public TUBase getBase(SurfaceUnit su)
 	{
+
+		//quick test check, see getMid\
+		if(su.u<-halfSideLength || su.u>=halfSideLength || su.v<-halfSideLength || su.v>=halfSideLength)
+			return null;
+
+
+		//if(su.side==PSide.NONE)
+		//	return null;
+
+
 		//the base unit to be returned eventually
 		TUBase bu = null;
 
@@ -89,7 +112,15 @@ public class TransportSystem
 			{
 				pair.Value.conPointWorld = UnitConverter.getWP(new SurfacePos(su.side, pair.Value.conPoint.x, pair.Value.conPoint.y), 
 				                                    WorldManager.curPlanet.radius, sideLength);
-				baseTUs.Add(new SurfaceUnit(su.side, pair.Key.u, pair.Key.v), pair.Value);
+				//Debug.Log(su.side+" " + pair.Key.u + " " + pair.Key.v);
+				SurfaceUnit newKey = new SurfaceUnit(su.side, pair.Key.u, pair.Key.v);
+				//if the key is not already in the list, add it
+				if(!baseTUs.ContainsKey(newKey))
+				{
+					//Debug.Log(su.side+" " + pair.Key.u + " " + pair.Key.v + " ");
+					
+					baseTUs.Add(newKey, pair.Value);
+				}
 				//Debug.Log(pair.Key);
 			}
 
@@ -101,9 +132,17 @@ public class TransportSystem
 
 	}
 
+
+
 	//returns the mid unit at the specified su or null if one does not exist
 	public TransportUnit getMid(SurfaceUnit su)
 	{
+
+		//quick check to see if this mid is out of range on the side
+		//later it will be transformed into a unit of other side in order to connect sides
+		if(su.u<-halfmidperglob || su.u>=halfmidperglob || su.v<-halfmidperglob || su.v>=halfmidperglob)
+			return null;
+
 		TransportUnit mu = null;
 
 		//if it is in the mid list, return it
@@ -123,8 +162,27 @@ public class TransportSystem
 			return null;
 		else
 		{
-			populateLarge(lu, lus);
-
+			//populateLarge(lu, lus);
+			//populate it with mid units(later will be moved to a separate function)
+			int startu = lus.u*largeTUWidth;
+			int startv = lus.v*largeTUWidth;
+			//loop through all mid units in the large unit and create them
+			for(int i = startu; i<startu+largeTUWidth; i++)
+			{
+				for(int j = startv; j<startv+largeTUWidth; j++)
+				{
+					//create a new base unit, set its properties, and add it to the base list
+					TransportUnit newTU = new TransportUnit();
+					newTU.conUp = true;//Random.value>0.5f;
+					newTU.conRight = true;//Random.value>0.5f;
+					newTU.indexI = i;
+					newTU.indexJ = j;
+					newTU.conPoint = new Vector2((i+0.5f)*midTUWidth + Random.value-0.5f,(j+0.5f)*midTUWidth + Random.value-0.5f);
+					//newTU.conPoint = new Vector2((i+0.5f)*midTUWidth,(j+0.5f)*midTUWidth);
+					//newTU.conPoint = new Vector2((i+Random.value)*midTUWidth,(j+Random.value)*midTUWidth);
+					midTUs.Add(new SurfaceUnit(su.side, i, j), newTU);
+				}
+			}
 			lu.populated = true;
 			//use recursion to return to the top of the function and return the newly created(or not) mid unit
 			return getMid(su);
@@ -132,9 +190,48 @@ public class TransportSystem
 
 	}
 
+	//returns the adjusted version of a mid unit accounting for side rotation
+	//returns the unit in the dir direction relative to the given su
+	public TransportUnit getAdjustedMid(SurfaceUnit su)
+	{
+	
+
+		//half the side length
+		int halfside = midperglob/2;
+		//if it is withing the bounds of a side(usually the case), it does not have to be modified
+		if(su.u>=-halfside && su.u<halfside && su.v>=-halfside && su.v<halfside)
+			return getMid(su);
+
+
+		//all cases for back side
+		if(su.side==PSide.BACK)
+		{
+			//if the u value is to far to the right, it is on the very left of the right side
+			if(su.u>=halfside)
+			{
+				return getMid(new SurfaceUnit(PSide.RIGHT, -halfside, su.v));
+			}
+		}
+		else if(su.side==PSide.RIGHT)
+		{
+			//if the u value is to far to the right, it is on the very left of the right side
+			if(su.u<halfside)
+			{
+				return getMid(new SurfaceUnit(PSide.BACK, halfside-1, su.v));
+			}
+		}
+
+		//if no other conditions are met, just return null
+		return null;
+	}
+
 	//returns the large unit at a specified su, creates one if it does not exist(every large unit will exist)
 	public TransportUnit getLarge(SurfaceUnit su)
 	{
+		//quick hopefully temporary check, see getMid for details
+		if(su.u<-halfgtuw || su.u>=halfgtuw || su.v<-halfgtuw || su.v>=halfgtuw)
+			return null;
+
 		TransportUnit lu = null;
 
 		//if it is in the list, return it
@@ -151,6 +248,7 @@ public class TransportSystem
 		tu.indexI = su.u;
 		tu.indexJ = su.v;
 		largeTUs.Add(su, tu);
+
 		return tu;
 	}
 
@@ -195,7 +293,7 @@ public class TransportSystem
 	//populates a large unit with mid units
 	private void populateLarge(TransportUnit lu, SurfaceUnit lus)
 	{
-		Debug.Log("built " + lus);
+		//Debug.Log("built " + lus);
 
 		//clear the index list
 		indexList.Clear();
@@ -240,10 +338,10 @@ public class TransportSystem
 		}
 
 
-		Vector3 topright = UnitConverter.getWP(new SurfacePos(PSide.TOP, (lu.indexI+1)*sideLengthLarge, (lu.indexJ+1)*sideLengthLarge), 10000, 1024);
-		Vector3 topleft = UnitConverter.getWP(new SurfacePos(PSide.TOP, (lu.indexI)*sideLengthLarge, (lu.indexJ+1)*sideLengthLarge), 10000, 1024);
-		Vector3 botright = UnitConverter.getWP(new SurfacePos(PSide.TOP, (lu.indexI+1)*sideLengthLarge, (lu.indexJ)*sideLengthLarge), 10000, 1024);
-		Vector3 botleft = UnitConverter.getWP(new SurfacePos(PSide.TOP, (lu.indexI)*sideLengthLarge, (lu.indexJ)*sideLengthLarge), 10000, 1024);
+		Vector3 topright = UnitConverter.getWP(new SurfacePos(lus.side, (lu.indexI+1)*sideLengthLarge, (lu.indexJ+1)*sideLengthLarge), 10000, 1024);
+		Vector3 topleft = UnitConverter.getWP(new SurfacePos(lus.side, (lu.indexI)*sideLengthLarge, (lu.indexJ+1)*sideLengthLarge), 10000, 1024);
+		Vector3 botright = UnitConverter.getWP(new SurfacePos(lus.side, (lu.indexI+1)*sideLengthLarge, (lu.indexJ)*sideLengthLarge), 10000, 1024);
+		Vector3 botleft = UnitConverter.getWP(new SurfacePos(lus.side, (lu.indexI)*sideLengthLarge, (lu.indexJ)*sideLengthLarge), 10000, 1024);
 		Debug.DrawLine(topleft, botleft, Color.red, Mathf.Infinity);
 		Debug.DrawLine(topleft, topright, Color.red, Mathf.Infinity);
 		Debug.DrawLine(topright, botright, Color.red, Mathf.Infinity);
@@ -282,8 +380,8 @@ public class TransportSystem
 				curix++;
 				if(curix>maxI)
 				{
-					//lastMid.conRight=true;
-					//set lev as well
+					lastMid.conRight=true;
+					lastMid.RightLev=2;
 					break;
 				}
 			}
@@ -298,8 +396,8 @@ public class TransportSystem
 				curiy++;
 				if(curiy>maxJ)
 				{
-					//lastMid.conUp=true;
-					//set lev as well
+					lastMid.conUp=true;
+					lastMid.UpLev=2;
 					break;
 				}
 			}
@@ -316,7 +414,7 @@ public class TransportSystem
 			//set its conpoint if it has not already been set
 			curMid.setConPoint(new Vector2((curix+Random.value)*midTUWidth,(curiy+Random.value)*midTUWidth));
 
-			MyDebug.placeMarker(UnitConverter.getWP(new SurfacePos(PSide.TOP, curMid.conPoint.x, curMid.conPoint.y), 10000, 1024), 10);
+			//MyDebug.placeMarker(UnitConverter.getWP(new SurfacePos(PSide.TOP, curMid.conPoint.x, curMid.conPoint.y), 10000, 1024), 10);
 
 			//connect on level 2
 			connectUnits(curMid, lastMid, 2);
@@ -427,7 +525,7 @@ public class TransportSystem
 			//set its conpoint if it has not already been set
 			curMid.setConPoint(new Vector2((curix+Random.value)*midTUWidth,(curiy+Random.value)*midTUWidth));
 
-			MyDebug.placeMarker(UnitConverter.getWP(new SurfacePos(PSide.TOP, curMid.conPoint.x, curMid.conPoint.y), 10000, 1024), 5);
+			//MyDebug.placeMarker(UnitConverter.getWP(new SurfacePos(PSide.TOP, curMid.conPoint.x, curMid.conPoint.y), 10000, 1024), 5);
 			
 			connectUnits(curMid, lastMid, 1);
 			

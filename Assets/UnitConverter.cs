@@ -37,6 +37,8 @@ public class UnitConverter
 		case PSide.BACK:
 			cubePos = new Vector3(sp.u, sp.v, -halfSide);
 			break;
+		case PSide.NONE://used to catch any errors
+			return new Vector3(0,0,0);
 		default://won't ever happen
 			cubePos = new Vector3();
 			break;

@@ -30,8 +30,8 @@ public class SurfaceSystem
 		halfSide = sideLength/2;
 		suLength = (2 * r * Mathf.PI) / (sideLength * 4);//circumference divided by number of sus around the sphere cross section
 
-		transport = new TransportSystem(8,16,8);
-		//transport = new TransportSystem(2,3,2);
+		//transport = new TransportSystem(8,16,8);
+		transport = new TransportSystem(2,4,4);
 
 		GameObject go = Resources.Load("Test things/rottest") as GameObject;
 		Vector3 pos = UnitConverter.getWP(new SurfacePos(PSide.TOP, 0, 0), radius, sideLength);
@@ -164,20 +164,23 @@ public class SurfaceSystem
 		
 		//Debug.Log(tuStartu + " " + tuStartv + " " + tuEndu + " " + tuEndv);
 		
-		for(int i = tuStartu; i<=tuEndu; i++)
+		for(int i = tuStartu-1; i<=tuEndu; i++)
 		{
-			for(int j = tuStartv; j<=tuEndv; j++)
+			for(int j = tuStartv-1; j<=tuEndv; j++)
 			{
 				//build the road units
 				//Debug.Log("looping");
 				//the trasport unit to examine
 				TUBase bu = transport.getBase(new SurfaceUnit(su.side, i, j));
+				//Debug.Log("where's my road?!?!?!?!?");
+				//Debug.Log(bu==null);
 				if(bu!=null)
 				{
 					if(bu.conRight)
 					{
 						//the transport unit to the right of this one
 						TUBase bu2 = transport.getBase(new SurfaceUnit(su.side, i+1, j));
+
 						if(bu2!=null)//only build it if both base units exist
 							buildTransportSegment(bu,bu2,bu.RightLev);
 					}
@@ -202,21 +205,56 @@ public class SurfaceSystem
 						if(bu2!=null)
 							buildTransportSegment(bu,bu2,bu.UpLeftLev);
 					}
-					
-					//if(tu.conUpRight)//add this in later
+
 				}
 			}
 		}
 	}
 
+	//if the surface unit given is out of range of the side it should be on, the proper side and coordinates are returned
+	//it will probably be the same
+	public SurfaceUnit sideCheck(SurfaceUnit su, int sideLength)
+	{
+		
+		
+		//half the side length
+		int halfside = sideLength/2;
+
+		//if it is withing the bounds of a side(usually the case), it does not have to be modified
+		if(su.u>=-halfside && su.u<halfside && su.v>=-halfside && su.v<halfside)
+			return su;
+		
+		
+		//all cases for back side
+		if(su.side==PSide.BACK)
+		{
+			//if the u value is to far to the right, it is on the very left of the right side
+			if(su.u>=halfside)
+			{
+				return new SurfaceUnit(PSide.RIGHT, -halfside, su.v);
+			}
+		}
+		else if(su.side==PSide.RIGHT)
+		{
+			//if the u value is to far to the right, it is on the very left of the right side
+			if(su.u<halfside)
+			{
+				return new SurfaceUnit(PSide.BACK, halfside-1, su.v);
+			}
+		}
+		
+		//if no other conditions are met, just return an empty one 
+		return new SurfaceUnit(PSide.NONE, 0, 0);
+	}
+
 	//builds a transport(road) segment between two transport units, lev is the segment level(lower number is usually bigger)
-	private void buildTransportSegment(TransportUnit t1, TransportUnit t2, int lev)
+	private void buildTransportSegment(TUBase t1, TUBase t2, int lev)
 	{
 		//Debug.DrawLine(t1.conPointWorld, t2.conPointWorld, Color.blue, Mathf.Infinity);
 		//GameObject road = GameObject.CreatePrimitive (PrimitiveType.Cube);
 		//position of the segment is halfway between each point(makes sense huh?)
 		Vector3 pos = (t1.conPointWorld+t2.conPointWorld)/2;
-
+		//Debug.Log(pos + " " + t1 + " " + t2);
 		//z scale is distance between the two points
 		//Vector3 scale = new Vector3(0.7f, 0.5f, Vector3.Distance(t1.conPointWorld, t2.conPointWorld));
 
@@ -253,6 +291,7 @@ public class SurfaceSystem
 		//build the object and initialize it
 		TestRoad road = buildObject<TestRoad>(pos,finalRot) as TestRoad;
 		road.init(length, width);
+	//	Debug.Log("where's my road?!?!?!?!?");
 
 	}
 

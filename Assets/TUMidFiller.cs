@@ -56,13 +56,14 @@ public class TUMidFiller
 		powUnit.conPoint = mu.conPoint;
 		powUnit.conSet = true;
 
-		MyDebug.placeMarker(UnitConverter.getWP(new SurfacePos(su.side, powUnit.conPoint.x, powUnit.conPoint.y), 
-		                     WorldManager.curPlanet.radius, 64*16), 3);
+		//MyDebug.placeMarker(UnitConverter.getWP(new SurfacePos(su.side, powUnit.conPoint.x, powUnit.conPoint.y), 
+		//                     WorldManager.curPlanet.radius, 64*16), 3);
 		                    
 		//Debug.Log(mu.conPoint + " " + powUnit.conPoint);
 		//Debug.Log(powIndexX + " " + powIndexY);
 
 		//the mid transport units to the left and bottom of the current mid unit
+		//TransportUnit leftTU = tran.getAdjustedMid(new SurfaceUnit(su.side,su.u - 1, su.v));
 		TransportUnit leftTU = tran.getMid(new SurfaceUnit(su.side,su.u - 1, su.v));
 		TransportUnit downTU = tran.getMid(new SurfaceUnit(su.side,su.u, su.v - 1));
 		TransportUnit rightTU = tran.getMid(new SurfaceUnit(su.side,su.u+1, su.v));
@@ -376,8 +377,8 @@ public class TUMidFiller
 			GridMath.findBaseIndexfromPoint(finalPoint, out fIndexX, out fIndexY);//finds index of base unit right below the goal point
 
 			//Debug.Log(targetSlope + " " + finalPoint);
-			MyDebug.placeMarker(UnitConverter.getWP(new SurfacePos(PSide.TOP, finalPoint.x, finalPoint.y), 
-			                                        WorldManager.curPlanet.radius, 64*16));
+		//	MyDebug.placeMarker(UnitConverter.getWP(new SurfacePos(PSide.TOP, finalPoint.x, finalPoint.y), 
+			  //                                      WorldManager.curPlanet.radius, 64*16));
 
 			//if the final point is out of range in the current mid unit, stop the loop
 			//also, this means that the goal base unit was never reached, so the last base unit needs to be connected to it
@@ -467,12 +468,13 @@ public class TUMidFiller
 			bu = new TUBase();
 			bu.indexI = i;
 			bu.indexJ = j;
+			//tran.baseTUs.Add(su, bu);
 			baseList.Add(su, bu);
 		}
 		return bu;
 	}
 
-
+	//private void 
 
 
 
