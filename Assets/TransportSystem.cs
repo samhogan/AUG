@@ -347,12 +347,12 @@ public class TransportSystem
 			buildMidCurve(lu, downLU.conPoint, Dir.DOWN, powMid, lus.side);
 
 		//build some level 2 streets coming off the level 1 streets or other level 2 streets
-		int numStreets = 20;//(int)(Random.value*5);
+		int numStreets = 80;//(int)(Random.value*5);
 		for(int i=0; i<numStreets; i++)
 		{
 			int startNum = lu.rng.Next(0, indexList.Count);
 			TransportUnit startMid = indexList[startNum];
-			buildLev2(lu, startMid, lu.rng.Next(2,20), lus.side);
+			buildLev2(lu, startMid, lu.rng.Next(2,80), lus.side);
 		}
 
 

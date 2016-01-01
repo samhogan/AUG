@@ -52,8 +52,11 @@ public class RequestSystem : MonoBehaviour
 	//NOTE: lets put this in a coroutine later once I know how one works
 	void Update() 
 	{
+		//calculate the player's real position from the floating position
+		Vector3 realPos = FloatingOrigin.getRealPos(transform.position);
+
 		//the current chunk the player is in
-		WorldPos curChunkPos = UnitConverter.getChunk(transform.position);
+		WorldPos curChunkPos = UnitConverter.getChunk(realPos);
 
 		//loop through all chunkpositions until one is found that has not been requested
 		for(int i = 0; i<chunkPositions.Length; i++)
@@ -155,7 +158,7 @@ public class RequestSystem : MonoBehaviour
 	//Get the unit chunk position of the current chunk that the player is in
 	//basically it rounds every position down to the nearest 16
 	//NOTE: Delete this later by migrating to unit converter method
-	WorldPos posToChunk()
+/*	WorldPos posToChunk()
 	{
 
 		WorldPos curChunkPos = new WorldPos (
@@ -164,7 +167,7 @@ public class RequestSystem : MonoBehaviour
 			Mathf.FloorToInt(transform.position.z / chunkSize)*chunkSize );
 
 		return curChunkPos;
-	}
+	}*/
 
 	//the size of a terrain chunk is the same as a request chunk to keep it organized, and makes requesting it fairly simple
 	void requestTerrain(WorldPos pos)

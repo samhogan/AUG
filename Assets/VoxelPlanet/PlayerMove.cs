@@ -73,8 +73,9 @@ public class PlayerMove : MonoBehaviour {
 
 		//planet.Attract(transform);
 
+		Vector3 realPos = FloatingOrigin.getRealPos(rb.position);
 		//points player away from planet
-		rb.rotation = Quaternion.FromToRotation (transform.up, rb.position) * rb.rotation;
+		rb.rotation = Quaternion.FromToRotation (transform.up, realPos) * rb.rotation;
 		//print(Quaternion.FromToRotation (transform.up, transform.position) * transform.rotation);
 		/*Vector3 gravityUp = (transform.position).normalized;
 		Vector3 localUp = transform.up;

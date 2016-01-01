@@ -19,8 +19,11 @@ public class Build
 		//Make its name in the inspector its type name
 		go.name = typeof(T).ToString();
 
+		//calculate the floating position(around the world origin)
+		Vector3 floatPos = FloatingOrigin.getFloatingPos(pos);
+
 		//set the objects position
-		go.transform.position = pos;
+		go.transform.position = floatPos;
 		go.transform.rotation = rot;
 
 		//add the component that is the type passed in the parameter(the type of object)
