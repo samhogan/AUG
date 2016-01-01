@@ -356,10 +356,10 @@ public class TransportSystem
 		}
 
 
-		Vector3 topright = UnitConverter.getWP(new SurfacePos(lus.side, (lu.indexI+1)*sideLengthLarge, (lu.indexJ+1)*sideLengthLarge), 10000, 1024);
-		Vector3 topleft = UnitConverter.getWP(new SurfacePos(lus.side, (lu.indexI)*sideLengthLarge, (lu.indexJ+1)*sideLengthLarge), 10000, 1024);
-		Vector3 botright = UnitConverter.getWP(new SurfacePos(lus.side, (lu.indexI+1)*sideLengthLarge, (lu.indexJ)*sideLengthLarge), 10000, 1024);
-		Vector3 botleft = UnitConverter.getWP(new SurfacePos(lus.side, (lu.indexI)*sideLengthLarge, (lu.indexJ)*sideLengthLarge), 10000, 1024);
+		Vector3 topright = UnitConverter.getWP(new SurfacePos(lus.side, (lu.indexI+1)*sideLengthLarge, (lu.indexJ+1)*sideLengthLarge), 10000, sideLength);
+		Vector3 topleft = UnitConverter.getWP(new SurfacePos(lus.side, (lu.indexI)*sideLengthLarge, (lu.indexJ+1)*sideLengthLarge), 10000, sideLength);
+		Vector3 botright = UnitConverter.getWP(new SurfacePos(lus.side, (lu.indexI+1)*sideLengthLarge, (lu.indexJ)*sideLengthLarge), 10000, sideLength);
+		Vector3 botleft = UnitConverter.getWP(new SurfacePos(lus.side, (lu.indexI)*sideLengthLarge, (lu.indexJ)*sideLengthLarge), 10000, sideLength);
 		Debug.DrawLine(topleft, botleft, Color.red, Mathf.Infinity);
 		Debug.DrawLine(topleft, topright, Color.red, Mathf.Infinity);
 		Debug.DrawLine(topright, botright, Color.red, Mathf.Infinity);
@@ -450,8 +450,8 @@ public class TransportSystem
 
 		float outSlope = GridMath.findSlope(lu.conPoint, outsideConPoint);//find the average slope from this conPoint to the outsideConPoint
 
-		Debug.DrawLine(UnitConverter.getWP(new SurfacePos(PSide.TOP, lu.conPoint.x, lu.conPoint.y), 10000, 1024), 
-		               UnitConverter.getWP(new SurfacePos(PSide.TOP, outsideConPoint.x, outsideConPoint.y), 10000, 1024), Color.blue, Mathf.Infinity);
+		Debug.DrawLine(UnitConverter.getWP(new SurfacePos(PSide.TOP, lu.conPoint.x, lu.conPoint.y), 10000, sideLength), 
+		               UnitConverter.getWP(new SurfacePos(PSide.TOP, outsideConPoint.x, outsideConPoint.y), 10000, sideLength), Color.blue, Mathf.Infinity);
 		//determine the goal mid unit
 		if(dir==Dir.RIGHT)
 		{

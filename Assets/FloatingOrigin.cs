@@ -5,7 +5,7 @@ using System.Collections.Generic;
 public class FloatingOrigin : MonoBehaviour
 {
 	//the size in unity units of the offset chunk size
-	static int step = 50;
+	static int step = 5000;
 	static int halfstep = step/2;
 
 	//the number of offset chunks away from the origin of some width
@@ -20,7 +20,7 @@ public class FloatingOrigin : MonoBehaviour
 	}
 	
 	// Update is called once per frame
-	void Update()
+	void LateUpdate()
 	{
 		//if position is greater than step, move everything back
 		if(transform.position.x>halfstep || transform.position.x<-halfstep)

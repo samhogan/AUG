@@ -32,7 +32,7 @@ public class SurfaceSystem
 		halfSide = sideLength/2;
 		suLength = (2 * r * Mathf.PI) / (sideLength * 4);//circumference divided by number of sus around the sphere cross section
 
-		transport = new TransportSystem(p,4,16,8);
+		transport = new TransportSystem(p,100,16,8);
 		//transport = new TransportSystem(p,2,4,4);
 
 		GameObject go = Resources.Load("Test things/rottest") as GameObject;

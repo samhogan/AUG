@@ -23,7 +23,7 @@ public class WorldManager : MonoBehaviour
 
 		//Planet earth = new Planet(10000);
 		//Planet earth = new Planet(200);
-		Planet earth = new Planet(10000);
+		Planet earth = new Planet(250000);
 		curPlanet = earth;
 	}
 	
