@@ -22,9 +22,11 @@ public class FloatingOrigin : MonoBehaviour
 	// Update is called once per frame
 	void LateUpdate()
 	{
+		Vector3 pos = transform.position;
 		//if position is greater than step, move everything back
-		if(transform.position.x>halfstep || transform.position.x<-halfstep)
+		if(pos.x>halfstep || pos.x<-halfstep)
 		{
+			//print("sup");
 			//the amount of offsets
 			int offset = Mathf.RoundToInt(transform.position.x/step);
 			offsetX+=offset;
@@ -32,14 +34,14 @@ public class FloatingOrigin : MonoBehaviour
 			int shiftx = offset*-step;
 			moveWorldObjects(new Vector3(shiftx,0,0));
 		}
-		if(transform.position.y>halfstep || transform.position.y<-halfstep)
+		if(pos.y>halfstep || pos.y<-halfstep)
 		{
 			int offset = Mathf.RoundToInt(transform.position.y/step);
 			offsetY+=offset;
 			int shifty = offset*-step;
 			moveWorldObjects(new Vector3(0,shifty,0));
 		}
-		if(transform.position.z>halfstep || transform.position.z<-halfstep)
+		if(pos.z>halfstep || pos.z<-halfstep)
 		{
 			int offset = Mathf.RoundToInt(transform.position.z/step);
 			offsetZ+=offset;

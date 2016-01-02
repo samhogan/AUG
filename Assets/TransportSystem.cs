@@ -27,7 +27,7 @@ public class TransportSystem
 	private Dictionary<SurfaceUnit, TransportUnit> midTUs = new Dictionary<SurfaceUnit, TransportUnit>();
 
 	//stores all large t units that have been generated
-	private Dictionary<SurfaceUnit, TransportUnit> largeTUs = new Dictionary<SurfaceUnit, TransportUnit>();
+	private Dictionary<SurfaceUnit, TULarge> largeTUs = new Dictionary<SurfaceUnit, TULarge>();
 
 	//used to fill mid units with base units(too much code, had to break it off into its own class)
 	private TUMidFiller midfill;
@@ -162,7 +162,7 @@ public class TransportSystem
 		//the coordinates of the proposed large unit
 		SurfaceUnit lus = getLargeSU(su);
 		//retrieve the large unit
-		TransportUnit lu = getLarge(lus);
+		TULarge lu = getLarge(lus);
 		//Debug.Log("proposed " + lus);
 		//if the lu has already been populated, the mu will never exist, so return null
 		if(lu.populated)
@@ -233,13 +233,13 @@ public class TransportSystem
 	}
 
 	//returns the large unit at a specified su, creates one if it does not exist(every large unit will exist)
-	public TransportUnit getLarge(SurfaceUnit su)
+	public TULarge getLarge(SurfaceUnit su)
 	{
 		//quick hopefully temporary check, see getMid for details
 		if(su.u<-halfgtuw || su.u>=halfgtuw || su.v<-halfgtuw || su.v>=halfgtuw)
 			return null;
 
-		TransportUnit lu = null;
+		TULarge lu = null;
 
 		//if it is in the list, return it
 		if(largeTUs.TryGetValue(su, out lu))
@@ -249,7 +249,7 @@ public class TransportSystem
 
 
 		//if not, build one and return it
-		TransportUnit tu = new TransportUnit();
+		TULarge tu = new TULarge();
 
 		//get this large unit's rng
 		tu.rng = RandomHandler.transportRandom(su, TLev.LARGE);
@@ -304,7 +304,7 @@ public class TransportSystem
 	}
 
 	//populates a large unit with mid units
-	private void populateLarge(TransportUnit lu, SurfaceUnit lus)
+	private void populateLarge(TULarge lu, SurfaceUnit lus)
 	{
 		//Debug.Log("built " + lus);
 
@@ -318,10 +318,10 @@ public class TransportSystem
 		powMid.conPoint = lu.conPoint;//same conpoint, or could change to not be, doesn't really  matter
 		powMid.conSet=true;
 
-		TransportUnit rightLU = getLarge(new SurfaceUnit(lus.side,lus.u + 1, lus.v));
-		TransportUnit leftLU = getLarge(new SurfaceUnit(lus.side,lus.u - 1, lus.v));
-		TransportUnit upLU = getLarge(new SurfaceUnit(lus.side,lus.u, lus.v+1));
-		TransportUnit downLU = getLarge(new SurfaceUnit(lus.side,lus.u, lus.v-1));
+		TULarge rightLU = getLarge(new SurfaceUnit(lus.side,lus.u + 1, lus.v));
+		TULarge leftLU = getLarge(new SurfaceUnit(lus.side,lus.u - 1, lus.v));
+		TULarge upLU = getLarge(new SurfaceUnit(lus.side,lus.u, lus.v+1));
+		TULarge downLU = getLarge(new SurfaceUnit(lus.side,lus.u, lus.v-1));
 		//Vector2 conPointRight = rightLU.conPoint;
 
 		//determine in which direction the streets should be built
@@ -371,7 +371,7 @@ public class TransportSystem
 	}
 
 	//builds a level 2 street of length from startMid within curLarge transport unit
-	private void buildLev2(TransportUnit curLarge, TransportUnit startMid, int length, PSide side)
+	private void buildLev2(TULarge curLarge, TransportUnit startMid, int length, PSide side)
 	{
 		//the max and min indexes that the street can be built to(stay within the large unit)
 		//move out of this function so it is not recalculated every time
@@ -442,7 +442,7 @@ public class TransportSystem
 	}
 
 	//builds a street from the center of a large unit to the edge in the given direction
-	private void buildMidCurve(TransportUnit lu, Vector2 outsideConPoint, Dir dir, TransportUnit powMid, PSide side)//powmid is the mid unit that contains the large's conpoint
+	private void buildMidCurve(TULarge lu, Vector2 outsideConPoint, Dir dir, TransportUnit powMid, PSide side)//powmid is the mid unit that contains the large's conpoint
 	{
 
 

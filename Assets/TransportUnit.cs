@@ -18,7 +18,6 @@ public class TransportUnit
 	private int rightLev = 0;
 	private int upLev = 0;
 
-	public System.Random rng;//the random number generator for the unit
 
 	public int RightLev
 	{

@@ -77,7 +77,7 @@ public class SurfaceSystem
 
 			int count = rand.Next(30);
 
-			MyDebug.placeMarker(UnitConverter.getWP(new SurfacePos(su.side, su.u, su.v), radius, sideLength));
+		//	MyDebug.placeMarker(UnitConverter.getWP(new SurfacePos(su.side, su.u, su.v), radius, sideLength));
 			for(int i = 0; i<count; i++)
 			{
 				//Vector3 pos = new Vector3(

@@ -46,7 +46,10 @@ public class RequestSystem : MonoBehaviour
 		}*/
 		//terrain = planet.terrain;
 	}
-	
+
+	//deletes chunks every some frames
+	int delTimer = 0;
+
 	// Update is called once per frame
 	//(for now) every frame up to 1 chunk is requested and up to 1 object is rendered
 	//NOTE: lets put this in a coroutine later once I know how one works
@@ -89,8 +92,12 @@ public class RequestSystem : MonoBehaviour
 			objectsToRender.RemoveAt(0);
 		}
 
-		//this will eventually happen every tenth frame or so
-		requestChunkDeletion(curChunkPos);
+		//every 10th frame request deletion of chunks
+		if(delTimer>=10)
+		{
+			delTimer = 0;
+			requestChunkDeletion(curChunkPos);
+		}
 		//testing
 
 		/*SurfacePos pos = UnitConverter.getSP(transform.position, 1024);
