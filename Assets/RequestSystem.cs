@@ -93,11 +93,13 @@ public class RequestSystem : MonoBehaviour
 		}
 
 		//every 10th frame request deletion of chunks
-		if(delTimer>=10)
+		delTimer++;
+		if(delTimer>=100)
 		{
 			delTimer = 0;
 			requestChunkDeletion(curChunkPos);
 		}
+
 		//testing
 
 		/*SurfacePos pos = UnitConverter.getSP(transform.position, 1024);

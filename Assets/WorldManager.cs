@@ -12,7 +12,7 @@ public class WorldManager : MonoBehaviour
 	//public static XXHash hash;
 
 	// Use this for initialization
-	void Start () 
+	void OnEnable () 
 	{
 
 		//universal terrain stuff

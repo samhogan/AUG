@@ -5,7 +5,7 @@ using System.Collections.Generic;
 public class FloatingOrigin : MonoBehaviour
 {
 	//the size in unity units of the offset chunk size
-	static int step = 5000;
+	static int step = 10000;
 	static int halfstep = step/2;
 
 	//the number of offset chunks away from the origin of some width
