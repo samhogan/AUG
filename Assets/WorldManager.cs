@@ -4,8 +4,8 @@ using System.Collections;
 //This will attach to an empty gameobject in the game world and initializes and holds importing stuff about the world
 public class WorldManager : MonoBehaviour 
 {
-	//the planet that things will be built for
-	public static Planet curPlanet;
+
+	public UniverseSystem universe;
 
 	//the hash function
 	//NOTE: implement defined 3 value function
@@ -21,10 +21,8 @@ public class WorldManager : MonoBehaviour
 
 		RandomHandler.hash = new XXHash(1);//using seed 1 for testing(will later be randomly chosen
 
-		//Planet earth = new Planet(10000);
-		//Planet earth = new Planet(200);
-		Planet earth = new Planet(250000);
-		curPlanet = earth;
+		//initialize THE UNIVERSE!!!!!!!!!
+		universe = new UniverseSystem();
 	}
 	
 	// Update is called once per frame

@@ -122,7 +122,7 @@ public class TransportSystem
 				{
 					//find the world connection point
 					Vector3 conPointWorld = UnitConverter.getWP(new SurfacePos(su.side, pair.Value.conPoint.x, pair.Value.conPoint.y), 
-					                                               WorldManager.curPlanet.radius, sideLength);
+					                                               UniverseSystem.curPlanet.radius, sideLength);
 					conPointWorld = planet.noise.altitudePos(conPointWorld);
 					//Debug.Log(su.side+" " + pair.Key.u + " " + pair.Key.v + " ");
 					pair.Value.conPointWorld = conPointWorld;

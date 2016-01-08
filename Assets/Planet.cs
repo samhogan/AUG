@@ -13,10 +13,13 @@ public class Planet
 
 	public float radius = 200f;//radius of the planet
 
-	private float genScale = 5f;//the perlin scale for general elevation
+	//the position of the planet in unispace (measured in 10000s or whatever the scale is)
+	private Vector3 scaledPos;
+	//the large scale representation of the planet in unispace
+	private GameObject scaledRep;
 
 	//later will have many parameters
-	public Planet(float r)
+	public Planet(float r)//Vector3 sp, float r)
 	{
 		radius = r;
 		terrain = new TerrainSystem(this, radius);
@@ -25,6 +28,12 @@ public class Planet
 
 		noise = new NoiseHandler(radius);
 
+
+		scaledPos = new Vector3(100,0,100);
+		scaledRep = GameObject.CreatePrimitive(PrimitiveType.Sphere);
+		scaledRep.layer = 8;//add to Unispace layer
+		scaledRep.transform.position = scaledPos;
+		
 	}
 
 }

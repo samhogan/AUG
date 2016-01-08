@@ -13,8 +13,8 @@ public class NoiseHandler
 	public NoiseHandler(float r)
 	{
 		radius = r;
-		tScale1 = 1000;
-		tHeight1 = 10;
+		tScale1 = 100;
+		tHeight1 = 50;
 	}
 
 	//returns the altitude of the terrain at a given position

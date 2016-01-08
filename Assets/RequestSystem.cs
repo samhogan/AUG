@@ -30,7 +30,7 @@ public class RequestSystem : MonoBehaviour
 	void Start() 
 	{
 		//set planet reference to appropriate planet
-		planet = WorldManager.curPlanet;
+		planet = UniverseSystem.curPlanet;
 		//surface position test
 		/*for(int i = -4; i<=4; i++)
 		{
