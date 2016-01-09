@@ -58,48 +58,51 @@ public class RequestSystem : MonoBehaviour
 		//calculate the player's real position from the floating position
 		Vector3 realPos = FloatingOrigin.getRealPos(transform.position);
 
-		//the current chunk the player is in
-		WorldPos curChunkPos = UnitConverter.getChunk(realPos);
-
-		//loop through all chunkpositions until one is found that has not been requested
-		for(int i = 0; i<chunkPositions.Length; i++)
+		//only generate stuff for a planet if you are on a planet
+		if(Unitracker.onPlanet)
 		{
-			//calculates a proposed chunk to render based on order of chunkPositions and chunkSize
-			WorldPos proposedChunk = new WorldPos(curChunkPos.x + chunkPositions[i].x*chunkSize,
-			                                      curChunkPos.y + chunkPositions[i].y*chunkSize,
-			                                      curChunkPos.z + chunkPositions[i].z*chunkSize);
+			//the current chunk the player is in
+			WorldPos curChunkPos = UnitConverter.getChunk(realPos);
 
-			//if the chunk the player/object is in has not already been requested, request it
-			if(!requestedChunks.Contains(proposedChunk))
+			//loop through all chunkpositions until one is found that has not been requested
+			for(int i = 0; i<chunkPositions.Length; i++)
 			{
-				//NOTE: might change back
-				requestChunkGen(proposedChunk);
-				/*//print("Player is in chunk " + curChunkPos);
-				requestTerrain(proposedChunk);//request terrain chunk generation
-				requestSurface(proposedChunk);//request surface generation
-				renderObjectsInChunk(proposedChunk);//request objects in this position to be rendered
+				//calculates a proposed chunk to render based on order of chunkPositions and chunkSize
+				WorldPos proposedChunk = new WorldPos(curChunkPos.x + chunkPositions[i].x*chunkSize,
+				                                      curChunkPos.y + chunkPositions[i].y*chunkSize,
+				                                      curChunkPos.z + chunkPositions[i].z*chunkSize);
 
-				//print("Chunk added to requested chunks " + curChunkPos);
-				requestedChunks.Add(proposedChunk);//add it to the already requested chunks list
-				*/
+				//if the chunk the player/object is in has not already been requested, request it
+				if(!requestedChunks.Contains(proposedChunk))
+				{
+					//NOTE: might change back
+					requestChunkGen(proposedChunk);
+					/*//print("Player is in chunk " + curChunkPos);
+					requestTerrain(proposedChunk);//request terrain chunk generation
+					requestSurface(proposedChunk);//request surface generation
+					renderObjectsInChunk(proposedChunk);//request objects in this position to be rendered
+
+					//print("Chunk added to requested chunks " + curChunkPos);
+					requestedChunks.Add(proposedChunk);//add it to the already requested chunks list
+					*/
+				}
 			}
-		}
-		//print("objects to render " + objectsToRender.Count);
-		//it the render list contains objects, render the first one in the list and remove it
-		if(objectsToRender.Count > 0)
-		{
-			objectsToRender[0].Render();
-			objectsToRender.RemoveAt(0);
-		}
+			//print("objects to render " + objectsToRender.Count);
+			//it the render list contains objects, render the first one in the list and remove it
+			if(objectsToRender.Count > 0)
+			{
+				objectsToRender[0].Render();
+				objectsToRender.RemoveAt(0);
+			}
 
-		//every 10th frame request deletion of chunks
-		delTimer++;
-		if(delTimer>=100)
-		{
-			delTimer = 0;
-			requestChunkDeletion(curChunkPos);
+			//every 10th frame request deletion of chunks
+			delTimer++;
+			if(delTimer>=100)
+			{
+				delTimer = 0;
+				requestChunkDeletion(curChunkPos);
 		}
-
+		}
 		//testing
 
 		/*SurfacePos pos = UnitConverter.getSP(transform.position, 1024);

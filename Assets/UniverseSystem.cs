@@ -11,7 +11,7 @@ public class UniverseSystem
 
 	//is the player in space or on a planet?
 	//things are generated slightly different in space
-	public static bool inSpace;
+//	public static bool inSpace;
 
 
 
@@ -19,7 +19,7 @@ public class UniverseSystem
 
 	public UniverseSystem()
 	{
-		inSpace = true;
+	//	inSpace = true;
 		populate();
 
 	}
@@ -29,8 +29,9 @@ public class UniverseSystem
 	{
 		//Planet earth = new Planet(10000);
 		//Planet earth = new Planet(200);
-		Planet earth = new Planet(250000);
-		curPlanet = earth;
+
+		//Planet earth = new Planet(250000);
+		//curPlanet = earth;
 	}
 
 }
