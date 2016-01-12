@@ -11,29 +11,42 @@ public class Planet
 
 	public NoiseHandler noise;//contains all perlin noise info 
 
-	public float radius = 200f;//radius of the planet
+	public float radius;//radius of the planet
+	private float scaledRadius;//the radius of the scaledRep in unispace
 
 	//the position of the planet in unispace (measured in 10000s or whatever the scale is)
-	private Vector3 scaledPos;
+	public UniPos scaledPos;
+
+
 	//the large scale representation of the planet in unispace
-	private GameObject scaledRep;
+	public GameObject scaledRep;
 
 	//later will have many parameters
 	public Planet(float r)//Vector3 sp, float r)
 	{
 		radius = r;
+		scaledRadius = r/Unitracker.uniscale;
+
 		terrain = new TerrainSystem(this, radius);
 		//surface = new SurfaceSystem(radius, 400);
 		surface = new SurfaceSystem(this, radius, (int)(radius/50));//number of surface units per side is radius/50
 
 		noise = new NoiseHandler(radius);
 
+		createRep();
+	}
 
-		scaledPos = new Vector3(100,0,100);
+	//instantiates the unispace rep of the planet
+	void createRep()
+	{
 		scaledRep = GameObject.CreatePrimitive(PrimitiveType.Sphere);
+		GameObject.Destroy(scaledRep.GetComponent<SphereCollider>());//remove this pesky component
 		scaledRep.layer = 8;//add to Unispace layer
-		scaledRep.transform.position = scaledPos;
-		
+
+		//arbitrary unipos for testing
+		scaledPos = new UniPos(new Vector3(0,0,0), 100, 0, 100);
+		scaledRep.transform.position = Unitracker.UniToAbs(scaledPos);
+		scaledRep.transform.localScale = new Vector3(scaledRadius*2, scaledRadius*2, scaledRadius*2);
 	}
 
 }

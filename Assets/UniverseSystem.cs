@@ -1,10 +1,13 @@
 ﻿using UnityEngine;
 using System.Collections;
+using System.Collections.Generic;
+
 
 public class UniverseSystem
 {
 
 	//list of planets
+	public static List<Planet> planets = new List<Planet>();
 
 	//the planet that things will be built for
 	public static Planet curPlanet;
@@ -30,7 +33,8 @@ public class UniverseSystem
 		//Planet earth = new Planet(10000);
 		//Planet earth = new Planet(200);
 
-		//Planet earth = new Planet(250000);
+		Planet earth = new Planet(250000);
+		planets.Add(earth);
 		//curPlanet = earth;
 	}
 
