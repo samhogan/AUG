@@ -9,7 +9,7 @@ using System.Collections.Generic;
 //Chunk size is static, surface unit size is dynamic
 public class RequestSystem : MonoBehaviour 
 {
-	private Planet planet;//the planet the terrainloader is building for, will not be public eventually(curplanet variable or something)
+	//private Planet planet;//the planet the terrainloader is building for, will not be public eventually(curplanet variable or something)
 	//TerrainSystem terrain;//the terrain system of the planet
 
 	//positions of 'chunks' of objects that have already been requested
@@ -30,7 +30,7 @@ public class RequestSystem : MonoBehaviour
 	void Start() 
 	{
 		//set planet reference to appropriate planet
-		planet = UniverseSystem.curPlanet;
+		//planet = UniverseSystem.curPlanet;
 		//surface position test
 		/*for(int i = -4; i<=4; i++)
 		{
@@ -185,32 +185,32 @@ public class RequestSystem : MonoBehaviour
 	void requestTerrain(WorldPos pos)
 	{
 		//NOTE: NEED to migrate this over to the worldhelper buildobject function
-		planet.terrain.CreateChunk(pos);
+		UniverseSystem.curPlanet.terrain.CreateChunk(pos);
 	}
 
 	void deleteTerrain(WorldPos pos)
 	{
 		//NOTE: NEED to migrate this over to the worldhelper buildobject function
-		planet.terrain.DestroyChunk(pos);
+		UniverseSystem.curPlanet.terrain.DestroyChunk(pos);
 	}
 
 	//this requests the generation of a surface unit that is at the center of the chunk
 	void requestSurface(WorldPos pos)
 	{
 		//convert the worldpos to a surface pos
-		SurfacePos surfp = UnitConverter.getSP(pos.toVector3(), planet.surface.sideLength);
+		SurfacePos surfp = UnitConverter.getSP(pos.toVector3(), UniverseSystem.curPlanet.surface.sideLength);
 
 		//convert the surfacepos to a surface unit then request its creation
-		planet.surface.CreateSurfaceObjects(surfp.toUnit());
+		UniverseSystem.curPlanet.surface.CreateSurfaceObjects(surfp.toUnit());
 	}
 
 	void deleteSurface(WorldPos pos)
 	{
 		//convert the worldpos to a surface pos
-		SurfacePos surfp = UnitConverter.getSP(pos.toVector3(), planet.surface.sideLength);
+		SurfacePos surfp = UnitConverter.getSP(pos.toVector3(), UniverseSystem.curPlanet.surface.sideLength);
 		
 		//convert the surfacepos to a surface unit then request its creation
-		planet.surface.deleteSurface(surfp.toUnit());
+		UniverseSystem.curPlanet.surface.deleteSurface(surfp.toUnit());
 
 	}
 

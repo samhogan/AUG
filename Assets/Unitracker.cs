@@ -25,9 +25,15 @@ public class Unitracker : MonoBehaviour
 	//the position of the player in THE UNIVERSE!!!!! (1:1 scale)
 	//UniPos playerPos;
 	//the player's reference point in the univers(what point its transform position is relative to)
+	//when in space, relative to the universe origin, when on a planet, relative to planet center
 	int pRefX;
 	int pRefY;
 	int pRefZ;
+
+	//the player's reference point on the planet(same thing as pRef except rotated in space)
+	//int planetRefX;
+	//int planetRefY;
+	//int planetRefZ;
 
 	//the position of the player relative to the planet(if it is on one)
 	//UniPos planetPos;
@@ -64,12 +70,59 @@ public class Unitracker : MonoBehaviour
 		transform.position = new Vector3(scaledX, scaledY, scaledZ);
 		//print("pos is " + transform.position);
 
+		print(UniverseSystem.curPlanet!=null);
+		if(onPlanet)
+			checkSpace();
+		else
+			checkPlanets();
+	 
 		checkTrackerPos();
-		
 		checkPlayerPos();
 		//checkTrackerPos();
 	
 	}
+
+	//checks if the player is in the jurisdiction of any planet
+	void checkPlanets()
+	{
+		foreach(Planet plan in UniverseSystem.planets)
+		{
+			//if the player is inside the planets "atmosphere" the it is the curplanet
+			if(Vector3.Distance(transform.position,plan.scaledRep.transform.position)<plan.scaledAtmosRadius)
+			{
+				setCurPlanet(plan);
+				break;
+			}
+
+		}
+	}
+
+	void checkSpace()
+	{
+
+	}
+
+	//sets up proper positioning and rotations of objects for a new planet
+	void setCurPlanet(Planet plan)
+	{
+		onPlanet=true;
+		UniverseSystem.curPlanet = plan;
+
+		transform.parent = plan.scaledRep;
+		pRefX = Mathf.RoundToInt(transform.localPosition.x);
+
+		//calculate new position of the player
+		player.transform.position = new Vector3((transform.localPosition.x-pRefX)*uniscale,
+		                                        (transform.localPosition.y-pRefY)*uniscale,
+		                                        (transform.localPosition.z-pRefZ)*uniscale);
+
+		//rotate the player and other objects around it
+
+
+
+	}
+
+
 
 	//convers a unipos to an absolute world pos based on the current tRef
 	public static Vector3 UniToAbs(UniPos uni)
@@ -139,17 +192,25 @@ public class Unitracker : MonoBehaviour
 
 
 	//checks if the player is outside the precision threshold (5000 units from the origin) and moves it (and world objects) back
+	//used with space and on planet
 	void checkPlayerPos()
 	{
-		//pRef point relative to the tRef point
-		Vector3 relRef = new Vector3(pRefX-tRefX, pRefY-tRefY, pRefZ-tRefZ);
+		//pRef point relative to the local unity origin
+		//if on planet, relative to the planet center
+		//if in space, relative to the unispace origin
+		Vector3 relRef;
+		if(onPlanet)
+			relRef=new Vector3(pRefX, pRefY, pRefZ);
+		else
+			relRef= new Vector3(pRefX-tRefX, pRefY-tRefY, pRefZ-tRefZ);
 		print("the relRef is " + relRef);
+
 		//if(player.transform.position.x>halfus)//the other way to do it using player pos rather than tracker pos
 		//if the player has exceeded the play area(5000 units in any direction or .5 scaled units)
-		if(transform.position.x>relRef.x+0.5f || transform.position.x<relRef.x-0.5f)
+		if(transform.localPosition.x>relRef.x+0.5f || transform.localPosition.x<relRef.x-0.5f)
 		{
 			//the new reference point x coordinate
-			int newRefX = Mathf.RoundToInt(transform.position.x)+tRefX;
+			int newRefX = Mathf.RoundToInt(transform.localPosition.x) + (onPlanet ? 0:tRefX);//only add the tRefX if in space
 			//print("the new pRefX is " + pRefX);
 			//how much to shift the player(and other objects) by in normal space units
 			int shift = (pRefX-newRefX)*uniscale;
@@ -159,10 +220,10 @@ public class Unitracker : MonoBehaviour
 			//set the new ref
 			pRefX = newRefX;
 		}
-		if(transform.position.y>relRef.y+0.5f || transform.position.y<relRef.y-0.5f)
+		if(transform.localPosition.y>relRef.y+0.5f || transform.localPosition.y<relRef.y-0.5f)
 		{
 			//the new reference point y coordinate
-			int newRefY = Mathf.RoundToInt(transform.position.y)+tRefY;
+			int newRefY = Mathf.RoundToInt(transform.localPosition.y)+(onPlanet ? 0:tRefY);
 			
 			//how much to shift the player(and other objects) by in normal space units
 			int shift = (pRefY-newRefY)*uniscale;
@@ -171,10 +232,10 @@ public class Unitracker : MonoBehaviour
 			//set the new ref
 			pRefY = newRefY;
 		}
-		if(transform.position.z>relRef.z+0.5f || transform.position.z<relRef.z-0.5f)
+		if(transform.localPosition.z>relRef.z+0.5f || transform.localPosition.z<relRef.z-0.5f)
 		{
 			//the new reference point z coordinate
-			int newRefZ = Mathf.RoundToInt(transform.position.z)+tRefZ;
+			int newRefZ = Mathf.RoundToInt(transform.localPosition.z)+(onPlanet ? 0:tRefZ);
 			
 			//how much to shift the player(and other objects) by in normal space units
 			int shift = (pRefZ-newRefZ)*uniscale;

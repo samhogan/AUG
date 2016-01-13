@@ -13,6 +13,8 @@ public class Planet
 
 	public float radius;//radius of the planet
 	private float scaledRadius;//the radius of the scaledRep in unispace
+	private float atmosRadius;//the radius of the atmosphere/direct gravitational influence(distance from planet to make it curplanet)
+	public float scaledAtmosRadius;//atmosRadius in unispace
 
 	//the position of the planet in unispace (measured in 10000s or whatever the scale is)
 	public UniPos scaledPos;
@@ -26,6 +28,9 @@ public class Planet
 	{
 		radius = r;
 		scaledRadius = r/Unitracker.uniscale;
+
+		atmosRadius = r+10000;//atmosphere is 10 km above surface
+		scaledAtmosRadius = atmosRadius/Unitracker.uniscale;
 
 		terrain = new TerrainSystem(this, radius);
 		//surface = new SurfaceSystem(radius, 400);
