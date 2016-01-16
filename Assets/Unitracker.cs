@@ -1,5 +1,6 @@
 ﻿using UnityEngine;
 using System.Collections;
+using System.Collections.Generic;
 
 //this tracker exists in unispace and tracks the position of the player in the universe
 //it shall also eventually control floating origin (sorry dedicated FloatingOrigin script, it's better this way)
@@ -26,9 +27,9 @@ public class Unitracker : MonoBehaviour
 	//UniPos playerPos;
 	//the player's reference point in the univers(what point its transform position is relative to)
 	//when in space, relative to the universe origin, when on a planet, relative to planet center
-	int pRefX;
-	int pRefY;
-	int pRefZ;
+	private static int pRefX;
+	private static int pRefY;
+	private static int pRefZ;
 
 	//the player's reference point on the planet(same thing as pRef except rotated in space)
 	//int planetRefX;
@@ -63,11 +64,11 @@ public class Unitracker : MonoBehaviour
 	{
 
 		//calculate the position of the tracker based on the position of the player
-		float scaledX = pRefX+(player.transform.position.x/uniscale)-tRefX;
-		float scaledY = pRefY+(player.transform.position.y/uniscale)-tRefY;
-		float scaledZ = pRefZ+(player.transform.position.z/uniscale)-tRefZ;
+		float scaledX = pRefX+(player.transform.localPosition.x/uniscale)-tRefX;
+		float scaledY = pRefY+(player.transform.localPosition.y/uniscale)-tRefY;
+		float scaledZ = pRefZ+(player.transform.localPosition.z/uniscale)-tRefZ;
 
-		transform.position = new Vector3(scaledX, scaledY, scaledZ);
+		transform.localPosition = new Vector3(scaledX, scaledY, scaledZ);
 		//print("pos is " + transform.position);
 
 		print(UniverseSystem.curPlanet!=null);
@@ -80,6 +81,27 @@ public class Unitracker : MonoBehaviour
 		checkPlayerPos();
 		//checkTrackerPos();
 	
+	}
+
+
+	//returns the real position relative to the planet's center
+	//ONLY use this for planet positioning, also make double precision later
+	public static Vector3 getRealPos(Vector3 floatPos)
+	{
+		floatPos.x+=pRefX*uniscale;
+		floatPos.y+=pRefY*uniscale;
+		floatPos.z+=pRefZ*uniscale;
+		return floatPos;
+	}
+	
+	//returns the floating position relative to the unity world origin given a real position relative to the planet origin 
+	//used for positioning world objects on the planet
+	public static Vector3 getFloatingPos(Vector3 realPos)
+	{
+		realPos.x-=pRefX*uniscale;
+		realPos.y-=pRefY*uniscale;
+		realPos.z-=pRefZ*uniscale;
+		return realPos;
 	}
 
 	//checks if the player is in the jurisdiction of any planet
@@ -108,8 +130,12 @@ public class Unitracker : MonoBehaviour
 		onPlanet=true;
 		UniverseSystem.curPlanet = plan;
 
-		transform.parent = plan.scaledRep;
+		//parent the unitracker to the planet and set the new ref points relative to the planet center
+		transform.SetParent(plan.scaledRep.transform, true);
 		pRefX = Mathf.RoundToInt(transform.localPosition.x);
+		pRefY = Mathf.RoundToInt(transform.localPosition.y);
+		pRefZ = Mathf.RoundToInt(transform.localPosition.z);
+
 
 		//calculate new position of the player
 		player.transform.position = new Vector3((transform.localPosition.x-pRefX)*uniscale,
@@ -215,8 +241,8 @@ public class Unitracker : MonoBehaviour
 			//how much to shift the player(and other objects) by in normal space units
 			int shift = (pRefX-newRefX)*uniscale;
 			//print("the shift is " + shift);
-			player.transform.position+=new Vector3(shift, 0, 0);
-			
+			//player.transform.position+=new Vector3(shift, 0, 0);
+			moveWorldObjects(new Vector3(shift,0,0));
 			//set the new ref
 			pRefX = newRefX;
 		}
@@ -227,8 +253,7 @@ public class Unitracker : MonoBehaviour
 			
 			//how much to shift the player(and other objects) by in normal space units
 			int shift = (pRefY-newRefY)*uniscale;
-			player.transform.position+=new Vector3(0, shift, 0);
-			
+			moveWorldObjects(new Vector3(0, shift, 0));
 			//set the new ref
 			pRefY = newRefY;
 		}
@@ -239,12 +264,27 @@ public class Unitracker : MonoBehaviour
 			
 			//how much to shift the player(and other objects) by in normal space units
 			int shift = (pRefZ-newRefZ)*uniscale;
-			player.transform.position+=new Vector3(0, 0, shift);
-			
+
+			moveWorldObjects(new Vector3(0, 0, shift));
 			//set the new ref
 			pRefZ = newRefZ;
 		}
 
+	}
+
+	//moves all worldobjects in the world a certain amount
+	private void moveWorldObjects(Vector3 shift)
+	{
+		/*foreach(KeyValuePair<WorldPos, List<WorldObject>> objectList in RequestSystem.builtObjects)
+		{
+			foreach(WorldObject wo in objectList.Value)
+			{
+				wo.transform.position+=shift;
+			}
+		}*/
+		
+		//also shift the player(should eventually not have to do this)
+		player.transform.position+=shift;
 	}
 
 }

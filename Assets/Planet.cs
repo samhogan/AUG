@@ -44,14 +44,22 @@ public class Planet
 	//instantiates the unispace rep of the planet
 	void createRep()
 	{
-		scaledRep = GameObject.CreatePrimitive(PrimitiveType.Sphere);
-		GameObject.Destroy(scaledRep.GetComponent<SphereCollider>());//remove this pesky component
+		scaledRep =  new GameObject("Planet 8493yuhbgo86");
+
+
+		//the gameobject that holds the scaledRep's mesh data so it can be scaled
+		GameObject meshobj = GameObject.CreatePrimitive(PrimitiveType.Sphere);
+		meshobj.transform.SetParent(scaledRep.transform);
+		GameObject.Destroy(meshobj.GetComponent<SphereCollider>());//remove this pesky component
+
+
 		scaledRep.layer = 8;//add to Unispace layer
+		meshobj.layer = 8;
 
 		//arbitrary unipos for testing
 		scaledPos = new UniPos(new Vector3(0,0,0), 100, 0, 100);
 		scaledRep.transform.position = Unitracker.UniToAbs(scaledPos);
-		scaledRep.transform.localScale = new Vector3(scaledRadius*2, scaledRadius*2, scaledRadius*2);
+		meshobj.transform.localScale = new Vector3(scaledRadius*2, scaledRadius*2, scaledRadius*2);
 	}
 
 }

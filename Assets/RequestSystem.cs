@@ -56,7 +56,7 @@ public class RequestSystem : MonoBehaviour
 	void Update() 
 	{
 		//calculate the player's real position from the floating position
-		Vector3 realPos = FloatingOrigin.getRealPos(transform.position);
+		Vector3 realPos = Unitracker.getRealPos(transform.position);
 
 		//only generate stuff for a planet if you are on a planet
 		if(Unitracker.onPlanet)
