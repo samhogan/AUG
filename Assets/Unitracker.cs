@@ -71,23 +71,24 @@ public class Unitracker : MonoBehaviour
 		Planet startPlanet = UniverseSystem.planets[0];
 		UniverseSystem.curPlanet = startPlanet;
 
+		onPlanet = true;
+
 		//parent tracker and set up position
 		transform.SetParent(startPlanet.scaledRep.transform);
 		transform.localPosition = startPoint/uniscale;
 
+		//calculate the initial player ref points and relative position
+		reposPlayer();
 
 		//calculate the initial player ref points
-		pRefX = Mathf.FloorToInt(startPoint.x/uniscale);
+		/*pRefX = Mathf.FloorToInt(startPoint.x/uniscale);
 		pRefY = Mathf.FloorToInt(startPoint.y/uniscale);
 		pRefZ = Mathf.FloorToInt(startPoint.z/uniscale);
 
 		//finally, set the player's relative position to the ref points, phew...
 		player.transform.position = new Vector3(startPoint.x-pRefX*uniscale,
 		                                        startPoint.y-pRefY*uniscale,
-		                                        startPoint.z-pRefZ*uniscale);
-
-
-
+		                                        startPoint.z-pRefZ*uniscale);*/
 
 	}
 	
@@ -103,7 +104,7 @@ public class Unitracker : MonoBehaviour
 		transform.localPosition = new Vector3(scaledX, scaledY, scaledZ);
 		//print("pos is " + transform.position);
 
-		print(UniverseSystem.curPlanet!=null);
+		//print(UniverseSystem.curPlanet!=null);
 		if(onPlanet)
 			checkSpace();
 		else
@@ -150,11 +151,7 @@ public class Unitracker : MonoBehaviour
 
 		}
 	}
-
-	void checkSpace()
-	{
-
-	}
+	
 
 	//sets up proper positioning and rotations of objects for a new planet
 	void setCurPlanet(Planet plan)
@@ -164,15 +161,7 @@ public class Unitracker : MonoBehaviour
 
 		//parent the unitracker to the planet and set the new ref points relative to the planet center
 		transform.SetParent(plan.scaledRep.transform, true);
-		pRefX = Mathf.RoundToInt(transform.localPosition.x);
-		pRefY = Mathf.RoundToInt(transform.localPosition.y);
-		pRefZ = Mathf.RoundToInt(transform.localPosition.z);
-
-
-		//calculate new position of the player
-		player.transform.position = new Vector3((transform.localPosition.x-pRefX)*uniscale,
-		                                        (transform.localPosition.y-pRefY)*uniscale,
-		                                        (transform.localPosition.z-pRefZ)*uniscale);
+		reposPlayer();
 
 		//rotate the player and other objects around it
 
@@ -180,6 +169,42 @@ public class Unitracker : MonoBehaviour
 
 	}
 
+
+	//repositions the player and sets pRefs based on the position of the tracker
+	//this is only done with initial setup and leaving and entering a planet
+	private void reposPlayer()
+	{
+		pRefX = Mathf.RoundToInt(transform.localPosition.x);
+		pRefY = Mathf.RoundToInt(transform.localPosition.y);
+		pRefZ = Mathf.RoundToInt(transform.localPosition.z);
+		
+		
+		//calculate new position of the player
+		player.transform.position = new Vector3((transform.localPosition.x-pRefX)*uniscale,
+		                                        (transform.localPosition.y-pRefY)*uniscale,
+		                                        (transform.localPosition.z-pRefZ)*uniscale);
+
+	}
+
+	//checks if the player is far enough away from the current planet to be in space!!!!!!
+	void checkSpace()
+	{
+		//if outside the atmosphere distance of the current planet, stop being part of that planet
+		if(Vector3.Distance(transform.position,UniverseSystem.curPlanet.scaledRep.transform.position)>UniverseSystem.curPlanet.scaledAtmosRadius)
+		{
+			onPlanet = false;
+			UniverseSystem.curPlanet = null;
+			transform.parent = null;
+
+			reposPlayer();
+
+			//clear up all the request system arrays
+			//yes sam you need to implement this asap
+			//but i don't wanna
+			//too bad, DO IT!!!!!
+			//no
+		}
+	}
 
 
 	//convers a unipos to an absolute world pos based on the current tRef

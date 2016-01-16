@@ -29,7 +29,7 @@ public class Planet
 		radius = r;
 		scaledRadius = r/Unitracker.uniscale;
 
-		atmosRadius = r+10000;//atmosphere is 10 km above surface
+		atmosRadius = r+5000;//atmosphere is 5 km above surface
 		scaledAtmosRadius = atmosRadius/Unitracker.uniscale;
 
 		terrain = new TerrainSystem(this, radius);
@@ -60,6 +60,16 @@ public class Planet
 		scaledPos = new UniPos(new Vector3(0,0,0), 100, 0, 100);
 		scaledRep.transform.position = Unitracker.UniToAbs(scaledPos);
 		meshobj.transform.localScale = new Vector3(scaledRadius*2, scaledRadius*2, scaledRadius*2);
+
+
+		//add some fun color
+		meshobj.GetComponent<MeshRenderer>().material = Resources.Load("TestMaterial") as Material;//loads the default material, will remove this
+		;
+
+
+
+
+
 	}
 
 }
