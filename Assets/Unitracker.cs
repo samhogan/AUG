@@ -48,7 +48,7 @@ public class Unitracker : MonoBehaviour
 
 
 	// Use this for initialization
-	void OnEnable()
+	void Start()
 	{
 		pRefX = 0;
 		pRefY = 0;
@@ -57,6 +57,38 @@ public class Unitracker : MonoBehaviour
 		tRefX = 0;
 		tRefY = 0;
 		tRefZ = 0;
+
+		initialPositioning();
+	}
+
+	//properly positions the player and unitracker and sets all ref points
+	//this initial setup has to be done differently because the tracker cannot reference the unset player position
+	void initialPositioning()
+	{
+		//the starting point of the player in relation to the starting planet
+		//this will eventually be handled by a double precision vector3
+		Vector3 startPoint = new Vector3(0,250020,0);
+		Planet startPlanet = UniverseSystem.planets[0];
+		UniverseSystem.curPlanet = startPlanet;
+
+		//parent tracker and set up position
+		transform.SetParent(startPlanet.scaledRep.transform);
+		transform.localPosition = startPoint/uniscale;
+
+
+		//calculate the initial player ref points
+		pRefX = Mathf.FloorToInt(startPoint.x/uniscale);
+		pRefY = Mathf.FloorToInt(startPoint.y/uniscale);
+		pRefZ = Mathf.FloorToInt(startPoint.z/uniscale);
+
+		//finally, set the player's relative position to the ref points, phew...
+		player.transform.position = new Vector3(startPoint.x-pRefX*uniscale,
+		                                        startPoint.y-pRefY*uniscale,
+		                                        startPoint.z-pRefZ*uniscale);
+
+
+
+
 	}
 	
 	// Update is called once per frame
