@@ -16,8 +16,8 @@ public class UniCam : MonoBehaviour
 	}
 	
 	// Update is called once per frame
-	void Update () 
+	void LateUpdate () 
 	{
-		transform.rotation = playerCam.transform.rotation;
+		transform.localRotation = playerCam.transform.rotation;
 	}
 }

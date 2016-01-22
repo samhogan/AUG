@@ -50,6 +50,8 @@ public class Unitracker : MonoBehaviour
 	// Use this for initialization
 	void Start()
 	{
+		print(Quaternion.Inverse(Quaternion.Euler(0,-45,0)).eulerAngles);
+		
 		pRefX = 0;
 		pRefY = 0;
 		pRefZ = 0;
@@ -65,30 +67,36 @@ public class Unitracker : MonoBehaviour
 	//this initial setup has to be done differently because the tracker cannot reference the unset player position
 	void initialPositioning()
 	{
-		//the starting point of the player in relation to the starting planet
-		//this will eventually be handled by a double precision vector3
-		Vector3 startPoint = new Vector3(0,250020,0);
-		Planet startPlanet = UniverseSystem.planets[0];
-		UniverseSystem.curPlanet = startPlanet;
 
-		onPlanet = true;
+		bool startOnPlanet = false;
 
-		//parent tracker and set up position
-		transform.SetParent(startPlanet.scaledRep.transform);
-		transform.localPosition = startPoint/uniscale;
+		if(startOnPlanet)
+		{
+			//the starting point of the player in relation to the starting planet
+			//this will eventually be handled by a double precision vector3
+			Vector3 startPoint = new Vector3(0,250020,0);
+			//Vector3 startPoint = new Vector3(0,250020,0);
+			Planet startPlanet = UniverseSystem.planets[0];
+			UniverseSystem.curPlanet = startPlanet;
 
-		//calculate the initial player ref points and relative position
-		reposPlayer();
+			onPlanet = true;
 
-		//calculate the initial player ref points
-		/*pRefX = Mathf.FloorToInt(startPoint.x/uniscale);
-		pRefY = Mathf.FloorToInt(startPoint.y/uniscale);
-		pRefZ = Mathf.FloorToInt(startPoint.z/uniscale);
+			//parent tracker and set up position
+			transform.SetParent(startPlanet.scaledRep.transform);
+			transform.localPosition = startPoint/uniscale;
 
-		//finally, set the player's relative position to the ref points, phew...
-		player.transform.position = new Vector3(startPoint.x-pRefX*uniscale,
-		                                        startPoint.y-pRefY*uniscale,
-		                                        startPoint.z-pRefZ*uniscale);*/
+			//calculate the initial player ref points and relative position
+			reposPlayer();
+		}
+		else
+		{
+			Vector3 startPoint = new Vector3(0,0,0);
+			transform.localPosition = startPoint/uniscale;
+		
+			onPlanet = false;
+
+			reposPlayer();
+		}
 
 	}
 	
@@ -159,13 +167,34 @@ public class Unitracker : MonoBehaviour
 		onPlanet=true;
 		UniverseSystem.curPlanet = plan;
 
+		print("p player initial rot is " + player.transform.rotation.eulerAngles);
+		
+
 		//parent the unitracker to the planet and set the new ref points relative to the planet center
 		transform.SetParent(plan.scaledRep.transform, true);
 		reposPlayer();
 
+
+		print("p tracker parented rot is " + transform.rotation.eulerAngles);
+		
+		
+
+		
+
 		//rotate the player and other objects around it
+		//player.transform.localRotation = Quaternion.Inverse(transform.localRotation)*player.transform.localRotation;
+		//player.transform.localRotation = player.transform.localRotation*transform.localRotation;//Quaternion.Euler(0,-45,0);
 
+		//player.transform.rotation = player.transform.rotation*transform.localRotation;
+		//player.transform.rotation*=transform.localRotation;
+		player.transform.rotation=transform.localRotation*player.transform.rotation;
+		
 
+		print("p new player rot is " + player.transform.rotation.eulerAngles);
+		
+
+		//print(transform.localRotation.eulerAngles);
+		transform.localRotation = Quaternion.identity;
 
 	}
 
@@ -174,6 +203,8 @@ public class Unitracker : MonoBehaviour
 	//this is only done with initial setup and leaving and entering a planet
 	private void reposPlayer()
 	{
+
+		//calculate the new reference points
 		pRefX = Mathf.RoundToInt(transform.localPosition.x);
 		pRefY = Mathf.RoundToInt(transform.localPosition.y);
 		pRefZ = Mathf.RoundToInt(transform.localPosition.z);
@@ -184,6 +215,9 @@ public class Unitracker : MonoBehaviour
 		                                        (transform.localPosition.y-pRefY)*uniscale,
 		                                        (transform.localPosition.z-pRefZ)*uniscale);
 
+		//rotate the player to account for a rotated planet/leaving a rotated planet
+		//player.transform.localRotation = player.transform.localRotation*transform.localRotation;
+		
 	}
 
 	//checks if the player is far enough away from the current planet to be in space!!!!!!
@@ -196,13 +230,37 @@ public class Unitracker : MonoBehaviour
 			UniverseSystem.curPlanet = null;
 			transform.parent = null;
 
+			print("player initial rot is " + player.transform.rotation.eulerAngles);
+
 			reposPlayer();
+
+			//player.transform.rotation = player.transform.rotation*Quaternion.Inverse(transform.localRotation);
+			//player.transform.rotation = player.transform.rotation*transform.localRotation;
+
+			//
+			print("tracker parented rot is " + transform.rotation.eulerAngles);
+			
+			//rotate the player rotation by the negative rotation of the planet
+			//player.transform.rotation*=transform.localRotation;
+			player.transform.rotation=transform.localRotation*player.transform.rotation;
+			//player.transform.rotation = Quaternion.
+
+
+			print("new player rot is " + player.transform.rotation.eulerAngles);
+			
+
+			//print(transform.rotation.eulerAngles);
+			transform.localRotation = Quaternion.identity;
+
 
 			//clear up all the request system arrays
 			//yes sam you need to implement this asap
 			//but i don't wanna
 			//too bad, DO IT!!!!!
 			//no
+			//RequestSystem.builtObjects.Clear();
+			//TerrainSystem.chunks.Clear();
+			//SurfaceSystem.surfList.Clear();
 		}
 	}
 
@@ -286,7 +344,7 @@ public class Unitracker : MonoBehaviour
 			relRef=new Vector3(pRefX, pRefY, pRefZ);
 		else
 			relRef= new Vector3(pRefX-tRefX, pRefY-tRefY, pRefZ-tRefZ);
-		print("the relRef is " + relRef);
+		//print("the relRef is " + relRef);
 
 		//if(player.transform.position.x>halfus)//the other way to do it using player pos rather than tracker pos
 		//if the player has exceeded the play area(5000 units in any direction or .5 scaled units)

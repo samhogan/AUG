@@ -24,7 +24,7 @@ public class Planet
 	public GameObject scaledRep;
 
 	//later will have many parameters
-	public Planet(float r)//Vector3 sp, float r)
+	public Planet(float r, UniPos pos)//Vector3 sp, float r)
 	{
 		radius = r;
 		scaledRadius = r/Unitracker.uniscale;
@@ -38,11 +38,11 @@ public class Planet
 
 		noise = new NoiseHandler(radius);
 
-		createRep();
+		createRep(pos);
 	}
 
 	//instantiates the unispace rep of the planet
-	void createRep()
+	void createRep(UniPos pos)
 	{
 		scaledRep =  new GameObject("Planet 8493yuhbgo86");
 
@@ -57,14 +57,17 @@ public class Planet
 		meshobj.layer = 8;
 
 		//arbitrary unipos for testing
-		scaledPos = new UniPos(new Vector3(0,0,0), 100, 0, 100);
+		scaledPos = pos;
 		scaledRep.transform.position = Unitracker.UniToAbs(scaledPos);
+		scaledRep.transform.rotation = Quaternion.Euler(0,45,0);
+
 		meshobj.transform.localScale = new Vector3(scaledRadius*2, scaledRadius*2, scaledRadius*2);
+
 
 
 		//add some fun color
 		meshobj.GetComponent<MeshRenderer>().material = Resources.Load("TestMaterial") as Material;//loads the default material, will remove this
-		;
+
 
 
 

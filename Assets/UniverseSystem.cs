@@ -33,9 +33,12 @@ public class UniverseSystem
 		//Planet earth = new Planet(10000);
 		//Planet earth = new Planet(200);
 
-		Planet earth = new Planet(250000);
+		Planet earth = new Planet(250000, new UniPos(new Vector3(0,0,0), 100, 0, 100));
 		planets.Add(earth);
 		//curPlanet = earth;
+
+		Planet planetfun = new Planet(6000000, new UniPos(new Vector3(0,0,0), 1000, 200, 50));
+		planets.Add(planetfun);
 	}
 
 }

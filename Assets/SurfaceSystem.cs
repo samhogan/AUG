@@ -19,7 +19,7 @@ public class SurfaceSystem
 	//private static List<SurfaceUnit> surfList = new List<SurfaceUnit>();//surface units that have already been loaded
 
 	//dictionary of all 
-	private static Dictionary<SurfaceUnit, SurfaceHolder> surfList = new Dictionary<SurfaceUnit, SurfaceHolder>();
+	public static Dictionary<SurfaceUnit, SurfaceHolder> surfList = new Dictionary<SurfaceUnit, SurfaceHolder>();
 	//public GameObject tree;//used for instantiation testing
 
 	private SurfaceHolder curSH;//a reference to the surface holder currently being used so it doesn't have to be used as a parameter everywhere
