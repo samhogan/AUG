@@ -14,6 +14,9 @@ public class TerrainObject : WorldObject
 
 	private MeshCollider coll;
 
+	//the scale of the terrain object (for LOD)
+	public int scale;
+
 	void OnEnable()//onenable makes these references immediately after being created instead of in the next frame
 	{
 		setReferences();
@@ -29,6 +32,7 @@ public class TerrainObject : WorldObject
 		mesh.RecalculateNormals();//not sure what this does at the moment
 		filter.mesh = mesh;
 		coll.sharedMesh = mesh;
+		//transform.position.localScale = new Vector3(scale, scale, scale);
 
 	}
 }

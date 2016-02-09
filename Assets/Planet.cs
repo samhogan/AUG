@@ -8,6 +8,7 @@ public class Planet
 	//private RoadSystem roads;//builds the roads/civilization organization
 	public TerrainSystem terrain;//builds the terrain with voxels and marching cubes
 	public SurfaceSystem surface;//builds the objects that are on the planet surface
+	public LODSystem lod;//builds terrain with voxels and marching cubes on multiple levels of detail!!!
 
 	public NoiseHandler noise;//contains all perlin noise info 
 
@@ -36,6 +37,8 @@ public class Planet
 		//surface = new SurfaceSystem(radius, 400);
 		surface = new SurfaceSystem(this, radius, (int)(radius/50));//number of surface units per side is radius/50
 
+		lod = new LODSystem(this);
+
 		noise = new NoiseHandler(radius);
 
 		createRep(pos);
@@ -59,19 +62,24 @@ public class Planet
 		//arbitrary unipos for testing
 		scaledPos = pos;
 		scaledRep.transform.position = Unitracker.UniToAbs(scaledPos);
-		scaledRep.transform.rotation = Quaternion.Euler(0,45,0);
+		//scaledRep.transform.rotation = Quaternion.Euler(0,45,0);
+		scaledRep.transform.rotation = Quaternion.Euler(0,0,0);
 
 		meshobj.transform.localScale = new Vector3(scaledRadius*2, scaledRadius*2, scaledRadius*2);
 
 
+		lod.CreateChunk(new LODPos(14,0,0,0));
+		lod.CreateChunk(new LODPos(14,0,0,-1));
+		lod.CreateChunk(new LODPos(14,0,-1,0));
+		lod.CreateChunk(new LODPos(14,0,-1,-1));
+		lod.CreateChunk(new LODPos(14,-1,0,0));
+		lod.CreateChunk(new LODPos(14,-1,0,-1));
+		lod.CreateChunk(new LODPos(14,-1,-1,0));
+		lod.CreateChunk(new LODPos(14,-1,-1,-1));
+
 
 		//add some fun color
 		meshobj.GetComponent<MeshRenderer>().material = Resources.Load("TestMaterial") as Material;//loads the default material, will remove this
-
-
-
-
-
 
 	}
 
