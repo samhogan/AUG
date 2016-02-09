@@ -25,7 +25,7 @@ public class LODSystem
 	{
 		//build the terrainobject and add its gameobject to the chunks list(may remove this last thing later)
 		//TerrainObject chunk = Build.buildObject<TerrainObject>(pos.toVector3(), Quaternion.identity);
-		GameObject terrainGO = new GameObject("Terrain Chunk lev: " + pos.level);
+		GameObject terrainGO = new GameObject("Terrain Chunk " + pos.ToString());
 		TerrainObject chunk = terrainGO.AddComponent<TerrainObject>();
 		chunks.Add(pos, chunk);
 
@@ -33,8 +33,10 @@ public class LODSystem
 		int scale = (int)(Mathf.Pow(2,pos.level));
 		chunk.scale = scale;
 
+
+		//positions and scales the gameobject (maybe should move this elsewhere)
 		//if it should be in unispace
-		if(pos.level == 14)
+		if(pos.level > uniCutoff)
 		{
 
 			//add it to unispace and make its parent proud
@@ -68,9 +70,9 @@ public class LODSystem
 					
 					//the world position of the current voxel
 					Vector3 voxPos = new Vector3();//position of chunk+position of voxel within chunk
-					voxPos.x = (pos.x*16+x+0.0f)*scale;
-					voxPos.y = (pos.y*16+y+0.0f)*scale;
-					voxPos.z = (pos.z*16+z+0.0f)*scale;
+					voxPos.x = (pos.x*16+x)*scale;
+					voxPos.y = (pos.y*16+y)*scale;
+					voxPos.z = (pos.z*16+z)*scale;
 
 	
 					//the distance from the center of the planet to the current voxel
@@ -99,6 +101,30 @@ public class LODSystem
 		
 	}
 
+	//splits up a terrain chunk into 8 smaller chunks 
+	public void splitChunk(LODPos pos)
+	{
+		TerrainObject to;
+		//don't do anything if the chunk list does not contain the pos
+		if(!chunks.TryGetValue(pos, out to))
+			return;
+
+		//hide this terrain object but don't delete it
+		to.gameObject.SetActive(false);
+		//1 level lower
+		int newLev = pos.level-1;
+		//the position of the first subchunk in this chunk
+		WorldPos newStart = new WorldPos(pos.x*2, pos.y*2, pos.z*2);
+
+		for(int x=0; x<=1; x++)
+			for(int y=0; y<=1; y++)
+				for(int z=0; z<=1; z++)
+					CreateChunk(new LODPos(newLev, newStart.x+x, newStart.y+y, newStart.z+z));
+
+
+	}
+
+	//public static splitList 
 	//public 
 
 }
@@ -119,5 +145,10 @@ public struct LODPos
 	public Vector3 toVector3()
 	{
 		return new Vector3(x,y,z);
+	}
+
+	public string ToString()
+	{
+		return "level " + level + " pos " + x + "," + y + "," + z;   
 	}
 }

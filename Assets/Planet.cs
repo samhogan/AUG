@@ -77,10 +77,13 @@ public class Planet
 		lod.CreateChunk(new LODPos(14,-1,-1,0));
 		lod.CreateChunk(new LODPos(14,-1,-1,-1));
 
+		lod.splitChunk(new LODPos(14,0,0,0));
+		lod.splitChunk(new LODPos(13,0,1,0));
+
 
 		//add some fun color
 		meshobj.GetComponent<MeshRenderer>().material = Resources.Load("TestMaterial") as Material;//loads the default material, will remove this
-
+		meshobj.SetActive(false);
 	}
 
 }
