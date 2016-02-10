@@ -24,6 +24,9 @@ public class Planet
 	//the large scale representation of the planet in unispace
 	public GameObject scaledRep;
 
+	//the initial lod level (8 chunks of that level)
+	private int startLev;
+
 	//later will have many parameters
 	public Planet(float r, UniPos pos)//Vector3 sp, float r)
 	{
@@ -38,6 +41,8 @@ public class Planet
 		surface = new SurfaceSystem(this, radius, (int)(radius/50));//number of surface units per side is radius/50
 
 		lod = new LODSystem(this);
+		startLev = Mathf.CeilToInt(Mathf.Log(radius/16, 2));
+
 
 		noise = new NoiseHandler(radius);
 
@@ -67,18 +72,16 @@ public class Planet
 
 		meshobj.transform.localScale = new Vector3(scaledRadius*2, scaledRadius*2, scaledRadius*2);
 
+		for(int x=-1; x<=0; x++)
+			for(int y=-1; y<=0; y++)
+				for(int z=-1; z<=0; z++)
+					lod.CreateChunk(new LODPos(startLev,x,y,z));
 
-		lod.CreateChunk(new LODPos(14,0,0,0));
-		lod.CreateChunk(new LODPos(14,0,0,-1));
-		lod.CreateChunk(new LODPos(14,0,-1,0));
-		lod.CreateChunk(new LODPos(14,0,-1,-1));
-		lod.CreateChunk(new LODPos(14,-1,0,0));
-		lod.CreateChunk(new LODPos(14,-1,0,-1));
-		lod.CreateChunk(new LODPos(14,-1,-1,0));
-		lod.CreateChunk(new LODPos(14,-1,-1,-1));
+		//lod.splitChunk(new LODPos(14,0,0,0));
+		//lod.splitChunk(new LODPos(13,1,1,1));
 
-		lod.splitChunk(new LODPos(14,0,0,0));
-		lod.splitChunk(new LODPos(13,0,1,0));
+		Debug.Log(lod.containsLand(new LODPos(14,0,0,0)));
+		Debug.Log(lod.containsLand(new LODPos(12,3,3,3)));
 
 
 		//add some fun color

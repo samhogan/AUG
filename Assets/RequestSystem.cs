@@ -185,7 +185,8 @@ public class RequestSystem : MonoBehaviour
 	void requestTerrain(WorldPos pos)
 	{
 		//NOTE: NEED to migrate this over to the worldhelper buildobject function
-		UniverseSystem.curPlanet.terrain.CreateChunk(pos);
+		//UniverseSystem.curPlanet.terrain.CreateChunk(pos);
+		UniverseSystem.curPlanet.lod.requestChunk(new LODPos(0, pos.x, pos.y, pos.z));
 	}
 
 	void deleteTerrain(WorldPos pos)

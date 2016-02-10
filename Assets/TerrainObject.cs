@@ -16,13 +16,15 @@ public class TerrainObject : WorldObject
 
 	//the scale of the terrain object (for LOD)
 	public int scale;
+	//if this terrain object is currently inactive and "split" into 8 smaller terrain objects
+	public bool isSplit;
 
 	void OnEnable()//onenable makes these references immediately after being created instead of in the next frame
 	{
 		setReferences();
 		
 		coll = gameObject.GetComponent<MeshCollider>();
-
+		isSplit = false;
 	}
 
 	//creates the mesh from the voxel data and assigns it to the mesh filter and mesh collider

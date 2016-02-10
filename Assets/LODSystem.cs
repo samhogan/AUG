@@ -23,6 +23,9 @@ public class LODSystem
 	//creates and instantiates a terrain chunk (but does not render it yet)
 	public void CreateChunk(LODPos pos) 
 	{
+		//first check that the chunk contains data (or probably does)
+
+
 		//build the terrainobject and add its gameobject to the chunks list(may remove this last thing later)
 		//TerrainObject chunk = Build.buildObject<TerrainObject>(pos.toVector3(), Quaternion.identity);
 		GameObject terrainGO = new GameObject("Terrain Chunk " + pos.ToString());
@@ -116,14 +119,81 @@ public class LODSystem
 		//the position of the first subchunk in this chunk
 		WorldPos newStart = new WorldPos(pos.x*2, pos.y*2, pos.z*2);
 
+		//build all of the 8 chunks that contain land
 		for(int x=0; x<=1; x++)
 			for(int y=0; y<=1; y++)
 				for(int z=0; z<=1; z++)
-					CreateChunk(new LODPos(newLev, newStart.x+x, newStart.y+y, newStart.z+z));
-
+				{	
+					LODPos newChunk = new LODPos(newLev, newStart.x+x, newStart.y+y, newStart.z+z);
+					if(containsLand(newChunk))
+						CreateChunk(newChunk);
+				}
 
 	}
 
+	//generates a chunk if it will exist but first generates all chunk levels above it and subdivides them
+	//returns true if the chunk is successfully created
+	public bool requestChunk(LODPos pos)
+	{
+		//if it is already built, we are done
+		if(chunks.ContainsKey(pos))
+			return true;
+
+		LODPos abovePos = getAbove(pos);
+		if(chunks.ContainsKey(getAbove(pos)))
+		{
+			TerrainObject above = null;
+			chunks.TryGetValue(abovePos, out above);
+
+			//if it is already split, the current terrian chunk will never exist
+			if(above.isSplit)
+				return false;
+			else
+			{
+				//split the chunk and then check if the chunk exists now
+				splitChunk(abovePos);
+				return chunks.ContainsKey(pos);
+			}
+		}
+		else//the above chunk does not exist
+		{
+			//request the above chunk to be generated, and if it is, split it and check if the current chunk is generated
+			if(requestChunk(abovePos))
+			{
+				splitChunk(abovePos);
+				return chunks.ContainsKey(pos);
+			}
+
+			return false;
+		}
+	}
+
+	//returns the lodpos of 1 higher level that contains the given lodpos
+	private LODPos getAbove(LODPos pos)
+	{
+		return new LODPos(pos.level+1,
+		                  Mathf.FloorToInt(pos.x/2.0f),
+		                  Mathf.FloorToInt(pos.y/2.0f),
+		                  Mathf.FloorToInt(pos.z/2.0f));
+
+	}
+
+	//returns true if land (probably) exists within the given lod chunk
+	public bool containsLand(LODPos pos)
+	{
+		//length of this specific lod chunk
+		float sideLength = 16*Mathf.Pow(2,pos.level);
+
+		//the position of the lod chunk in relation to the center in unity units
+		Vector3 absPos = new Vector3(sideLength*(pos.x+0.5f),
+		                             sideLength*(pos.y+0.5f),
+		                             sideLength*(pos.z+0.5f));
+		//Debug.Log(absPos.magnitude + " " + planet.noise.getAltitude(absPos)+" " +sideLength);
+		//contains land if the dist to center of lod chunk is less than dist to land
+		return absPos.magnitude < (planet.noise.getAltitude(absPos)+sideLength);
+
+
+	}
 	//public static splitList 
 	//public 
 
