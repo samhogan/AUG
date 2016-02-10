@@ -22,8 +22,7 @@ public class TerrainObject : WorldObject
 	void OnEnable()//onenable makes these references immediately after being created instead of in the next frame
 	{
 		setReferences();
-		
-		coll = gameObject.GetComponent<MeshCollider>();
+
 		isSplit = false;
 	}
 
@@ -33,7 +32,13 @@ public class TerrainObject : WorldObject
 		Mesh mesh = MarchingCubes2.CreateMesh(voxVals);
 		mesh.RecalculateNormals();//not sure what this does at the moment
 		filter.mesh = mesh;
-		coll.sharedMesh = mesh;
+
+		//only add colliders for level 0 terrain objects (scale 1)
+		if(scale==1)
+		{
+			coll = gameObject.AddComponent<MeshCollider>();
+			coll.sharedMesh = mesh;
+		}
 		//transform.position.localScale = new Vector3(scale, scale, scale);
 
 	}

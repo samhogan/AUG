@@ -101,7 +101,8 @@ public class RequestSystem : MonoBehaviour
 			{
 				delTimer = 0;
 				requestChunkDeletion(curChunkPos);
-		}
+				requestTerrain(curChunkPos);
+			}
 		}
 		//testing
 
@@ -186,13 +187,14 @@ public class RequestSystem : MonoBehaviour
 	{
 		//NOTE: NEED to migrate this over to the worldhelper buildobject function
 		//UniverseSystem.curPlanet.terrain.CreateChunk(pos);
-		UniverseSystem.curPlanet.lod.requestChunk(new LODPos(0, pos.x, pos.y, pos.z));
+		UniverseSystem.curPlanet.lod.requestChunk(new LODPos(0, pos.x/16, pos.y/16, pos.z/16));
+		//print(pos);
 	}
 
 	void deleteTerrain(WorldPos pos)
 	{
 		//NOTE: NEED to migrate this over to the worldhelper buildobject function
-		UniverseSystem.curPlanet.terrain.DestroyChunk(pos);
+		//UniverseSystem.curPlanet.terrain.DestroyChunk(pos);
 	}
 
 	//this requests the generation of a surface unit that is at the center of the chunk

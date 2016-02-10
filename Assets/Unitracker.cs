@@ -10,7 +10,7 @@ public class Unitracker : MonoBehaviour
 	public GameObject player;
 
 	//is the player on a planet?(or asteroid or whatever gosh..)
-	public static bool onPlanet = false;
+	public static bool onPlanet = true;
 
 	//the ratio of normal space to unispace, also used for number of units to exceed floating origin boundaries
 	public static int uniscale = 10000;
@@ -68,7 +68,7 @@ public class Unitracker : MonoBehaviour
 	void initialPositioning()
 	{
 
-		bool startOnPlanet = false;
+		bool startOnPlanet = true;
 
 		if(startOnPlanet)
 		{

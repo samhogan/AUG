@@ -58,8 +58,9 @@ public class LODSystem
 		}
 		else
 		{
-			terrainGO.transform.localScale = new Vector3(scale, scale, scale);
 
+			terrainGO.transform.localScale = new Vector3(scale, scale, scale);
+			terrainGO.transform.localPosition = Unitracker.getFloatingPos(pos.toVector3()*scale*16);
 
 		}
 
@@ -129,12 +130,16 @@ public class LODSystem
 						CreateChunk(newChunk);
 				}
 
+		//it is now split, this is kind of a useless comment and the more i type the more time i waste soo um yeah. how's your day been reader of my code? I know this comment is getting unjustifiably long so I should probably stop typing it but i wont today is feb. 10 2016 and i am currently working on the lod system for this game. hopefully this game will get popular in the future which will cause me to hire employees and one of them will see this comment and think "what the heck?" but then they will laugh and show it to their coworker and call me in from my luxury office to ask me if i remember writing this comment
+		to.isSplit = true;
+
 	}
 
 	//generates a chunk if it will exist but first generates all chunk levels above it and subdivides them
 	//returns true if the chunk is successfully created
 	public bool requestChunk(LODPos pos)
 	{
+		//Debug.Log(pos.ToString());
 		//if it is already built, we are done
 		if(chunks.ContainsKey(pos))
 			return true;

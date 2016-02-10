@@ -33,7 +33,7 @@ public class Planet
 		radius = r;
 		scaledRadius = r/Unitracker.uniscale;
 
-		atmosRadius = r+5000;//atmosphere is 5 km above surface
+		atmosRadius = r+50000;//atmosphere is 5 km above surface
 		scaledAtmosRadius = atmosRadius/Unitracker.uniscale;
 
 		terrain = new TerrainSystem(this, radius);
@@ -79,6 +79,7 @@ public class Planet
 
 		//lod.splitChunk(new LODPos(14,0,0,0));
 		//lod.splitChunk(new LODPos(13,1,1,1));
+		lod.requestChunk(new LODPos(0, 3000,5400,9000));
 
 		Debug.Log(lod.containsLand(new LODPos(14,0,0,0)));
 		Debug.Log(lod.containsLand(new LODPos(12,3,3,3)));

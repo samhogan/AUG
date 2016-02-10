@@ -7,7 +7,7 @@ using System.Collections;
 //turns out they are inherited, but not every child will use a mesh collider so hmmmmmm....
 [RequireComponent(typeof(MeshFilter))]
 [RequireComponent(typeof(MeshRenderer))]
-[RequireComponent(typeof(MeshCollider))]
+//[RequireComponent(typeof(MeshCollider))]
 
 public class WorldObject : MonoBehaviour
 {
