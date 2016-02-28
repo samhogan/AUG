@@ -9,7 +9,17 @@ public class LODSystem
 	private Planet planet;//a reference to its planet
 	int chunkSize = TerrainObject.chunkSize;//voxels per chunk side
 
+	//all chunks and their positions
 	public Dictionary<LODPos, TerrainObject> chunks = new Dictionary<LODPos, TerrainObject>();
+
+	//
+	List<LODPos> splitChunks = new List<LODPos>();
+
+	//the list of chunks that exist and are not split (are visable)
+	List<LODPos> visChunks = new List<LODPos>();
+
+	//list of chunks that have been split, but thier pieces still need to be rendered
+	public List<LODPos> chunksToSplitRender = new List<LODPos>();
 
 	//the level at which chunks appear in unispace rather than in normal space
 	int uniCutoff = 5;
@@ -19,11 +29,97 @@ public class LODSystem
 		planet = p;
 	}
 
-
-	//creates and instantiates a terrain chunk (but does not render it yet)
-	public void CreateChunk(LODPos pos) 
+	//updates level of detail by subdividing/combining chunks
+	//given a level 0 lodpos (which is just a worldpos)
+	public void updateLOD(WorldPos pos)
 	{
-		//first check that the chunk contains data (or probably does)
+		List<LODPos> chunksToSplit = new List<LODPos>();
+		//for every chunk that is not split, check if it is close enough to be split
+		foreach(LODPos lpos in visChunks)
+		{
+			//if the distance from the player's position to the lpos is close enough and its not a level 0 pos, add it to the split list
+			if(lodposInRange(pos, lpos) && lpos.level > 0)
+				chunksToSplit.Add(lpos);
+
+		}
+
+
+		List<LODPos> chunksToCombine = new List<LODPos>();
+
+		//for every chunk that is split, check if it is far enough to be combined
+		foreach(LODPos lpos in splitChunks)
+		{
+			if(!lodposInRange(pos, lpos))
+				chunksToCombine.Add(lpos);
+		}
+
+		foreach(LODPos lpos in chunksToCombine)
+		{
+			combineChunk(lpos);
+		}
+
+		foreach(LODPos lpos in chunksToSplit)
+		{
+			splitChunk(lpos);
+		}
+
+
+
+	}
+
+	//is the lodpos close enough to be split up?
+	bool lodposInRange(WorldPos pos, LODPos lpos)
+	{
+		//length of the side of lpos in units of 16 (or one side length of a level 0 lodpos)
+		float sideLength = Mathf.Pow(2,lpos.level);
+
+		//if the distance from the player's position to the lpos is less than its side length times some constant, return true
+		return Vector3.Distance(new Vector3(pos.x+.5f, pos.y+.5f, pos.z+.5f), 
+		                        new Vector3((lpos.x+.5f)*sideLength, (lpos.y+0.5f)*sideLength, (lpos.z+.5f)*sideLength)) < sideLength*1.2;
+	}
+
+	//renders the pieces of a chunk that has already been split
+	public void splitRender(LODPos pos)
+	{
+
+		//hide this terrain object but don't delete it
+		chunks[pos].gameObject.SetActive(false);
+
+		//now find all of its pieces and render them
+
+		//1 level lower
+		int newLev = pos.level-1;
+		//the position of the first subchunk in this chunk
+		WorldPos newStart = new WorldPos(pos.x*2, pos.y*2, pos.z*2);
+		
+		//build all of the 8 chunks that contain land
+		for(int x=0; x<=1; x++)
+		{
+			for(int y=0; y<=1; y++)
+			{
+				for(int z=0; z<=1; z++)
+				{	
+					LODPos newChunk = new LODPos(newLev, newStart.x+x, newStart.y+y, newStart.z+z);
+					TerrainObject tobj = null;
+					if(chunks.TryGetValue(newChunk, out tobj))
+					{
+						tobj.Render();	
+					}
+				}
+			}
+		}
+	}
+
+	public void CreateChunk(LODPos pos)
+	{
+		CreateChunk(pos, false);
+	}
+	//creates and instantiates a terrain chunk (but does not render it yet)
+	public void CreateChunk(LODPos pos, bool render) 
+	{
+		//if the chunk has aready been created, dont build it again!
+		if(chunks.ContainsKey(pos))
+			return;
 
 
 		//build the terrainobject and add its gameobject to the chunks list(may remove this last thing later)
@@ -31,8 +127,10 @@ public class LODSystem
 		GameObject terrainGO = new GameObject("Terrain Chunk " + pos.ToString());
 		TerrainObject chunk = terrainGO.AddComponent<TerrainObject>();
 		chunks.Add(pos, chunk);
+		visChunks.Add(pos);
 
 		//this lod chunk scale
+		//level 0 has scale 1, level 1 has scale 2, level 2 has scale 4, etc.
 		int scale = (int)(Mathf.Pow(2,pos.level));
 		chunk.scale = scale;
 
@@ -98,10 +196,15 @@ public class LODSystem
 			}
 			
 		}
-		
+
+		//here is a museum of the history of 
 		//TerrainLoader.addToRender(chunk);
 		//Loader.addToRender(chunk);
-		chunk.Render();//renders the chunk (be sure to remove later)
+		//if(Time.time<3)
+		if(render)
+			chunk.Render();//renders the chunk immediately
+		//RequestSystem.terrainToRender.Add(chunk);
+		
 		
 	}
 
@@ -114,7 +217,7 @@ public class LODSystem
 			return;
 
 		//hide this terrain object but don't delete it
-		to.gameObject.SetActive(false);
+		//to.gameObject.SetActive(false);
 		//1 level lower
 		int newLev = pos.level-1;
 		//the position of the first subchunk in this chunk
@@ -132,7 +235,60 @@ public class LODSystem
 
 		//it is now split, this is kind of a useless comment and the more i type the more time i waste soo um yeah. how's your day been reader of my code? I know this comment is getting unjustifiably long so I should probably stop typing it but i wont today is feb. 10 2016 and i am currently working on the lod system for this game. hopefully this game will get popular in the future which will cause me to hire employees and one of them will see this comment and think "what the heck?" but then they will laugh and show it to their coworker and call me in from my luxury office to ask me if i remember writing this comment
 		to.isSplit = true;
+		splitChunks.Add(pos);
+		//RequestSystem.terrainToSplitRender.Add(to);
+		chunksToSplitRender.Add(pos);
+		
 
+	}
+
+	//deletes all pieces of the given chunk and reactivates it or "combines" all its pieces into it
+	public void combineChunk(LODPos pos)
+	{
+		//reactivate the chunk
+		chunks[pos].gameObject.SetActive(true);
+		
+		//now find all of its pieces and destroy them
+		
+		//1 level lower
+		int newLev = pos.level-1;
+		//the position of the first subchunk in this chunk
+		WorldPos newStart = new WorldPos(pos.x*2, pos.y*2, pos.z*2);
+
+		for(int x=0; x<=1; x++)
+		{
+			for(int y=0; y<=1; y++)
+			{
+				for(int z=0; z<=1; z++)
+				{	
+					LODPos newChunk = new LODPos(newLev, newStart.x+x, newStart.y+y, newStart.z+z);
+					TerrainObject tobj = null;
+					if(chunks.TryGetValue(newChunk, out tobj))
+					{
+						//if the chunk to be deleted is split, combine it first
+						if(splitChunks.Contains(newChunk))
+						{
+							combineChunk(newChunk);
+						}
+
+						//remove it from vischunks
+						visChunks.Remove(newChunk);
+
+						//remove from chunkstosplitrender if it is in it
+						if(chunksToSplitRender.Contains(newChunk))
+							chunksToSplitRender.Remove(newChunk);
+
+						//finally remove from the chunks dictionary and utterly DESTROY IT (but it will later be pooled
+						chunks.Remove(newChunk);
+						GameObject.Destroy(tobj);
+					}
+				}
+			}
+		}
+
+		//move this from splitchunks to vischunks
+		splitChunks.Remove(pos);
+		visChunks.Add(pos);
 	}
 
 	//generates a chunk if it will exist but first generates all chunk levels above it and subdivides them
@@ -194,9 +350,20 @@ public class LODSystem
 		                             sideLength*(pos.y+0.5f),
 		                             sideLength*(pos.z+0.5f));
 		//Debug.Log(absPos.magnitude + " " + planet.noise.getAltitude(absPos)+" " +sideLength);
-		//contains land if the dist to center of lod chunk is less than dist to land
-		return absPos.magnitude < (planet.noise.getAltitude(absPos)+sideLength);
 
+		//altitude of land below or above this chunk
+		float alt = planet.noise.getAltitude(absPos);
+
+		//contains land if the dist to center of lod chunk is within a side length of the altitude
+		return absPos.magnitude < (alt+sideLength) && absPos.magnitude > (alt-sideLength);
+
+
+	}
+
+	//returns the side length of a given lod level
+	int getSideLength(int lev)
+	{
+		return (int)(16*Mathf.Pow(2,lev));
 
 	}
 	//public static splitList 

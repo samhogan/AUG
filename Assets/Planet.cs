@@ -75,11 +75,11 @@ public class Planet
 		for(int x=-1; x<=0; x++)
 			for(int y=-1; y<=0; y++)
 				for(int z=-1; z<=0; z++)
-					lod.CreateChunk(new LODPos(startLev,x,y,z));
+					lod.CreateChunk(new LODPos(startLev,x,y,z), true);
 
 		//lod.splitChunk(new LODPos(14,0,0,0));
 		//lod.splitChunk(new LODPos(13,1,1,1));
-		lod.requestChunk(new LODPos(0, 3000,5400,9000));
+		//lod.requestChunk(new LODPos(0, 3000,5400,9000));
 
 		Debug.Log(lod.containsLand(new LODPos(14,0,0,0)));
 		Debug.Log(lod.containsLand(new LODPos(12,3,3,3)));

@@ -22,6 +22,12 @@ public class RequestSystem : MonoBehaviour
 	//unorganized list of objects that are added in the order they will be rendered in
 	public static List<WorldObject> objectsToRender = new List<WorldObject>();
 
+	//terrain pieces of all lod are in a separate render list because all terrain is rendered first
+	//public static List<TerrainObject> terrainToRender = new List<TerrainObject>();
+
+	//terrain chunks to be deactivated and its pieces rendered
+	//public static List<TerrainObject> terrainToSplitRender = new List<TerrainObject>();
+
 	//length in unity units of the side of a chunk
 	//NOTE: change all other chunksizes to reference this one
 	public static int chunkSize = 16;
@@ -47,6 +53,8 @@ public class RequestSystem : MonoBehaviour
 		//terrain = planet.terrain;
 	}
 
+
+	WorldPos currentChunk = new WorldPos(0,0,0);
 	//deletes chunks every some frames
 	int delTimer = 0;
 
@@ -87,9 +95,33 @@ public class RequestSystem : MonoBehaviour
 					*/
 				}
 			}
+
+			//if the player is in a new chunk, update the lod
+			if(curChunkPos!=currentChunk)
+			{
+
+				currentChunk = curChunkPos;
+				Debug.Log("lod updated");
+				UniverseSystem.curPlanet.lod.updateLOD(new WorldPos(curChunkPos.x/16, curChunkPos.y/16, curChunkPos.z/16));	
+			}
+				//UniverseSystem.curPlanet.lod.updateLOD(new WorldPos(curChunkPos.x/16, curChunkPos.y/16, curChunkPos.z/16));	
+			
 			//print("objects to render " + objectsToRender.Count);
+
+			//if the terrain render list contains terrain, render one, if not,
 			//it the render list contains objects, render the first one in the list and remove it
-			if(objectsToRender.Count > 0)
+			/*if(terrainToRender.Count > 0)
+			{
+				terrainToRender[0].Render();
+				terrainToRender.RemoveAt(0);
+			}*/
+			if(UniverseSystem.curPlanet.lod.chunksToSplitRender.Count > 0)
+			{
+				UniverseSystem.curPlanet.lod.splitRender(UniverseSystem.curPlanet.lod.chunksToSplitRender[0]);	
+				
+				UniverseSystem.curPlanet.lod.chunksToSplitRender.RemoveAt(0);
+			}
+			else if(objectsToRender.Count > 0)
 			{
 				objectsToRender[0].Render();
 				objectsToRender.RemoveAt(0);
@@ -187,6 +219,9 @@ public class RequestSystem : MonoBehaviour
 	{
 		//NOTE: NEED to migrate this over to the worldhelper buildobject function
 		//UniverseSystem.curPlanet.terrain.CreateChunk(pos);
+		//if(Time.time<3)
+
+		//request the level 0 lodchunk 
 		UniverseSystem.curPlanet.lod.requestChunk(new LODPos(0, pos.x/16, pos.y/16, pos.z/16));
 		//print(pos);
 	}

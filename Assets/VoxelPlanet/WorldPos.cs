@@ -26,6 +26,20 @@ public struct WorldPos
 	{
 		return x + " " + y + " " + z;
 	}
+
+	//overloaded operators
+
+	public static bool operator ==(WorldPos wp1, WorldPos wp2) 
+	{
+		return wp1.x==wp2.x && wp1.y==wp2.y && wp1.z==wp2.z;
+	}
+
+	public static bool operator !=(WorldPos wp1, WorldPos wp2) 
+	{
+		return wp1.x!=wp2.x || wp1.y!=wp2.y || wp1.z!=wp2.z;
+	}
+
+
 	//this was in the tutorial so i guess it will live in here
 	public override bool Equals(object obj)
 	{
