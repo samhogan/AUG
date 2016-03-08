@@ -29,6 +29,8 @@ public class TerrainObject : WorldObject
 	//creates the mesh from the voxel data and assigns it to the mesh filter and mesh collider
 	public override void Render()
 	{
+		//if(Time.time<10)
+		//{
 		Mesh mesh = MarchingCubes2.CreateMesh(voxVals);
 		mesh.RecalculateNormals();//not sure what this does at the moment
 		filter.mesh = mesh;
@@ -40,6 +42,6 @@ public class TerrainObject : WorldObject
 			coll.sharedMesh = mesh;
 		}
 		//transform.position.localScale = new Vector3(scale, scale, scale);
-
+		//}
 	}
 }

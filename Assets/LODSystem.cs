@@ -39,8 +39,10 @@ public class LODSystem
 		{
 			//if the distance from the player's position to the lpos is close enough and its not a level 0 pos, add it to the split list
 			if(lodposInRange(pos, lpos) && lpos.level > 0)
+			{
+				//Debug.Log(lpos);
 				chunksToSplit.Add(lpos);
-
+			}
 		}
 
 
@@ -49,18 +51,37 @@ public class LODSystem
 		//for every chunk that is split, check if it is far enough to be combined
 		foreach(LODPos lpos in splitChunks)
 		{
+			//Debug.Log(lpos.ToString() + " " + chunks.ContainsKey(lpos));
 			if(!lodposInRange(pos, lpos))
 				chunksToCombine.Add(lpos);
 		}
+		Debug.Log(splitChunks.Count + " " + chunksToCombine.Count);
 
-		foreach(LODPos lpos in chunksToCombine)
+		/*foreach(LODPos lpos in chunksToCombine)
 		{
+			Debug.Log(lpos.ToString() + " " + chunks.ContainsKey(lpos));
+			
 			combineChunk(lpos);
 		}
 
 		foreach(LODPos lpos in chunksToSplit)
 		{
 			splitChunk(lpos);
+			//Debug.Log("Apparently a chunk was split");
+		}*/
+
+		for(int i=chunksToCombine.Count-1; i>=0; i--)
+		{
+
+			//Debug.Log(lpos.ToString() + " " + chunks.ContainsKey(lpos));
+			Debug.Log("a chunk is being combined");
+			combineChunk(chunksToCombine[i]);
+		}
+		
+		for(int i=chunksToSplit.Count-1; i>=0; i--)
+		{
+			splitChunk(chunksToSplit[i]);
+			//Debug.Log("Apparently a chunk was split");
 		}
 
 
@@ -82,6 +103,11 @@ public class LODSystem
 	public void splitRender(LODPos pos)
 	{
 
+		//if(!chunks.ContainsKey(pos))
+		//	return;
+		
+
+		//Debug.Log("Chunks contains key :" + pos.ToString() + " " + chunks.ContainsKey(pos));
 		//hide this terrain object but don't delete it
 		chunks[pos].gameObject.SetActive(false);
 
@@ -110,6 +136,7 @@ public class LODSystem
 		}
 	}
 
+	//overloaded createchunk
 	public void CreateChunk(LODPos pos)
 	{
 		CreateChunk(pos, false);
@@ -127,6 +154,7 @@ public class LODSystem
 		GameObject terrainGO = new GameObject("Terrain Chunk " + pos.ToString());
 		TerrainObject chunk = terrainGO.AddComponent<TerrainObject>();
 		chunks.Add(pos, chunk);
+		//Debug.Log("chunks added key :" + pos.ToString());
 		visChunks.Add(pos);
 
 		//this lod chunk scale
@@ -211,10 +239,10 @@ public class LODSystem
 	//splits up a terrain chunk into 8 smaller chunks 
 	public void splitChunk(LODPos pos)
 	{
-		TerrainObject to;
+	//	TerrainObject to;
 		//don't do anything if the chunk list does not contain the pos
-		if(!chunks.TryGetValue(pos, out to))
-			return;
+	//	if(!chunks.TryGetValue(pos, out to))
+	//		return;
 
 		//hide this terrain object but don't delete it
 		//to.gameObject.SetActive(false);
@@ -234,8 +262,9 @@ public class LODSystem
 				}
 
 		//it is now split, this is kind of a useless comment and the more i type the more time i waste soo um yeah. how's your day been reader of my code? I know this comment is getting unjustifiably long so I should probably stop typing it but i wont today is feb. 10 2016 and i am currently working on the lod system for this game. hopefully this game will get popular in the future which will cause me to hire employees and one of them will see this comment and think "what the heck?" but then they will laugh and show it to their coworker and call me in from my luxury office to ask me if i remember writing this comment
-		to.isSplit = true;
+		chunks[pos].isSplit = true;
 		splitChunks.Add(pos);
+		visChunks.Remove(pos);
 		//RequestSystem.terrainToSplitRender.Add(to);
 		chunksToSplitRender.Add(pos);
 		
@@ -280,7 +309,9 @@ public class LODSystem
 
 						//finally remove from the chunks dictionary and utterly DESTROY IT (but it will later be pooled
 						chunks.Remove(newChunk);
-						GameObject.Destroy(tobj);
+						//Object.Destroy(tobj);
+						GameObject.Destroy(tobj.gameObject);
+						Debug.Log("Apparently chunk " + newChunk.ToString() + " was deleted");
 					}
 				}
 			}
