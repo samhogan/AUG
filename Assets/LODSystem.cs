@@ -55,7 +55,7 @@ public class LODSystem
 			if(!lodposInRange(pos, lpos))
 				chunksToCombine.Add(lpos);
 		}
-		Debug.Log(splitChunks.Count + " " + chunksToCombine.Count);
+		//Debug.Log(splitChunks.Count + " " + chunksToCombine.Count);
 
 		/*foreach(LODPos lpos in chunksToCombine)
 		{
@@ -70,20 +70,20 @@ public class LODSystem
 			//Debug.Log("Apparently a chunk was split");
 		}*/
 
-		for(int i=chunksToCombine.Count-1; i>=0; i--)
-		{
 
-			//Debug.Log(lpos.ToString() + " " + chunks.ContainsKey(lpos));
-			Debug.Log("a chunk is being combined");
-			combineChunk(chunksToCombine[i]);
-		}
-		
 		for(int i=chunksToSplit.Count-1; i>=0; i--)
 		{
 			splitChunk(chunksToSplit[i]);
 			//Debug.Log("Apparently a chunk was split");
 		}
 
+		for(int i=chunksToCombine.Count-1; i>=0; i--)
+		{
+			
+			//Debug.Log(lpos.ToString() + " " + chunks.ContainsKey(lpos));
+			//Debug.Log("a chunk is being combined");
+			combineChunk(chunksToCombine[i]);
+		}
 
 
 	}
@@ -109,7 +109,7 @@ public class LODSystem
 
 		//Debug.Log("Chunks contains key :" + pos.ToString() + " " + chunks.ContainsKey(pos));
 		//hide this terrain object but don't delete it
-		chunks[pos].gameObject.SetActive(false);
+		//chunks[pos].gameObject.SetActive(false);
 
 		//now find all of its pieces and render them
 
@@ -134,6 +134,11 @@ public class LODSystem
 				}
 			}
 		}
+
+		//splitChunks.
+		Debug.Log(pos.ToString() + " is being splitrendered");
+		chunks[pos].gameObject.SetActive(false);
+		
 	}
 
 	//overloaded createchunk
@@ -267,7 +272,7 @@ public class LODSystem
 		visChunks.Remove(pos);
 		//RequestSystem.terrainToSplitRender.Add(to);
 		chunksToSplitRender.Add(pos);
-		
+		Debug.Log(pos + " was added to splitrenderlist");
 
 	}
 
@@ -311,7 +316,7 @@ public class LODSystem
 						chunks.Remove(newChunk);
 						//Object.Destroy(tobj);
 						GameObject.Destroy(tobj.gameObject);
-						Debug.Log("Apparently chunk " + newChunk.ToString() + " was deleted");
+						Debug.Log("chunk " + newChunk.ToString() + " was deleted");
 					}
 				}
 			}
