@@ -128,8 +128,8 @@ public class RequestSystem : MonoBehaviour
 			}
 			else if(objectsToRender.Count > 0)
 			{
-				//objectsToRender[0].Render();
-				//objectsToRender.RemoveAt(0);
+				objectsToRender[0].Render();
+				objectsToRender.RemoveAt(0);
 			}
 
 			//every 10th frame request deletion of chunks

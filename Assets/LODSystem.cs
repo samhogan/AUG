@@ -164,7 +164,7 @@ public class LODSystem
 
 		//this lod chunk scale
 		//level 0 has scale 1, level 1 has scale 2, level 2 has scale 4, etc.
-		int scale = (int)(Mathf.Pow(2,pos.level));
+		float scale = (int)(Mathf.Pow(2,pos.level));//TerrainObject.wsRatio;
 		chunk.scale = scale;
 
 
@@ -180,18 +180,18 @@ public class LODSystem
 
 			//finds the adjusted scale of this terrain obj when in unispace
 			float absScale = ((float)scale)/Unitracker.uniscale;
-			terrainGO.transform.localScale = new Vector3(absScale, absScale, absScale);
+			terrainGO.transform.localScale = new Vector3(absScale, absScale, absScale)*TerrainObject.wsRatio;
 
 			//the adjusted position of this terrain obj whin in unispace
-			terrainGO.transform.localPosition = pos.toVector3()*16*absScale;
+			terrainGO.transform.localPosition = pos.toVector3()*TerrainObject.chunkWidth*absScale;
 
 
 		}
-		else
+		else//it is in normal space
 		{
 
-			terrainGO.transform.localScale = new Vector3(scale, scale, scale);
-			terrainGO.transform.localPosition = Unitracker.getFloatingPos(pos.toVector3()*scale*16);
+			terrainGO.transform.localScale = new Vector3(scale, scale, scale)*TerrainObject.wsRatio;
+			terrainGO.transform.localPosition = Unitracker.getFloatingPos(pos.toVector3()*scale*TerrainObject.chunkWidth);
 
 		}
 
@@ -205,9 +205,9 @@ public class LODSystem
 					
 					//the world position of the current voxel
 					Vector3 voxPos = new Vector3();//position of chunk+position of voxel within chunk
-					voxPos.x = (pos.x*16+x)*scale;
-					voxPos.y = (pos.y*16+y)*scale;
-					voxPos.z = (pos.z*16+z)*scale;
+					voxPos.x = (pos.x*16+x*TerrainObject.wsRatio)*scale;
+					voxPos.y = (pos.y*16+y*TerrainObject.wsRatio)*scale;
+					voxPos.z = (pos.z*16+z*TerrainObject.wsRatio)*scale;
 
 	
 					//the distance from the center of the planet to the current voxel
@@ -272,7 +272,7 @@ public class LODSystem
 		visChunks.Remove(pos);
 		//RequestSystem.terrainToSplitRender.Add(to);
 		chunksToSplitRender.Add(pos);
-		Debug.Log(pos + " was added to splitrenderlist");
+		Debug.Log(pos.ToString() + " was added to splitrenderlist");
 
 	}
 
