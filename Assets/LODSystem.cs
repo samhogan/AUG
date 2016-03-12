@@ -57,20 +57,6 @@ public class LODSystem
 		}
 		//Debug.Log(splitChunks.Count + " " + chunksToCombine.Count);
 
-		/*foreach(LODPos lpos in chunksToCombine)
-		{
-			Debug.Log(lpos.ToString() + " " + chunks.ContainsKey(lpos));
-			
-			combineChunk(lpos);
-		}
-
-		foreach(LODPos lpos in chunksToSplit)
-		{
-			splitChunk(lpos);
-			//Debug.Log("Apparently a chunk was split");
-		}*/
-
-
 		for(int i=chunksToSplit.Count-1; i>=0; i--)
 		{
 			splitChunk(chunksToSplit[i]);
@@ -136,9 +122,9 @@ public class LODSystem
 		}
 
 		//splitChunks.
-		Debug.Log(pos.ToString() + " is being splitrendered");
+		//Debug.Log(pos.ToString() + " is being splitrendered " + chunksToSplitRender.IndexOf(pos) + " " + chunksToSplitRender.LastIndexOf(pos));
 		chunks[pos].gameObject.SetActive(false);
-		
+		//Debug.Log(pos.ToString() + " was deactivated");		
 	}
 
 	//overloaded createchunk
@@ -272,7 +258,7 @@ public class LODSystem
 		visChunks.Remove(pos);
 		//RequestSystem.terrainToSplitRender.Add(to);
 		chunksToSplitRender.Add(pos);
-		Debug.Log(pos.ToString() + " was added to splitrenderlist");
+		//Debug.Log(pos.ToString() + " was added to splitrenderlist");
 
 	}
 
@@ -281,6 +267,8 @@ public class LODSystem
 	{
 		//reactivate the chunk
 		chunks[pos].gameObject.SetActive(true);
+		//Debug.Log(pos.ToString() + " was activated");		
+		
 		
 		//now find all of its pieces and destroy them
 		
@@ -316,12 +304,15 @@ public class LODSystem
 						chunks.Remove(newChunk);
 						//Object.Destroy(tobj);
 						GameObject.Destroy(tobj.gameObject);
-						Debug.Log("chunk " + newChunk.ToString() + " was deleted");
+						//Debug.Log("chunk " + newChunk.ToString() + " was deleted");
 					}
 				}
 			}
 		}
 
+		chunks[pos].isSplit = false;
+		if(chunksToSplitRender.Contains(pos))
+			chunksToSplitRender.Remove(pos);
 		//move this from splitchunks to vischunks
 		splitChunks.Remove(pos);
 		visChunks.Add(pos);

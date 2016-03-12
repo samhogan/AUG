@@ -118,6 +118,8 @@ public class RequestSystem : MonoBehaviour
 				terrainToRender[0].Render();
 				terrainToRender.RemoveAt(0);
 			}*/
+			//Debug.Log(UniverseSystem.curPlanet.lod.chunksToSplitRender.ToString());
+
 			if(UniverseSystem.curPlanet.lod.chunksToSplitRender.Count > 0)
 			{
 				//Debug.Log("(rs) Chunks contains key :" + UniverseSystem.curPlanet.lod.chunksToSplitRender[0].ToString() + " " 
