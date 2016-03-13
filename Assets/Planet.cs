@@ -14,8 +14,10 @@ public class Planet
 
 	public float radius;//radius of the planet
 	private float scaledRadius;//the radius of the scaledRep in unispace
-	private float atmosRadius;//the radius of the atmosphere/direct gravitational influence(distance from planet to make it curplanet)
+	private float atmosRadius;//the radius of the atmosphere/direct gravitational influence/distance terrain is split from(distance from planet to make it curplanet)
 	public float scaledAtmosRadius;//atmosRadius in unispace
+
+	public float buildHeight;//the height the player must under for surface objects to be generated, and consequently, the build height (is actually radius+build height but whatever)
 
 	//the position of the planet in unispace (measured in 10000s or whatever the scale is)
 	public UniPos scaledPos;
@@ -33,8 +35,10 @@ public class Planet
 		radius = r;
 		scaledRadius = r/Unitracker.uniscale;
 
-		atmosRadius = r+50000;//atmosphere is 5 km above surface
+		atmosRadius = r+200000;//atmosphere is 200 km above surface
 		scaledAtmosRadius = atmosRadius/Unitracker.uniscale;
+
+		buildHeight = r+10000;//build height is 10 km above surface
 
 		terrain = new TerrainSystem(this, radius);
 		//surface = new SurfaceSystem(radius, 400);
@@ -86,8 +90,8 @@ public class Planet
 
 
 		//add some fun color
-		meshobj.GetComponent<MeshRenderer>().material = Resources.Load("TestMaterial") as Material;//loads the default material, will remove this
-		meshobj.SetActive(false);
+		meshobj.GetComponent<MeshRenderer>().material = Resources.Load("Water") as Material;//loads the default material, will remove this
+		//meshobj.SetActive(false);
 	}
 
 }

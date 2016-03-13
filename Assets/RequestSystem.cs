@@ -72,30 +72,24 @@ public class RequestSystem : MonoBehaviour
 			//the current chunk the player is in
 			WorldPos curChunkPos = UnitConverter.getChunk(realPos);
 
-			//loop through all chunkpositions until one is found that has not been requested
-			for(int i = 0; i<chunkPositions.Length; i++)
+			//only request chunk generation (of surface objects) if the chunk is within the build heigth
+			if(curChunkPos.toVector3().magnitude < UniverseSystem.curPlanet.buildHeight)
 			{
-				//calculates a proposed chunk to render based on order of chunkPositions and chunkSize
-				WorldPos proposedChunk = new WorldPos(curChunkPos.x + chunkPositions[i].x*chunkSize,
-				                                      curChunkPos.y + chunkPositions[i].y*chunkSize,
-				                                      curChunkPos.z + chunkPositions[i].z*chunkSize);
-
-				//if the chunk the player/object is in has not already been requested, request it
-				if(!requestedChunks.Contains(proposedChunk))
+				//loop through all chunkpositions until one is found that has not been requested
+				for(int i = 0; i<chunkPositions.Length; i++)
 				{
-					//NOTE: might change back
-					requestChunkGen(proposedChunk);
-					/*//print("Player is in chunk " + curChunkPos);
-					requestTerrain(proposedChunk);//request terrain chunk generation
-					requestSurface(proposedChunk);//request surface generation
-					renderObjectsInChunk(proposedChunk);//request objects in this position to be rendered
+					//calculates a proposed chunk to render based on order of chunkPositions and chunkSize
+					WorldPos proposedChunk = new WorldPos(curChunkPos.x + chunkPositions[i].x*chunkSize,
+					                                      curChunkPos.y + chunkPositions[i].y*chunkSize,
+					                                      curChunkPos.z + chunkPositions[i].z*chunkSize);
 
-					//print("Chunk added to requested chunks " + curChunkPos);
-					requestedChunks.Add(proposedChunk);//add it to the already requested chunks list
-					*/
+					//if the chunk the player/object is in has not already been requested, request it
+					if(!requestedChunks.Contains(proposedChunk))
+						requestChunkGen(proposedChunk);
+
 				}
-			}
 
+			}
 			//if the player is in a new chunk, update the lod
 			if(curChunkPos!=currentChunk)
 			{
@@ -161,7 +155,7 @@ public class RequestSystem : MonoBehaviour
 	//requests creation of items in all systems
 	void requestChunkGen(WorldPos chunk)
 	{
-		requestTerrain(chunk);//request terrain chunk generation
+		//requestTerrain(chunk);//request terrain chunk generation
 		requestSurface(chunk);//request surface generation
 		renderObjectsInChunk(chunk);//request objects in this position to be rendered
 

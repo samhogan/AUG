@@ -18,7 +18,7 @@ public class Unitracker : MonoBehaviour
 	private static int halfus = uniscale/2;
 
 	//how far the unitracker has to travel in unity units to be moved back by floating origin
-	private static int unithreshold = 10000;
+	private static int unithreshold = 1000;
 	private static int halfut = unithreshold/2;
 
 
@@ -261,6 +261,8 @@ public class Unitracker : MonoBehaviour
 			//RequestSystem.builtObjects.Clear();
 			//TerrainSystem.chunks.Clear();
 			//SurfaceSystem.surfList.Clear();
+
+			//this a later comment from that of above, but be sure to combine all top level terrain chunks
 		}
 	}
 
@@ -390,13 +392,20 @@ public class Unitracker : MonoBehaviour
 	//moves all worldobjects in the world a certain amount
 	private void moveWorldObjects(Vector3 shift)
 	{
-		/*foreach(KeyValuePair<WorldPos, List<WorldObject>> objectList in RequestSystem.builtObjects)
+		//move all the MobileObjects
+		foreach(KeyValuePair<WorldPos, List<WorldObject>> objectList in RequestSystem.builtObjects)
 		{
 			foreach(WorldObject wo in objectList.Value)
 			{
 				wo.transform.position+=shift;
 			}
-		}*/
+		}
+		//move all terrain objects that are in normal space (if the player is on a planet
+		if(onPlanet)
+			foreach(KeyValuePair<LODPos, TerrainObject> chunk in UniverseSystem.curPlanet.lod.chunks)
+				if(chunk.Key.level<=LODSystem.uniCutoff)
+					chunk.Value.gameObject.transform.position+=shift;
+
 		
 		//also shift the player(should eventually not have to do this)
 		player.transform.position+=shift;

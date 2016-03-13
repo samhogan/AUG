@@ -2,6 +2,8 @@
 using System.Collections;
 using System.Collections.Generic;
 //keeps the player and nearby objects centered around the origin to avoid floating point errors
+
+//DEPRECATED AND WILL LATER BE REMOVED, SO DON'T WASTE YOUR TIME HERE
 public class FloatingOrigin : MonoBehaviour
 {
 	//the size in unity units of the offset chunk size

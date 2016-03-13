@@ -22,7 +22,7 @@ public class LODSystem
 	public List<LODPos> chunksToSplitRender = new List<LODPos>();
 
 	//the level at which chunks appear in unispace rather than in normal space
-	int uniCutoff = 5;
+	public static int uniCutoff = 5;
 
 	public LODSystem(Planet p)
 	{

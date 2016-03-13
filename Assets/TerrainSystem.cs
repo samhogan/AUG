@@ -4,6 +4,8 @@ using System.Collections.Generic;
 
 //Creates the terrain of planets using voxels and marching cubes. instanced by the planet class
 //NOTE: a chunk is the same thing as a terrainobject
+
+//DEPRECATED, REPLACED BY LODSYSTEM
 public class TerrainSystem
 {
 	private Planet planet;//a reference to its planet
