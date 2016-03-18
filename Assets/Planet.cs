@@ -91,7 +91,7 @@ public class Planet
 
 		//add some fun color
 		meshobj.GetComponent<MeshRenderer>().material = Resources.Load("Water") as Material;//loads the default material, will remove this
-		//meshobj.SetActive(false);
+		meshobj.SetActive(false);
 	}
 
 }

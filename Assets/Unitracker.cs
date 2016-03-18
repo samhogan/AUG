@@ -68,7 +68,7 @@ public class Unitracker : MonoBehaviour
 	void initialPositioning()
 	{
 
-		bool startOnPlanet = false;
+		bool startOnPlanet = true;
 
 		if(startOnPlanet)
 		{

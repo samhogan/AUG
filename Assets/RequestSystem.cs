@@ -75,19 +75,7 @@ public class RequestSystem : MonoBehaviour
 			//only request chunk generation (of surface objects) if the chunk is within the build heigth
 			if(curChunkPos.toVector3().magnitude < UniverseSystem.curPlanet.buildHeight)
 			{
-				//loop through all chunkpositions until one is found that has not been requested
-				for(int i = 0; i<chunkPositions.Length; i++)
-				{
-					//calculates a proposed chunk to render based on order of chunkPositions and chunkSize
-					WorldPos proposedChunk = new WorldPos(curChunkPos.x + chunkPositions[i].x*chunkSize,
-					                                      curChunkPos.y + chunkPositions[i].y*chunkSize,
-					                                      curChunkPos.z + chunkPositions[i].z*chunkSize);
-
-					//if the chunk the player/object is in has not already been requested, request it
-					if(!requestedChunks.Contains(proposedChunk))
-						requestChunkGen(proposedChunk);
-
-				}
+				findChunk(curChunkPos);
 
 			}
 			//if the player is in a new chunk, update the lod
@@ -114,6 +102,7 @@ public class RequestSystem : MonoBehaviour
 			}*/
 			//Debug.Log(UniverseSystem.curPlanet.lod.chunksToSplitRender.ToString());
 
+			//render terrain if there is some, or else render an object
 			if(UniverseSystem.curPlanet.lod.chunksToSplitRender.Count > 0)
 			{
 				//Debug.Log("(rs) Chunks contains key :" + UniverseSystem.curPlanet.lod.chunksToSplitRender[0].ToString() + " " 
@@ -151,6 +140,37 @@ public class RequestSystem : MonoBehaviour
 		//print(UnitConverter.getSP(transform.position, 64*16));*/
 	}
 
+	//finds a nearby chunk in need of requesting
+	void findChunk(WorldPos curChunkPos)
+	{
+
+		//loop through all chunkpositions with all combinations of positive and negative components until one is found that has not been requested
+		foreach(WorldPos pos in chunkPositions)
+		{
+			for(int xs=1; xs>=-1; xs-=2)//xs is x component sign
+			{
+				for(int ys=1; ys>=-1; ys-=2)
+				{
+					for(int zs=1; zs>=-1; zs-=2)
+					{
+						//-0 and zero are the same, so only check for positive zero
+						if((pos.x==0 && xs==-1) || (pos.y==0 && ys==-1) || (pos.z==0 && zs==-1))
+							continue;
+
+						//calculates a proposed chunk to render based on order of chunkPositions and chunkSize
+						WorldPos proposedChunk = new WorldPos(curChunkPos.x + xs*pos.x*chunkSize,
+						                                      curChunkPos.y + ys*pos.y*chunkSize,
+						                                      curChunkPos.z + zs*pos.z*chunkSize);
+						
+						//if the chunk the player/object is in has not already been requested, request it
+						if(!requestedChunks.Contains(proposedChunk))
+							requestChunkGen(proposedChunk);
+					}
+				}
+			}
+		}
+	}
+
 	//request chunk generation
 	//requests creation of items in all systems
 	void requestChunkGen(WorldPos chunk)
@@ -173,7 +193,7 @@ public class RequestSystem : MonoBehaviour
 		{
 			//NOTE: make 100 a definied variable later and change it to not 100
 			//if the distance between the current chunk and one chunk still in the requestedchunks list is greater than an arbitrary value, request its destruction
-			if(Vector3.Distance(curChunk.toVector3(), pos.toVector3()) > 50)
+			if(Vector3.Distance(curChunk.toVector3(), pos.toVector3()) > 120)
 			{
 				chunksToDelete.Add(pos);
 			}
@@ -222,8 +242,12 @@ public class RequestSystem : MonoBehaviour
 		//UniverseSystem.curPlanet.terrain.CreateChunk(pos);
 		//if(Time.time<3)
 
+		//terrain chunks are on a unit scale rather than a 16 scale, so convert it
+		LODPos adjustedPos = new LODPos(0, pos.x/16, pos.y/16, pos.z/16);
 		//request the level 0 lodchunk 
-		//UniverseSystem.curPlanet.lod.requestChunk(new LODPos(0, pos.x/16, pos.y/16, pos.z/16));
+		//only request it if it contains land!!!
+		if(UniverseSystem.curPlanet.lod.containsLand(adjustedPos))
+			UniverseSystem.curPlanet.lod.requestChunk(adjustedPos);
 		//print(pos);
 	}
 
@@ -283,7 +307,7 @@ public class RequestSystem : MonoBehaviour
 	}
 
 	//contains the order that 'chunks' around the player should be loaded
-	static  WorldPos[] chunkPositions = new WorldPos[]{new WorldPos( 0, 0, 0), 
+	/*static  WorldPos[] chunkPositions = new WorldPos[]{new WorldPos( 0, 0, 0), 
 		new WorldPos( 1, 0, 0), new WorldPos( -1, 0, 0), 
 		new WorldPos( 0, 1, 0),new WorldPos( 0, -1, 0), 
 		new WorldPos( 0, 0, 1), new WorldPos( 0, 0, -1), 
@@ -291,5 +315,12 @@ public class RequestSystem : MonoBehaviour
 		new WorldPos( 1, 0, 1), new WorldPos( 1, 0, -1), new WorldPos( -1, 0, 1), new WorldPos( -1, 0, -1), 
 		new WorldPos( 0, 1, 1), new WorldPos( 0, 1, -1), new WorldPos( 0, -1, 1), new WorldPos( 0, -1, -1), 
 		new WorldPos( 1, 1, 1), new WorldPos( 1, 1, -1), new WorldPos( 1, -1, 1), new WorldPos( 1, -1, -1), 
-		new WorldPos( -1, 1, 1), new WorldPos( -1, 1, -1), new WorldPos( -1, -1, 1), new WorldPos( -1, -1, -1), };
+		new WorldPos( -1, 1, 1), new WorldPos( -1, 1, -1), new WorldPos( -1, -1, 1), new WorldPos( -1, -1, -1), };*/
+
+	static  WorldPos[] chunkPositions = new WorldPos[]{new WorldPos(0,0,0), new WorldPos( 1, 0, 0), new WorldPos( 0, 1, 0), new WorldPos( 0, 0, 1), new WorldPos( 1, 1, 0),
+		new WorldPos( 1, 0, 1), new WorldPos( 0, 1, 1), new WorldPos( 1, 1, 1), new WorldPos( 2, 0, 0), new WorldPos( 0, 2, 0), new WorldPos( 0, 0, 2), new WorldPos( 2, 1, 0),
+		new WorldPos( 2, 0, 1), new WorldPos( 1, 2, 0), new WorldPos( 0, 2, 1),  new WorldPos( 1, 0, 2), new WorldPos( 0, 1, 2), new WorldPos( 2, 1, 1), new WorldPos( 1, 2, 1),
+		new WorldPos( 1, 1, 2), new WorldPos( 2, 2, 0), new WorldPos( 2, 0, 2), new WorldPos( 0, 2, 2), new WorldPos( 2, 2, 1), new WorldPos( 2, 1, 2), new WorldPos( 1, 2, 2),
+		new WorldPos( 2, 2, 2)};
+
 }

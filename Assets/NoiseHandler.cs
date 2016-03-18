@@ -14,9 +14,9 @@ public class NoiseHandler
 	{
 		radius = r;
 		tScale1 = 250000;
-		//tScale1 = 1030;
+		tScale1 = 1030;
 		tHeight1 = 20000;
-		//tHeight1 = 200;
+		tHeight1 = 200;
 	}
 
 	//returns the altitude of the terrain at a given position

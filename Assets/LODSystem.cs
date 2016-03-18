@@ -322,6 +322,7 @@ public class LODSystem
 	//returns true if the chunk is successfully created
 	public bool requestChunk(LODPos pos)
 	{
+
 		//Debug.Log(pos.ToString());
 		//if it is already built, we are done
 		if(chunks.ContainsKey(pos))
