@@ -6,7 +6,7 @@ public class Planet
 {
 
 	//private RoadSystem roads;//builds the roads/civilization organization
-	public TerrainSystem terrain;//builds the terrain with voxels and marching cubes
+	//public TerrainSystem terrain;//builds the terrain with voxels and marching cubes
 	public SurfaceSystem surface;//builds the objects that are on the planet surface
 	public LODSystem lod;//builds terrain with voxels and marching cubes on multiple levels of detail!!!
 
@@ -40,7 +40,7 @@ public class Planet
 
 		buildHeight = r+10000;//build height is 10 km above surface
 
-		terrain = new TerrainSystem(this, radius);
+		//terrain = new TerrainSystem(this, radius);
 		//surface = new SurfaceSystem(radius, 400);
 		surface = new SurfaceSystem(this, radius, (int)(radius/50));//number of surface units per side is radius/50
 
