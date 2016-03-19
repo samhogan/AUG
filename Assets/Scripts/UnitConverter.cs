@@ -91,7 +91,7 @@ public class UnitConverter
 			//pos.y == -1 or 1 (bottom or top)
 			//calculate the remaining cube components
 			cubify(pos.x, pos.z, out sp.u, out sp.v);
-			
+			//Debug.Log (sp.u + " " + sp.v);
 			if(pos.y >= 0)
 				sp.side = PSide.TOP;//if positive y value, it is the top
 			else
@@ -140,7 +140,8 @@ public class UnitConverter
 		//these values have a range of 2 [-1,1], so multiply them by half the side length
 		sp.u *= halfSide;
 		sp.v *= halfSide;
-		
+		//Debug.Log (pos);
+		//Debug.Log (sp);
 		return sp;
 	}
 	
@@ -161,7 +162,20 @@ public class UnitConverter
 		float innersqrt = -Mathf.Sqrt((inner * inner) - 12.0f * aa2);
 		u = Mathf.Sign(a)*Mathf.Sqrt(innersqrt + aa2 - bb2 + 3.0f) * iSqrt2;//multiply by the sign (+ or -) to get the correct final sign
 		v = Mathf.Sign(b)*Mathf.Sqrt(innersqrt - aa2 + bb2 + 3.0f) * iSqrt2;
-		
+
+		if (float.IsNaN (u))
+			u = 0;
+
+		if (float.IsNaN (v))
+			v = 0;
+		/*Debug.Log (Mathf.Sqrt(innersqrt - aa2 + bb2 + 3.0f));
+		Debug.Log("a is " + a);
+		Debug.Log("b is " + b);
+		Debug.Log("inner is " + inner);
+		Debug.Log("innersqrt is " + innersqrt);
+		Debug.Log("u is" + u);
+		Debug.Log("v is" + v);*/
+
 		//Note to self: FIGURE OUT HOW THIS THING WORKS!!!!!!!!
 		//yes future code readers, i don't know how this actually works
 		//i tried to figure out the inverse function myself but i couldn't

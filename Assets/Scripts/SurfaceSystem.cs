@@ -50,7 +50,7 @@ public class SurfaceSystem
 
 		//creates an empty surface holder
 		SurfaceHolder sh = null;
-
+		//Debug.Log (su);
 		//only make the objects in this unit if it has not already been generated
 		//and add it to the list so it is not generated again
 		if(!surfList.TryGetValue(su, out sh))
@@ -120,11 +120,11 @@ public class SurfaceSystem
 
 				//surfacepos of the tree
 				SurfacePos treeSurf = new SurfacePos(su.side, su.u + u, su.v + v);
-
+				//Debug.Log (u + " " + v + " " + su.u + " " + su.v);
 				//convert to world unit and rotation
 				Vector3 worldPos = UnitConverter.getWP(treeSurf, radius, sideLength);
 				Quaternion worldRot = getWorldRot(worldPos, surfRot, su.side);
-
+				//Debug.Log (treeSurf+ " " + worldPos + " " + surfRot.eulerAngles + " " + worldRot);
 
 				//adjust the pos to the correct altitude, later move to function
 				//worldPos = worldPos.normalized*planet.noise.getAltitude(worldPos);

@@ -35,6 +35,25 @@ public class RequestSystem : MonoBehaviour
 	// Use this for initialization
 	void Start() 
 	{
+		/*for (int x = -2000; x < 2000; x += 10)
+			for (int y = 249000; y < 251000; y += 10)
+				for (int z = -2000; z < 2000; z += 10) {
+					Vector3 pos = new Vector3 (x, y, z);
+					SurfacePos spos = UnitConverter.getSP(pos, UniverseSystem.curPlanet.surface.sideLength);
+					if (float.IsNaN (spos.u) || float.IsNaN (spos.v))
+						MyDebug.placeMarker (Unitracker.getFloatingPos(pos), 20);
+				
+				
+				}
+					
+		Debug.Log(UnitConverter.getSP(new WorldPos(16,250016,16).toVector3(), UniverseSystem.curPlanet.surface.sideLength));
+		Debug.Log(UnitConverter.getSP(new Vector3(16,250016,15), UniverseSystem.curPlanet.surface.sideLength));
+		SurfacePos sp = UnitConverter.getSP(new WorldPos(16,250016,0).toVector3(), UniverseSystem.curPlanet.surface.sideLength);
+		//print (float.IsNaN (sp.v));
+		Debug.Log(UnitConverter.getSP(new WorldPos(16,250016,10).toVector3(), UniverseSystem.curPlanet.surface.sideLength));
+		Debug.Log(UnitConverter.getSP(new WorldPos(16,250016,143).toVector3(), UniverseSystem.curPlanet.surface.sideLength));
+		Debug.Log(UnitConverter.getSP(new WorldPos(16,250016,16).toVector3(), UniverseSystem.curPlanet.surface.sideLength));
+*/
 		//set planet reference to appropriate planet
 		//planet = UniverseSystem.curPlanet;
 		//surface position test
@@ -262,7 +281,7 @@ public class RequestSystem : MonoBehaviour
 	{
 		//convert the worldpos to a surface pos
 		SurfacePos surfp = UnitConverter.getSP(pos.toVector3(), UniverseSystem.curPlanet.surface.sideLength);
-
+		//Debug.Log (pos);
 		//convert the surfacepos to a surface unit then request its creation
 		UniverseSystem.curPlanet.surface.CreateSurfaceObjects(surfp.toUnit());
 	}
