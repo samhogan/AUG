@@ -68,7 +68,7 @@ public class Unitracker : MonoBehaviour
 	void initialPositioning()
 	{
 
-		bool startOnPlanet = true;
+		bool startOnPlanet = false;
 
 		if(startOnPlanet)
 		{
@@ -105,13 +105,22 @@ public class Unitracker : MonoBehaviour
 	{
 
 		//calculate the position of the tracker based on the position of the player
-		float scaledX = pRefX+(player.transform.localPosition.x/uniscale)-tRefX;
-		float scaledY = pRefY+(player.transform.localPosition.y/uniscale)-tRefY;
-		float scaledZ = pRefZ+(player.transform.localPosition.z/uniscale)-tRefZ;
+		float scaledX = pRefX+(player.transform.localPosition.x/uniscale);
+		float scaledY = pRefY+(player.transform.localPosition.y/uniscale);
+		float scaledZ = pRefZ+(player.transform.localPosition.z/uniscale);
+
+		//if the tracker is not parented to a planet, the tracker reference must be subtracted 
+		//because pRef is relative to the center of the universe rather than the center of a planet
+		if(!onPlanet)
+		{
+			scaledX -= tRefX;
+			scaledY -= tRefY;
+			scaledZ -= tRefZ;
+		}
 
 		transform.localPosition = new Vector3(scaledX, scaledY, scaledZ);
-		//print("pos is " + transform.position);
-
+		print(pRefX + " " + player.transform.localPosition + " " + transform.position);
+		//print(player.transform.position.x + " " + player.transform.localPosition.x);
 		//print(UniverseSystem.curPlanet!=null);
 		if(onPlanet)
 			checkSpace();
@@ -120,6 +129,7 @@ public class Unitracker : MonoBehaviour
 	 
 		checkTrackerPos();
 		checkPlayerPos();
+
 		//checkTrackerPos();
 	
 	}
@@ -167,15 +177,18 @@ public class Unitracker : MonoBehaviour
 		onPlanet=true;
 		UniverseSystem.curPlanet = plan;
 
-		print("p player initial rot is " + player.transform.rotation.eulerAngles);
+		//print("p player initial rot is " + player.transform.rotation.eulerAngles);
 		
-
+		print("before parent set " + transform.position);
 		//parent the unitracker to the planet and set the new ref points relative to the planet center
 		transform.SetParent(plan.scaledRep.transform, true);
+		//transform.parent = plan.scaledRep.transform;
+		////print("after parent set " + transform.position);
 		reposPlayer();
+		print("after player repos " + transform.position);
 
 
-		print("p tracker parented rot is " + transform.rotation.eulerAngles);
+		//print("p tracker parented rot is " + transform.rotation.eulerAngles);
 		
 		
 
@@ -190,7 +203,7 @@ public class Unitracker : MonoBehaviour
 		player.transform.rotation=transform.localRotation*player.transform.rotation;
 		
 
-		print("p new player rot is " + player.transform.rotation.eulerAngles);
+		//print("p new player rot is " + player.transform.rotation.eulerAngles);
 		
 
 		//print(transform.localRotation.eulerAngles);
@@ -230,7 +243,7 @@ public class Unitracker : MonoBehaviour
 			UniverseSystem.curPlanet = null;
 			transform.parent = null;
 
-			print("player initial rot is " + player.transform.rotation.eulerAngles);
+			//print("player initial rot is " + player.transform.rotation.eulerAngles);
 
 			reposPlayer();
 
@@ -238,15 +251,17 @@ public class Unitracker : MonoBehaviour
 			//player.transform.rotation = player.transform.rotation*transform.localRotation;
 
 			//
-			print("tracker parented rot is " + transform.rotation.eulerAngles);
+			//print("tracker parented rot is " + transform.rotation.eulerAngles);
 			
 			//rotate the player rotation by the negative rotation of the planet
 			//player.transform.rotation*=transform.localRotation;
 			player.transform.rotation=transform.localRotation*player.transform.rotation;
 			//player.transform.rotation = Quaternion.
 
+			//rotate velocities and stuff
+			//or possibly later have a container gameobject that just rotates everything in it 
 
-			print("new player rot is " + player.transform.rotation.eulerAngles);
+			//print("new player rot is " + player.transform.rotation.eulerAngles);
 			
 
 			//print(transform.rotation.eulerAngles);
@@ -283,6 +298,7 @@ public class Unitracker : MonoBehaviour
 	//checks if the tracker is outside the precision threshold (5000 units from the origin) and moves it (and planets) back
 	void checkTrackerPos()
 	{
+		print("before tracker repos " + transform.position);
 
 		bool newRef = false;//the ref has changed
 		if(transform.position.x>halfut || transform.position.x<-halfut)
@@ -318,13 +334,16 @@ public class Unitracker : MonoBehaviour
 
 		//only reposition the planets if the tref has changed
 		if(newRef)
+		{
+			print("before planet repos " + transform.position);
 			reposPlanets();
-
+		}
 	}
 
 	//recalculates all planet scaledRep positions 
 	void reposPlanets()
 	{
+		print("planets were repositioned");
 		foreach(Planet plan in UniverseSystem.planets)
 		{
 			plan.scaledRep.transform.position = UniToAbs(plan.scaledPos);

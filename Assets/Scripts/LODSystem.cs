@@ -170,7 +170,7 @@ public class LODSystem
 
 			//the adjusted position of this terrain obj whin in unispace
 			terrainGO.transform.localPosition = pos.toVector3()*TerrainObject.chunkWidth*absScale;
-
+			terrainGO.transform.localRotation = Quaternion.identity;
 
 		}
 		else//it is in normal space
