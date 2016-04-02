@@ -47,7 +47,7 @@ public class SurfaceSystem
 	//or if it already exists, increase its wuCount
 	public void CreateSurfaceObjects(SurfaceUnit su)
 	{
-
+		
 		//creates an empty surface holder
 		SurfaceHolder sh = null;
 		//Debug.Log (su);

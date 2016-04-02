@@ -22,7 +22,7 @@ public class WorldObject : MonoBehaviour
 		filter = gameObject.GetComponent<MeshFilter>();
 		renderer = gameObject.GetComponent<MeshRenderer>();
 		
-		Material mat = Resources.Load("TestMaterial2") as Material;//loads the default material, will remove this
+		Material mat = Resources.Load("AtlasGeneric") as Material;//loads the default material, will remove this
 		renderer.material = mat;
 	}
 

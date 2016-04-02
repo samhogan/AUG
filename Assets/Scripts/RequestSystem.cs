@@ -283,7 +283,7 @@ public class RequestSystem : MonoBehaviour
 		SurfacePos surfp = UnitConverter.getSP(pos.toVector3(), UniverseSystem.curPlanet.surface.sideLength);
 		//Debug.Log (pos);
 		//convert the surfacepos to a surface unit then request its creation
-		UniverseSystem.curPlanet.surface.CreateSurfaceObjects(surfp.toUnit());
+		/////UniverseSystem.curPlanet.surface.CreateSurfaceObjects(surfp.toUnit());
 	}
 
 	void deleteSurface(WorldPos pos)
@@ -292,7 +292,7 @@ public class RequestSystem : MonoBehaviour
 		SurfacePos surfp = UnitConverter.getSP(pos.toVector3(), UniverseSystem.curPlanet.surface.sideLength);
 		
 		//convert the surfacepos to a surface unit then request its creation
-		UniverseSystem.curPlanet.surface.deleteSurface(surfp.toUnit());
+		////UniverseSystem.curPlanet.surface.deleteSurface(surfp.toUnit());
 
 	}
 

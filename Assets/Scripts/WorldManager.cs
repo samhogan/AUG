@@ -16,8 +16,9 @@ public class WorldManager : MonoBehaviour
 	{
 
 		//universal terrain stuff
-		MarchingCubes2.SetWindingOrder (2, 1, 0);//the the visible side of the polygons 
-		MarchingCubes2.SetTarget(1);//1 is the voxel surface value
+		MarchingCubes.SetWindingOrder (2, 1, 0);//the the visible side of the polygons 
+		//MarchingCubes.SetWindingOrder (0,1,2);//the the visible side of the polygons 
+		MarchingCubes.SetTarget(1);//1 is the voxel surface value
 
 		RandomHandler.hash = new XXHash(1);//using seed 1 for testing(will later be randomly chosen
 

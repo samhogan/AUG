@@ -204,7 +204,9 @@ public class LODSystem
 
 					//fills in the appropriate voxel data for marching cubes
 					chunk.voxVals[x,y,z] = distxyz/altitude;//Noise.GetNoise((x+pos.x)/scale,(y+pos.y)/scale,(z+pos.z)/scale);
-					
+
+					//get the texture point of the substace at this vector
+					chunk.voxType[x, y, z] = planet.noise.getSubstace(voxPos).colorPoint;
 					//puts a hole in the planet(just for fun
 					//if(voxPos.x<10 && voxPos.x>-10 && voxPos.z<10 && voxPos.z>-10)
 					//chunk.voxVals[x,y,z] = 2;
@@ -373,19 +375,35 @@ public class LODSystem
 		//length of this specific lod chunk
 		float sideLength = 16*Mathf.Pow(2,pos.level);
 
-		//the position of the lod chunk in relation to the center in unity units
-		Vector3 absPos = new Vector3(sideLength*(pos.x+0.5f),
-		                             sideLength*(pos.y+0.5f),
-		                             sideLength*(pos.z+0.5f));
-		//Debug.Log(absPos.magnitude + " " + planet.noise.getAltitude(absPos)+" " +sideLength);
+		for(int x = 0; x <= 1; x++)
+			for(int y = 0; y <= 1; y++)
+				for(int z = 0; z <= 1; z++)
+				{
+					if(pointContainsLand(sideLength, new Vector3(x,y,z), pos))
+						return true;
+				}
 
-		//altitude of land below or above this chunk
+
+		return false;
+
+
+	}
+
+	//checks a single corner of a chunks to see if it is worthy of containing land
+	bool pointContainsLand(float sideLength, Vector3 corner, LODPos pos)
+	{
+		//the position of the corner chunk in relation to the center in unity units
+		Vector3 absPos = new Vector3(sideLength*(pos.x+corner.x),
+									sideLength*(pos.y+corner.y),
+									sideLength*(pos.z+corner.z));
+		//altitude of land below or above this point
 		float alt = planet.noise.getAltitude(absPos);
 
 		//contains land if the dist to center of lod chunk is within a side length of the altitude
+		//NOTE: may later change it to half a side legth because the corners are closer
 		return absPos.magnitude < (alt+sideLength) && absPos.magnitude > (alt-sideLength);
 
-
+		
 	}
 
 	//returns the side length of a given lod level

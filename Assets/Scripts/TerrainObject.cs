@@ -13,7 +13,10 @@ public class TerrainObject : WorldObject
 	//voxel values for generating terrain surface+1 to link all the meshes
 	//these values are decimal numbers used by the marching cubes algorithm to generate a mesh
 	public float[ , , ] voxVals = new float[chunkSize+1, chunkSize+1, chunkSize+1];
-	//public Vector2[ , , ] voxType = new Vector2[chunkSize+1, chunkSize+1, chunkSize+1];//the type of texture that will be rendered at each voxel
+
+	//the type of texture that will be rendered at each voxel
+	//NOTE: may later change to hold Subs rather than vectors
+	public Vector2[ , , ] voxType = new Vector2[chunkSize+1, chunkSize+1, chunkSize+1];
 
 	private MeshCollider coll;
 
@@ -34,7 +37,8 @@ public class TerrainObject : WorldObject
 	{
 		//if(Time.time<10)
 		//{
-		Mesh mesh = MarchingCubes2.CreateMesh(voxVals);
+		Mesh mesh = MarchingCubes.CreateMesh(voxVals, voxType);
+		//Mesh mesh = MarchingCubes2.CreateMesh(voxVals);
 		mesh.RecalculateNormals();//not sure what this does at the moment
 		filter.mesh = mesh;
 
