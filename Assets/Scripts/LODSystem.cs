@@ -196,17 +196,19 @@ public class LODSystem
 					voxPos.z = (pos.z*16+z*TerrainObject.wsRatio)*scale;
 
 	
-					//the distance from the center of the planet to the current voxel
-					float distxyz = Vector3.Distance(Vector3.zero, voxPos);
-					
-					//the height of land below (or above) this voxel
-					float altitude = planet.noise.getAltitude(voxPos);
+
+
+					Sub sub;//the substance of this voxel
+					float voxVal;//the voxel value of this voxel for marching cubes
+
+					//retrieve the voxel data from noise
+					planet.noise.getVoxData(voxPos, out voxVal, out sub);
 
 					//fills in the appropriate voxel data for marching cubes
-					chunk.voxVals[x,y,z] = distxyz/altitude;//Noise.GetNoise((x+pos.x)/scale,(y+pos.y)/scale,(z+pos.z)/scale);
+					chunk.voxVals[x,y,z] = voxVal;//Noise.GetNoise((x+pos.x)/scale,(y+pos.y)/scale,(z+pos.z)/scale);
 
 					//get the texture point of the substace at this vector
-					chunk.voxType[x, y, z] = planet.noise.getSubstace(voxPos).colorPoint;
+					chunk.voxType[x, y, z] = Substance.subs[sub].colorPoint;
 					//puts a hole in the planet(just for fun
 					//if(voxPos.x<10 && voxPos.x>-10 && voxPos.z<10 && voxPos.z>-10)
 					//chunk.voxVals[x,y,z] = 2;

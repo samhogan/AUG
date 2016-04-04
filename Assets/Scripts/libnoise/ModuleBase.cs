@@ -28,7 +28,7 @@ namespace LibNoise
         #region Fields
 
         private ModuleBase[] _modules;
-
+		public Sub substance;//sam
         #endregion
 
         #region Constructors
@@ -112,7 +112,14 @@ namespace LibNoise
         /// <param name="y">The input coordinate on the y-axis.</param>
         /// <param name="z">The input coordinate on the z-axis.</param>
         /// <returns>The resulting output value.</returns>
-        public abstract double GetValue(double x, double y, double z);
+		public abstract double GetValue(double x, double y, double z);
+        
+		//sam
+		public virtual double GetValue(double x, double y, double z, out Sub sub)
+		{
+			sub = Sub.TEST;
+			return 0;
+		}
 
         /// <summary>
         /// Returns the output value for the given input coordinates.

@@ -17,6 +17,8 @@ namespace LibNoise.Generator
         private int _seed;
         private readonly double[] _weights = new double[Utils.OctavesMaximum];
 
+		//public Sub substance;//sam
+
         #endregion
 
         #region Constructors
@@ -38,7 +40,7 @@ namespace LibNoise.Generator
         /// <param name="octaves">The number of octaves of the ridged-multifractal noise.</param>
         /// <param name="seed">The seed of the ridged-multifractal noise.</param>
         /// <param name="quality">The quality of the ridged-multifractal noise.</param>
-        public RidgedMultifractal(double frequency, double lacunarity, int octaves, int seed, QualityMode quality)
+        public RidgedMultifractal(double frequency, double lacunarity, int octaves, int seed, QualityMode quality, Sub sub)
             : base(0)
         {
             Frequency = frequency;
@@ -46,6 +48,7 @@ namespace LibNoise.Generator
             OctaveCount = octaves;
             Seed = seed;
             Quality = quality;
+			substance = sub;
         }
 
         #endregion
@@ -158,6 +161,13 @@ namespace LibNoise.Generator
             }
             return (value * 1.25) - 1.0;
         }
+
+		//sam
+		public override double GetValue(double x, double y, double z, out Sub sub)
+		{
+			sub = substance;
+			return GetValue(x, y, z);
+		}
 
         #endregion
     }

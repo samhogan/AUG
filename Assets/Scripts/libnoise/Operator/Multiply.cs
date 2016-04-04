@@ -41,12 +41,20 @@ namespace LibNoise.Operator
         /// <param name="y">The input coordinate on the y-axis.</param>
         /// <param name="z">The input coordinate on the z-axis.</param>
         /// <returns>The resulting output value.</returns>
-        public override double GetValue(double x, double y, double z)
-        {
+		public override double GetValue(double x, double y, double z)
+		{
             Debug.Assert(Modules[0] != null);
             Debug.Assert(Modules[1] != null);
-            return Modules[0].GetValue(x, y, z) * Modules[1].GetValue(x, y, z);
+			return Modules[0].GetValue(x, y, z) * Modules[1].GetValue(x, y, z);
         }
+
+		//sam
+		public override double GetValue(double x, double y, double z, out Sub sub)
+		{
+			return Modules[0].GetValue(x, y, z, out sub) * Modules[1].GetValue(x, y, z);
+
+		}
+
 
         #endregion
     }

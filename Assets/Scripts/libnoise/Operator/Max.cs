@@ -51,6 +51,21 @@ namespace LibNoise.Operator
             return Math.Max(a, b);
         }
 
+		public override double GetValue(double x, double y, double z, out Sub sub)
+		{
+			Debug.Assert(Modules[0] != null);
+			Debug.Assert(Modules[1] != null);
+			Sub asub;
+			Sub bsub;
+			var a = Modules[0].GetValue(x, y, z, out asub);
+			var b = Modules[1].GetValue(x, y, z, out bsub);
+			if(a > b)
+				sub = asub;
+			else
+				sub = bsub;
+			return Math.Max(a, b);
+		}
+
         #endregion
     }
 }

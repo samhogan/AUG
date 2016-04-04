@@ -60,6 +60,13 @@
             return _value;
         }
 
+		//sam
+		public override double GetValue(double x, double y, double z, out Sub sub)
+		{ 
+			sub = substance;
+			return _value;
+		}
+
         #endregion
     }
 }
