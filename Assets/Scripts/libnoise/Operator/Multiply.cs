@@ -49,7 +49,7 @@ namespace LibNoise.Operator
         }
 
 		//sam
-		public override double GetValue(double x, double y, double z, out Sub sub)
+		public override double GetValue(double x, double y, double z, out ModuleBase sub)
 		{
 			return Modules[0].GetValue(x, y, z, out sub) * Modules[1].GetValue(x, y, z);
 

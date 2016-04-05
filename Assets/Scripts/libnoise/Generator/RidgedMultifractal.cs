@@ -40,7 +40,7 @@ namespace LibNoise.Generator
         /// <param name="octaves">The number of octaves of the ridged-multifractal noise.</param>
         /// <param name="seed">The seed of the ridged-multifractal noise.</param>
         /// <param name="quality">The quality of the ridged-multifractal noise.</param>
-        public RidgedMultifractal(double frequency, double lacunarity, int octaves, int seed, QualityMode quality, Sub sub)
+        public RidgedMultifractal(double frequency, double lacunarity, int octaves, int seed, QualityMode quality)
             : base(0)
         {
             Frequency = frequency;
@@ -48,8 +48,16 @@ namespace LibNoise.Generator
             OctaveCount = octaves;
             Seed = seed;
             Quality = quality;
-			substance = sub;
         }
+
+		//sam
+		public RidgedMultifractal(double frequency, double lacunarity, int octaves, int seed, QualityMode quality, ModuleBase sub)
+			: this(frequency, lacunarity, octaves, seed, quality)
+		{
+
+			substance = sub;
+		}
+
 
         #endregion
 
@@ -163,7 +171,7 @@ namespace LibNoise.Generator
         }
 
 		//sam
-		public override double GetValue(double x, double y, double z, out Sub sub)
+		public override double GetValue(double x, double y, double z, out ModuleBase sub)
 		{
 			sub = substance;
 			return GetValue(x, y, z);

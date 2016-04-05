@@ -31,6 +31,14 @@
             Value = value;
         }
 
+		//sam
+		public Const(double value, ModuleBase sub)
+			: base(0)
+		{
+			Value = value;
+			substance = sub;
+		}
+
         #endregion
 
         #region Properties
@@ -61,7 +69,7 @@
         }
 
 		//sam
-		public override double GetValue(double x, double y, double z, out Sub sub)
+		public override double GetValue(double x, double y, double z, out ModuleBase sub)
 		{ 
 			sub = substance;
 			return _value;

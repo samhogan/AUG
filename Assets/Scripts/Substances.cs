@@ -24,7 +24,10 @@ public class Substance
 	public static Dictionary<Sub, Substance> subs = new Dictionary<Sub, Substance>() 
 	{
 		{Sub.TEST, new Substance(16,16)},
-		{Sub.ICE, new Substance(0,32)},
+		{Sub.ICE, new Substance(31,0)},
+		{Sub.ROCK, new Substance(0,32)},
+		{Sub.VEGITATION, new Substance(9,23)},
+		{Sub.ROCK2, new Substance(4, 28)},
 	};
 
 
@@ -36,5 +39,6 @@ public enum Sub
 	TEST,
 	ICE,
 	ROCK,
-	VEGITATION	
+	VEGITATION,
+	ROCK2,
 }

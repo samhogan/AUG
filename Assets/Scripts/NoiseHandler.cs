@@ -3,6 +3,7 @@ using System.Collections;
 using LibNoise;
 using LibNoise.Generator;
 using LibNoise.Operator;
+using System.Collections.Generic;
 
 
 //one instance per planet, controls simplex noise based things such as altitude, population density, etc.
@@ -16,18 +17,24 @@ public class NoiseHandler
 	private Max finalTerrain;
 	private Perlin textureTest;
 
+	private List<ModuleBase> substanceNoise;
+
 	public NoiseHandler(float r)
 	{
 		radius = r;
-		tScale1 = 250000;
-		tScale1 = 1030;
-		tHeight1 = 20000;
-		tHeight1 = 200;
-		RidgedMultifractal rmf = new RidgedMultifractal(.0001, 2, 2, 1, QualityMode.High, Sub.ICE);
-		Multiply mult = new Multiply(rmf, new Const(2000));
+
+		//create some terrain noise
+		RidgedMultifractal rmf = new RidgedMultifractal(.0001, 2, 4, 1, QualityMode.High, new Const((int)Sub.ICE));
+		Multiply mult = new Multiply(rmf, new Const(2000, new Const(0)));
 		finalTerrain = new Max(mult, new Const(0));//, new Perlin(.001, 2, 2, 2, 1, QualityMode.High));
 
-		textureTest = new Perlin(.0001, 2, 2, 1, 1, QualityMode.High);
+
+
+		substanceNoise = new List<ModuleBase>();
+		ModuleBase rock = new Select(new Const(2), new Const(4), new Billow(.001, 2, 2, 2, 1, QualityMode.High));
+		ModuleBase rinoise = new Select(new Const(1), rock, new Perlin(.00001, 2, 2, 2, 1, QualityMode.High));
+		ModuleBase veg = new Select(new Const(3), rinoise, new Perlin(.000006, 2, 2, 2, 4352, QualityMode.High));
+		substanceNoise.Add(veg);
 	}
 
 	//returns the voxel val(float value used to build the mesh with marching cubes) and type(substance) at a specific voxel
@@ -36,11 +43,14 @@ public class NoiseHandler
 		//the distance from the center of the planet to the current voxel
 		float distxyz = Vector3.Distance(Vector3.zero, pos);
 
-		pos = pos.normalized*radius;// get the spot at sea level of the planet(this is to prevent weird overhangs and stuff
+		Vector3 surfPos = pos.normalized*radius;// get the spot at sea level of the planet(this is to prevent weird overhangs and stuff
 
+		//the substance noise to use at this voxel
+		
 		//sub = Sub.ICE;
-		float noise = (float)finalTerrain.GetValue(pos.x, pos.y, pos.z, out sub);
+		float noise = (float)finalTerrain.GetValue(surfPos.x, surfPos.y, surfPos.z);
 
+		sub = (Sub)substanceNoise[0].GetValue(surfPos.x, surfPos.y, surfPos.z);
 		//the marching cubes value is the distance to the voxel / the altitude(point on the surface) above or below that voxel
 		val = distxyz/(radius + noise);
 
@@ -73,13 +83,13 @@ public class NoiseHandler
 
 	//returns the id of a sub at a specific position
 	//later might return the substace itself
-	public Substance getSubstace(Vector3 pos)
+	/*public Substance getSubstace(Vector3 pos)
 	{
 		//if(finalTerrain.GetValue(pos.x, pos.y, pos.z) > 0)
 		if(textureTest.GetValue(pos.x, pos.y, pos.z)>0)
 			return Substance.subs[Sub.TEST];
 		else
 			return Substance.subs[Sub.ICE];
-	}
+	}*/
 
 }
