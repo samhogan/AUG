@@ -48,6 +48,13 @@ namespace LibNoise.Operator
             return Modules[0].GetValue(x, y, z) + Modules[1].GetValue(x, y, z);
         }
 
+		public override double GetValue(double x, double y, double z, out int tid)
+		{
+			Debug.Assert(Modules[0] != null);
+			Debug.Assert(Modules[1] != null);
+			return Modules[0].GetValue(x, y, z, out tid) + Modules[1].GetValue(x, y, z);
+		}
+
         #endregion
     }
 }

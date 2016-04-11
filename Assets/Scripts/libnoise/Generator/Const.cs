@@ -31,12 +31,21 @@
             Value = value;
         }
 
+
 		//sam
-		public Const(double value, ModuleBase sub)
+		/*public Const(Sub sub)
+			: base(0)
+		{
+			Value = (double)sub;
+		}*/
+
+
+		//sam
+		public Const(double value, int tid)
 			: base(0)
 		{
 			Value = value;
-			substance = sub;
+			textID = tid;
 		}
 
         #endregion
@@ -69,9 +78,9 @@
         }
 
 		//sam
-		public override double GetValue(double x, double y, double z, out ModuleBase sub)
+		public override double GetValue(double x, double y, double z, out int tid)
 		{ 
-			sub = substance;
+			tid = textID;
 			return _value;
 		}
 

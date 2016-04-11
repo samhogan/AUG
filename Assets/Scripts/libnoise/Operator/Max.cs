@@ -51,22 +51,15 @@ namespace LibNoise.Operator
             return Math.Max(a, b);
         }
 
-		public override double GetValue(double x, double y, double z, out ModuleBase sub)
+		public override double GetValue(double x, double y, double z, out int tid)
 		{
 			Debug.Assert(Modules[0] != null);
 			Debug.Assert(Modules[1] != null);
-			ModuleBase asub;
-			ModuleBase bsub;
-			var a = Modules[0].GetValue(x, y, z, out asub);
-			var b = Modules[1].GetValue(x, y, z, out bsub);
-			//System.Diagnostics.Debug.
-			//UnityEngine.Debug.Log("max " + asub + " " + bsub);
-			if(a > b)
-				sub = asub;
-			else
-				sub = bsub;
-
-			sub = asub;
+			int atid;
+			int btid;
+			var a = Modules[0].GetValue(x, y, z, out atid);
+			var b = Modules[1].GetValue(x, y, z, out btid);
+			tid = a>b ? atid:btid;
 			return Math.Max(a, b);
 		}
 

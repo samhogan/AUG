@@ -50,7 +50,7 @@ public class Unitracker : MonoBehaviour
 	// Use this for initialization
 	void Start()
 	{
-		print(Quaternion.Inverse(Quaternion.Euler(0,-45,0)).eulerAngles);
+		//print(Quaternion.Inverse(Quaternion.Euler(0,-45,0)).eulerAngles);
 		
 		pRefX = 0;
 		pRefY = 0;
@@ -119,7 +119,7 @@ public class Unitracker : MonoBehaviour
 		}
 
 		transform.localPosition = new Vector3(scaledX, scaledY, scaledZ);
-		print(pRefX + " " + player.transform.localPosition + " " + transform.position);
+		//print(pRefX + " " + player.transform.localPosition + " " + transform.position);
 		//print(player.transform.position.x + " " + player.transform.localPosition.x);
 		//print(UniverseSystem.curPlanet!=null);
 		if(onPlanet)
@@ -179,13 +179,13 @@ public class Unitracker : MonoBehaviour
 
 		//print("p player initial rot is " + player.transform.rotation.eulerAngles);
 		
-		print("before parent set " + transform.position);
+		//print("before parent set " + transform.position);
 		//parent the unitracker to the planet and set the new ref points relative to the planet center
 		transform.SetParent(plan.scaledRep.transform, true);
 		//transform.parent = plan.scaledRep.transform;
 		////print("after parent set " + transform.position);
 		reposPlayer();
-		print("after player repos " + transform.position);
+		//print("after player repos " + transform.position);
 
 
 		//print("p tracker parented rot is " + transform.rotation.eulerAngles);
@@ -298,7 +298,7 @@ public class Unitracker : MonoBehaviour
 	//checks if the tracker is outside the precision threshold (5000 units from the origin) and moves it (and planets) back
 	void checkTrackerPos()
 	{
-		print("before tracker repos " + transform.position);
+		//print("before tracker repos " + transform.position);
 
 		bool newRef = false;//the ref has changed
 		if(transform.position.x>halfut || transform.position.x<-halfut)
@@ -335,7 +335,7 @@ public class Unitracker : MonoBehaviour
 		//only reposition the planets if the tref has changed
 		if(newRef)
 		{
-			print("before planet repos " + transform.position);
+			//print("before planet repos " + transform.position);
 			reposPlanets();
 		}
 	}
@@ -343,7 +343,7 @@ public class Unitracker : MonoBehaviour
 	//recalculates all planet scaledRep positions 
 	void reposPlanets()
 	{
-		print("planets were repositioned");
+		//print("planets were repositioned");
 		foreach(Planet plan in UniverseSystem.planets)
 		{
 			plan.scaledRep.transform.position = UniToAbs(plan.scaledPos);

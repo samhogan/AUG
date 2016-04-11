@@ -12,8 +12,8 @@ namespace LibNoise.Operator
 
         private double _fallOff;
         private double _raw;
-        private double _min = -1.0;
-        private double _max = 1.0;
+        private double _min = -5.0;//-1.0
+        private double _max = 0.0;//1.0
 
         #endregion
 
@@ -180,12 +180,63 @@ namespace LibNoise.Operator
                 }
                 return Modules[0].GetValue(x, y, z);
             }
+			//if (cv < _min || cv > _max)
             if (cv < _min || cv > _max)
             {
                 return Modules[0].GetValue(x, y, z);
             }
             return Modules[1].GetValue(x, y, z);
         }
+
+		public override double GetValue(double x, double y, double z, out int tid)
+		{
+			var cv = Modules[2].GetValue(x, y, z);
+			if (_fallOff > 0.0)
+			{
+				double a;
+				if (cv < (_min - _fallOff))
+				{
+					return Modules[0].GetValue(x, y, z, out tid);
+				}
+				if (cv < (_min + _fallOff))
+				{
+					int atid, btid;
+					double m0 = Modules[0].GetValue(x, y, z, out atid);
+					double m1 = Modules[1].GetValue(x, y, z, out btid);
+					tid = (cv < _min || cv > _max) ? atid : btid;
+
+					var lc = (_min - _fallOff);
+					var uc = (_min + _fallOff);
+					a = Utils.MapCubicSCurve((cv - lc) / (uc - lc));
+					return Utils.InterpolateLinear(m0,
+						m1, a);
+				}
+				if (cv < (_max - _fallOff))
+				{
+					return Modules[1].GetValue(x, y, z, out tid);
+				}
+				if (cv < (_max + _fallOff))
+				{
+					int atid, btid;
+					double m0 = Modules[0].GetValue(x, y, z, out atid);
+					double m1 = Modules[1].GetValue(x, y, z, out btid);
+					tid = (cv < _min || cv > _max) ? atid : btid;
+
+					var lc = (_max - _fallOff);
+					var uc = (_max + _fallOff);
+					a = Utils.MapCubicSCurve((cv - lc) / (uc - lc));
+					return Utils.InterpolateLinear(m1,
+						m0, a);
+				}
+				return Modules[0].GetValue(x, y, z, out tid);
+			}
+			//if (cv < _min || cv > _max)
+			if (cv < _min || cv > _max)
+			{
+				return Modules[0].GetValue(x, y, z, out tid);
+			}
+			return Modules[1].GetValue(x, y, z, out tid);
+		}
 
         #endregion
     }

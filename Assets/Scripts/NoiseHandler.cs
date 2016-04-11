@@ -11,30 +11,69 @@ public class NoiseHandler
 {
 	private float radius;//the radius of the planet
 
-	private float tScale1;//level 1 terrain scale(continents, big noise)
-	private float tHeight1;//level 1 terrain height
-
-	private Max finalTerrain;
-	private Perlin textureTest;
+	//module that outputsj
+	private ModuleBase finalTerrain;
+	private ModuleBase finalTexture;
 
 	private List<ModuleBase> substanceNoise;
 
 	public NoiseHandler(float r)
 	{
 		radius = r;
-
-		//create some terrain noise
-		RidgedMultifractal rmf = new RidgedMultifractal(.0001, 2, 4, 1, QualityMode.High, new Const((int)Sub.ICE));
-		Multiply mult = new Multiply(rmf, new Const(2000, new Const(0)));
-		finalTerrain = new Max(mult, new Const(0));//, new Perlin(.001, 2, 2, 2, 1, QualityMode.High));
-
-
-
 		substanceNoise = new List<ModuleBase>();
-		ModuleBase rock = new Select(new Const(2), new Const(4), new Billow(.001, 2, 2, 2, 1, QualityMode.High));
-		ModuleBase rinoise = new Select(new Const(1), rock, new Perlin(.00001, 2, 2, 2, 1, QualityMode.High));
-		ModuleBase veg = new Select(new Const(3), rinoise, new Perlin(.000006, 2, 2, 2, 4352, QualityMode.High));
-		substanceNoise.Add(veg);
+
+		Const baseTexture = new Const(3);
+		substanceNoise.Add(baseTexture);
+		finalTerrain = new Const(0, 0);
+		addMountains();
+		//create some terrain height noise
+		/*RidgedMultifractal rmf = new RidgedMultifractal(.0001, 2, 4, 1, QualityMode.High, new Const(Sub.ICE));
+		Multiply mounts = new Multiply(rmf, new Const(2000, new Const(0)));
+		Perlin hills = new Perlin(.0001, 2, .5, 4, 324, QualityMode.High);
+		Multiply hillsmult = new Multiply(hills, new Const(10));
+		//finalTerrain = new Max(mult, new Const(0));//, new Perlin(.001, 2, 2, 2, 1, QualityMode.High));
+		Select sel = new Select(hillsmult, mounts, new Perlin(0.000001, 2, .5, 6, 34, QualityMode.High));
+		sel.Maximum = 0;
+		sel.Minimum = -5;
+		sel.FallOff = 5;
+
+		Perlin continents = new Perlin(.000001, 2, .5, 4, 6734, QualityMode.High);
+		finalTerrain = new Add(sel, new Multiply(continents, new Const(2000)));
+
+
+		//terrain texture noise
+		substanceNoise = new List<ModuleBase>();
+		ModuleBase rock = new Select(new Const(2), new Const(4), new Billow(.001, 2, .5, 2, 1, QualityMode.High));
+		ModuleBase rinoise = new Select(new Const(1), rock, new Perlin(.00001, 2, .5, 2, 1, QualityMode.High));
+		ModuleBase veg = new Select(new Const(3), rinoise, new Perlin(.000006, 2, .5, 2, 4352, QualityMode.High));
+		substanceNoise.Add(veg);*/
+
+
+		/*Perlin testperl = new Perlin(.1, 2, .5, 6, 2, QualityMode.High);
+		for(int i = 0; i<20; i++)
+			Debug.Log(testperl.GetValue(Random.Range(-10000,10000), Random.Range(-10000,10000), Random.Range(-10000,10000))); 
+			*/
+	}
+
+	public void addMountains()
+	{
+		//create the mountain texture
+		ModuleBase rocktext = new Select(new Const(2), new Const(4), new Billow(.001, 2, .5, 2, 1, QualityMode.High));
+		substanceNoise.Add(rocktext);
+
+		Debug.Log(substanceNoise.Count);
+		//create the mountain height noise
+		RidgedMultifractal rmf = new RidgedMultifractal(.0001, 2, 4, 1, QualityMode.High, substanceNoise.Count-1);
+		//Multiply mounts = new Multiply(rmf, new Const(2000));
+		Multiply mounts = new Multiply(new Add(rmf, new Const(1)), new Const(2000));
+
+		//add it to the final terrain
+		//Max newTerrain = new Max(mounts, finalTerrain);
+		Add selector = new Add(new Perlin(.00001, 2, .5, 2, 1, QualityMode.High), new Multiply(new Perlin(0.001, 2, .5, 2, 345, QualityMode.High), new Const(.01)));
+		Select newTerrain = new Select(finalTerrain, mounts, selector);
+		newTerrain.FallOff = 0.01;
+		finalTerrain = newTerrain;
+
 	}
 
 	//returns the voxel val(float value used to build the mesh with marching cubes) and type(substance) at a specific voxel
@@ -46,11 +85,11 @@ public class NoiseHandler
 		Vector3 surfPos = pos.normalized*radius;// get the spot at sea level of the planet(this is to prevent weird overhangs and stuff
 
 		//the substance noise to use at this voxel
-		
+		int tid;//the id of the texture module to use from substanceNoise
 		//sub = Sub.ICE;
-		float noise = (float)finalTerrain.GetValue(surfPos.x, surfPos.y, surfPos.z);
-
-		sub = (Sub)substanceNoise[0].GetValue(surfPos.x, surfPos.y, surfPos.z);
+		float noise = (float)finalTerrain.GetValue(surfPos.x, surfPos.y, surfPos.z, out tid);
+		//Debug.Log(tid);
+		sub = (Sub)substanceNoise[tid].GetValue(surfPos.x, surfPos.y, surfPos.z);
 		//the marching cubes value is the distance to the voxel / the altitude(point on the surface) above or below that voxel
 		val = distxyz/(radius + noise);
 

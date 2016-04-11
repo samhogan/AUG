@@ -29,7 +29,8 @@ namespace LibNoise
 
         private ModuleBase[] _modules;
 		//public Sub substance;//sam
-		public ModuleBase substance;
+		public int textID;
+
         #endregion
 
         #region Constructors
@@ -116,9 +117,9 @@ namespace LibNoise
 		public abstract double GetValue(double x, double y, double z);
         
 		//sam
-		public virtual double GetValue(double x, double y, double z, out ModuleBase sub)
+		public virtual double GetValue(double x, double y, double z, out int tid)
 		{
-			sub = null;
+			tid = -1;
 			return 0;
 		}
 
