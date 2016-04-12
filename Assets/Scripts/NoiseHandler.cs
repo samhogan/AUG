@@ -13,19 +13,28 @@ public class NoiseHandler
 
 	//module that outputsj
 	private ModuleBase finalTerrain;
-	private ModuleBase finalTexture;
+	//private ModuleBase finalTexture;
 
 	private List<ModuleBase> substanceNoise;
+
+	//the temperature gradient(later dependent on distance from star and atmosphere)
+	private ModuleBase finalTemp;
 
 	public NoiseHandler(float r)
 	{
 		radius = r;
 		substanceNoise = new List<ModuleBase>();
 
+		TempGrad basetemp = new TempGrad(110, -40, r);
+		Perlin tempOffest = new Perlin(0.00001, 2, .5, 3, 52546, QualityMode.High);
+		finalTemp = new Add(basetemp, new Multiply(tempOffest, new Const(30)));
+
+
 		Const baseTexture = new Const(3);
 		substanceNoise.Add(baseTexture);
 		finalTerrain = new Const(0, 0);
 		addMountains();
+		addDeserts();
 		//create some terrain height noise
 		/*RidgedMultifractal rmf = new RidgedMultifractal(.0001, 2, 4, 1, QualityMode.High, new Const(Sub.ICE));
 		Multiply mounts = new Multiply(rmf, new Const(2000, new Const(0)));
@@ -33,7 +42,7 @@ public class NoiseHandler
 		Multiply hillsmult = new Multiply(hills, new Const(10));
 		//finalTerrain = new Max(mult, new Const(0));//, new Perlin(.001, 2, 2, 2, 1, QualityMode.High));
 		Select sel = new Select(hillsmult, mounts, new Perlin(0.000001, 2, .5, 6, 34, QualityMode.High));
-		sel.Maximum = 0;
+		sel.Maximum = 0;d
 		sel.Minimum = -5;
 		sel.FallOff = 5;
 
@@ -55,13 +64,36 @@ public class NoiseHandler
 			*/
 	}
 
+	private void addDeserts()
+	{
+		//texture
+		ModuleBase sandtext = new Const(Sub.SAND);
+		substanceNoise.Add(sandtext);
+
+		//heightmap
+		Const heightmap = new Const(0, substanceNoise.Count-1);
+
+		//combine with finalTerrain
+
+		//add the deserts
+		Select addedDeserts = new Select(finalTerrain, heightmap, new Perlin(.00001, 2, 0.5, 4, 2334, QualityMode.High));
+		addedDeserts.Maximum = .25;
+
+		//confine the deserts to appropriate temperatures
+		Select newTerrain = new Select(finalTerrain, addedDeserts, finalTemp);
+		newTerrain.Maximum = 200;
+		newTerrain.Minimum = 80;
+
+		finalTerrain = newTerrain;
+	}
+
 	public void addMountains()
 	{
 		//create the mountain texture
 		ModuleBase rocktext = new Select(new Const(2), new Const(4), new Billow(.001, 2, .5, 2, 1, QualityMode.High));
 		substanceNoise.Add(rocktext);
 
-		Debug.Log(substanceNoise.Count);
+		//Debug.Log(substanceNoise.Count);
 		//create the mountain height noise
 		RidgedMultifractal rmf = new RidgedMultifractal(.0001, 2, 4, 1, QualityMode.High, substanceNoise.Count-1);
 		//Multiply mounts = new Multiply(rmf, new Const(2000));
@@ -120,6 +152,10 @@ public class NoiseHandler
 		return pos*(getAltitude(pos)/radius);
 	}
 
+	public double getTemp(Vector3 pos)
+	{
+		return finalTemp.GetValue(pos);
+	}
 	//returns the id of a sub at a specific position
 	//later might return the substace itself
 	/*public Substance getSubstace(Vector3 pos)

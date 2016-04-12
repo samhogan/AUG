@@ -28,6 +28,7 @@ public class Substance
 		{Sub.ROCK, new Substance(0,32)},
 		{Sub.VEGITATION, new Substance(9,23)},
 		{Sub.ROCK2, new Substance(4, 28)},
+		{Sub.SAND, new Substance(15, 29)},
 	};
 
 
@@ -41,4 +42,5 @@ public enum Sub
 	ROCK,
 	VEGITATION,
 	ROCK2,
+	SAND
 }

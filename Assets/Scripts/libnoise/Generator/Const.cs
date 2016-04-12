@@ -33,11 +33,11 @@
 
 
 		//sam
-		/*public Const(Sub sub)
+		public Const(Sub sub)
 			: base(0)
 		{
 			Value = (double)sub;
-		}*/
+		}
 
 
 		//sam

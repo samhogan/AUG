@@ -88,6 +88,7 @@ public class RequestSystem : MonoBehaviour
 		//only generate stuff for a planet if you are on a planet
 		if(Unitracker.onPlanet)
 		{
+			Debug.Log(UniverseSystem.curPlanet.noise.getTemp(realPos));
 			//the current chunk the player is in
 			WorldPos curChunkPos = UnitConverter.getChunk(realPos);
 
