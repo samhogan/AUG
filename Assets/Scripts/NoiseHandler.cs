@@ -25,7 +25,7 @@ public class NoiseHandler
 		radius = r;
 		substanceNoise = new List<ModuleBase>();
 
-		TempGrad basetemp = new TempGrad(110, -40, r);
+		TempGrad basetemp = new TempGrad(110, -30, r);
 		Perlin tempOffest = new Perlin(0.00001, 2, .5, 3, 52546, QualityMode.High);
 		finalTemp = new Add(basetemp, new Multiply(tempOffest, new Const(30)));
 
@@ -35,6 +35,8 @@ public class NoiseHandler
 		finalTerrain = new Const(0, 0);
 		addMountains();
 		addDeserts();
+		addIce();
+	//	addContinents();
 		//create some terrain height noise
 		/*RidgedMultifractal rmf = new RidgedMultifractal(.0001, 2, 4, 1, QualityMode.High, new Const(Sub.ICE));
 		Multiply mounts = new Multiply(rmf, new Const(2000, new Const(0)));
@@ -62,6 +64,36 @@ public class NoiseHandler
 		for(int i = 0; i<20; i++)
 			Debug.Log(testperl.GetValue(Random.Range(-10000,10000), Random.Range(-10000,10000), Random.Range(-10000,10000))); 
 			*/
+	}
+
+	private void addContinents()
+	{
+		Perlin continents = new Perlin(.000001, 2, .5, 6, 6734, QualityMode.High);
+		finalTerrain = new Add(finalTerrain, new Multiply(continents, new Const(10000)));
+
+	}
+
+	private void addIce()
+	{
+		//texture
+		ModuleBase text = new Const(Sub.ICE);
+		substanceNoise.Add(text);
+
+		//heightmap
+		Const heightmap = new Const(0, substanceNoise.Count-1);
+
+		//combine with finalTerrain
+
+		//add the deserts
+		Select addedIce = new Select(finalTerrain, heightmap, new Perlin(.00001, 2, 0.5, 4, 234, QualityMode.High));
+		addedIce.Maximum = .8;
+
+		//confine the deserts to appropriate temperatures
+		Select newTerrain = new Select(finalTerrain, addedIce, finalTemp);
+		newTerrain.Maximum = 32;
+		newTerrain.Minimum = -1000;
+
+		finalTerrain = newTerrain;
 	}
 
 	private void addDeserts()

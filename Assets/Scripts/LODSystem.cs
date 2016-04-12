@@ -206,7 +206,8 @@ public class LODSystem
 
 					//fills in the appropriate voxel data for marching cubes
 					chunk.voxVals[x,y,z] = voxVal;//Noise.GetNoise((x+pos.x)/scale,(y+pos.y)/scale,(z+pos.z)/scale);
-
+					//if(x+voxPos.x > 0)
+					//	chunk.voxVals[x, y, z] = 2;
 					//get the texture point of the substace at this vector
 					chunk.voxType[x, y, z] = Substance.subs[sub].colorPoint;
 					//puts a hole in the planet(just for fun
