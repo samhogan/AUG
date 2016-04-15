@@ -49,6 +49,14 @@ namespace LibNoise.Generator
             Quality = quality;
         }
 
+		public Perlin(double frequency, double lacunarity, double persistence, int octaves, int seed,
+			QualityMode quality, int tid)
+			: this(frequency, lacunarity, persistence, octaves, seed, quality)
+		{
+			textID = tid;
+		}
+
+
         #endregion
 
         #region Properties
@@ -140,6 +148,13 @@ namespace LibNoise.Generator
             }
             return value;
         }
+
+		//sam
+		public override double GetValue(double x, double y, double z, out int tid)
+		{
+			tid = textID;
+			return GetValue(x, y, z);
+		}
 
         #endregion
     }

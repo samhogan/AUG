@@ -68,18 +68,21 @@ public class Unitracker : MonoBehaviour
 	void initialPositioning()
 	{
 
-		bool startOnPlanet = false;
+		bool startOnPlanet = true;
 
 		if(startOnPlanet)
 		{
-			//the starting point of the player in relation to the starting planet
-			//this will eventually be handled by a double precision vector3
-			Vector3 startPoint = new Vector3(0,250020,0);
+			
 			//Vector3 startPoint = new Vector3(0,250020,0);
 			Planet startPlanet = UniverseSystem.planets[0];
 			UniverseSystem.curPlanet = startPlanet;
 
 			onPlanet = true;
+
+			//the starting point of the player in relation to the starting planet
+			//this will eventually be handled by a double precision vector3
+			Vector3 startPoint = new Vector3(0,250020,0);
+			startPoint = new Vector3(0, UniverseSystem.curPlanet.noise.getAltitude(startPoint)+2,0);
 
 			//parent tracker and set up position
 			transform.SetParent(startPlanet.scaledRep.transform);

@@ -5,7 +5,6 @@ using LibNoise.Generator;
 using LibNoise.Operator;
 using System.Collections.Generic;
 
-
 //one instance per planet, controls simplex noise based things such as altitude, population density, etc.
 public class NoiseHandler
 {
@@ -13,7 +12,7 @@ public class NoiseHandler
 
 	//module that outputsj
 	private ModuleBase finalTerrain;
-	//private ModuleBase finalTexture;
+	private ModuleBase finalTexture;
 
 	private List<ModuleBase> substanceNoise;
 
@@ -25,17 +24,33 @@ public class NoiseHandler
 		radius = r;
 		substanceNoise = new List<ModuleBase>();
 
-		TempGrad basetemp = new TempGrad(110, -30, r);
+	/*	TempGrad basetemp = new TempGrad(110, -30, r);
 		Perlin tempOffest = new Perlin(0.00001, 2, .5, 3, 52546, QualityMode.High);
 		finalTemp = new Add(basetemp, new Multiply(tempOffest, new Const(30)));
 
 
 		Const baseTexture = new Const(3);
 		substanceNoise.Add(baseTexture);
-		finalTerrain = new Const(0, 0);
-		addMountains();
-		addDeserts();
-		addIce();
+		//finalTerrain = new Const(0, 0);
+
+		//ModuleBase text = new Const(Sub.VEGITATION);
+		ModuleBase grass = addTexture(Sub.VEGITATION, Sub.VEGITATION2, new Perlin(.0001, 2, .5, 1, 35426, QualityMode.High), .5);
+		grass = addTexture(Sub.VEGITATION3, grass, new Perlin(.0001, 2, .5, 1, 326, QualityMode.High), .3);
+		ModuleBase muddirt = addTexture(Sub.DIRT, Sub.MUD, new Perlin(.001, 2, .5, 1, 4546, QualityMode.High), .5);
+		ModuleBase ftext = addTexture(grass, muddirt, new Perlin(.0001, 2, .5, 1, 3926, QualityMode.High), .7);
+		//ftext = new Const(Sub.MUD);
+		substanceNoise.Add(ftext);
+
+		//heightmap
+		ModuleBase heightMap = new Perlin(.001, 2, .5, 1, 64, QualityMode.High, substanceNoise.Count-1);
+		heightMap = new Multiply(heightMap, new Const(100));
+		//Const heightMap = new Const(0, substanceNoise.Count-1);
+		finalTerrain = heightMap;*/
+
+		marsPreset();
+		//addMountains();
+		//addDeserts();
+		//addIce();
 	//	addContinents();
 		//create some terrain height noise
 		/*RidgedMultifractal rmf = new RidgedMultifractal(.0001, 2, 4, 1, QualityMode.High, new Const(Sub.ICE));
@@ -66,7 +81,82 @@ public class NoiseHandler
 			*/
 	}
 
-	private void addContinents()
+	//a test preset that creates a mars like planet used to figure out how to build this planet generator
+	private void marsPreset()
+	{
+
+		ModuleBase mainControl = new Perlin(.0001, 2, .5, 4, 634234, QualityMode.High);
+		ModuleBase edgeControl = new RidgedMultifractal(.001, 2, 3, 5723, QualityMode.High);
+		edgeControl = new ScaleBias(.0, 0, edgeControl);
+		ModuleBase finalControl = new Add(mainControl, edgeControl);
+		ModuleBase text = addModule(Sub.IRONOXIDE, Sub.IRONOXIDE2, finalControl, .5);
+		substanceNoise.Add(text);
+
+	/*	ModuleBase hills = new Perlin(.001, 2, 0.5, 3, 4353, QualityMode.Low, substanceNoise.Count-1);
+		hills = new Add(hills, new Const(1));
+		hills = new Multiply(hills, new Const(100));
+
+		ModuleBase plains = new Perlin(.001, 2, .5, 3, 724, QualityMode.High, substanceNoise.Count-1);
+		plains = new Multiply(plains, new Const(3));
+
+		ModuleBase hpcontrol = new Perlin(.0005, 2, .5, 5, 45623, QualityMode.High);
+
+		Select hpselector = new Select(hills, plains, hpcontrol);
+		hpselector.FallOff = 1;*/
+
+		ModuleBase plains = new Perlin(.001, 2, .5, 3, 724, QualityMode.High, substanceNoise.Count-1);
+		plains = new Multiply(plains, new Const(3));
+
+		//ModuleBase cliffthingsbase = new Perlin(.001, 2, .5, 4, 63443, QualityMode.High);
+		ModuleBase cliffthingsbase = new RidgedMultifractal(.001, 2, 4, 63443, QualityMode.High);
+		Terrace cliffthings = new Terrace(cliffthingsbase);
+		cliffthings.Add(-1);
+		cliffthings.Add(-.875);
+		cliffthings.Add(-.75);
+		cliffthings.Add(-.5);
+		cliffthings.Add(0);
+		cliffthings.Add(1);
+
+
+		ModuleBase finalcliff = new ScaleBias(50, 50, cliffthings);
+		ModuleBase innerControl = new Perlin(.005, 2, .4, 3, 2356, QualityMode.High);
+		ModuleBase outerControl = new Perlin(.001, 2, .4, 3, 2356, QualityMode.High);
+		Select cliffSelector = addModule(finalcliff, plains, innerControl, .5, .1);
+		Select cliffSelectorouter = addModule(cliffSelector, plains, outerControl, .2, .3);
+
+		finalTexture = new Const(substanceNoise.Count - 1);
+		finalTerrain = cliffSelectorouter;
+		//finalTerrain = hpselector;
+		
+		//finalTerrain = new Const(0, substanceNoise.Count - 1);
+		
+	}
+
+	//adds a module on top of another (creates a selector) 
+	//adds module addedMod to module baseMod based on control in a certain amount, amount ranges from 0(add none) to 1 (completely cover)
+	private Select addModule(ModuleBase addedMod, ModuleBase baseMod, ModuleBase control, double amount, double falloff)
+	{
+		Select newMod = new Select(baseMod, addedMod, control);
+		newMod.Minimum = -5;
+		newMod.Maximum = amount * 2 - 1;//puts it in the range[-1,1]
+		newMod.FallOff = falloff;
+
+		return newMod;
+	}
+
+	//OVERLOADED!!!! Yes I know, my comments are very helpful
+	//these two are used for composing texture modules
+	private Select addModule(Sub addedSub, Sub baseSub, ModuleBase control, double amount)
+	{
+		return addModule(new Const(addedSub), new Const(baseSub), control, amount, 0);
+	}
+
+	private Select addModule(Sub addedSub, ModuleBase baseText, ModuleBase control, double amount)
+	{
+		return addModule(new Const(addedSub), baseText, control, amount, 0);
+	}
+
+	/*private void addContinents()
 	{
 		Perlin continents = new Perlin(.000001, 2, .5, 6, 6734, QualityMode.High);
 		finalTerrain = new Add(finalTerrain, new Multiply(continents, new Const(10000)));
@@ -138,7 +228,7 @@ public class NoiseHandler
 		newTerrain.FallOff = 0.01;
 		finalTerrain = newTerrain;
 
-	}
+	}*/
 
 	//returns the voxel val(float value used to build the mesh with marching cubes) and type(substance) at a specific voxel
 	public void getVoxData(Vector3 pos, out float val, out Sub sub)
@@ -149,11 +239,12 @@ public class NoiseHandler
 		Vector3 surfPos = pos.normalized*radius;// get the spot at sea level of the planet(this is to prevent weird overhangs and stuff
 
 		//the substance noise to use at this voxel
-		int tid;//the id of the texture module to use from substanceNoise
+		//int tid;//the id of the texture module to use from substanceNoise
 		//sub = Sub.ICE;
-		float noise = (float)finalTerrain.GetValue(surfPos.x, surfPos.y, surfPos.z, out tid);
+		float noise = (float)finalTerrain.GetValue(surfPos.x, surfPos.y, surfPos.z);
 		//Debug.Log(tid);
-		sub = (Sub)substanceNoise[tid].GetValue(surfPos.x, surfPos.y, surfPos.z);
+		int tid = (int)finalTexture.GetValue(surfPos.x, surfPos.y, surfPos.z);
+		sub = (Sub)substanceNoise[tid].GetValue(pos.x, pos.y, pos.z);
 		//the marching cubes value is the distance to the voxel / the altitude(point on the surface) above or below that voxel
 		val = distxyz/(radius + noise);
 
@@ -200,3 +291,18 @@ public class NoiseHandler
 	}*/
 
 }
+
+
+/*pledge allegiance to the flag of binary
+ * * * * * * * * * * 000000000000000000000000000
+ * * * * * * * * * * 111111111111111111111111111
+ * * * * * * * * * * 000000000000000000000000000
+ * * * * * * * * * * 111111111111111111111111111
+ * * * * * * * * * * 000000000000000000000000000
+ 11111111111111111111111111111111111111111111111
+ 00000000000000000000000000000000000000000000000
+ 11111111111111111111111111111111111111111111111
+ 00000000000000000000000000000000000000000000000
+ 11111111111111111111111111111111111111111111111
+ 00000000000000000000000000000000000000000000000
+ */

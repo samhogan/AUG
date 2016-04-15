@@ -50,6 +50,13 @@ namespace LibNoise.Operator
             IsInverted = inverted;
         }
 
+		//sam
+		public Terrace(ModuleBase input, int tid)
+			: this(input)
+		{
+			textID = tid;
+		}
+
         #endregion
 
         #region Properties
@@ -167,6 +174,12 @@ namespace LibNoise.Operator
             a *= a;
             return Utils.InterpolateLinear(v0, v1, a);
         }
+
+		public override double GetValue(double x, double y, double z, out int tid)
+		{
+			tid = textID;
+			return GetValue(x, y, z);
+		}
 
         #endregion
     }

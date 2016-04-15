@@ -27,8 +27,17 @@ public class Substance
 		{Sub.ICE, new Substance(31,0)},
 		{Sub.ROCK, new Substance(0,32)},
 		{Sub.VEGITATION, new Substance(9,23)},
+		{Sub.VEGITATION2, new Substance(4,19)},
+		{Sub.VEGITATION3, new Substance(8,26)},
 		{Sub.ROCK2, new Substance(4, 28)},
 		{Sub.SAND, new Substance(15, 29)},
+		{Sub.DIRT, new Substance(5, 29)},
+		{Sub.MUD, new Substance(2, 30)},
+		{Sub.BASALT, new Substance(6,0)},
+		{Sub.BASALT2, new Substance(8,0)},
+		{Sub.BASALT3, new Substance(10,0)},
+		{Sub.IRONOXIDE, new Substance(10,30)}, 
+		{Sub.IRONOXIDE2, new Substance(10,31)}, 
 	};
 
 
@@ -40,7 +49,16 @@ public enum Sub
 	TEST,
 	ICE,
 	ROCK,
-	VEGITATION,
 	ROCK2,
-	SAND
+	SAND,
+	VEGITATION,
+	VEGITATION2,//darker grass
+	VEGITATION3,//dying grass
+	DIRT,
+	MUD,
+	BASALT,
+	BASALT2,
+	BASALT3,
+	IRONOXIDE,
+	IRONOXIDE2,
 }
