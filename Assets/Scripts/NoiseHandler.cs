@@ -47,11 +47,11 @@ public class NoiseHandler
 		//Const heightMap = new Const(0, substanceNoise.Count-1);
 		finalTerrain = heightMap;*/
 
-		for(int i = 0; i < 20; i++)
+		/*for(int i = 0; i < 20; i++)
 		{
 			Debug.Log(eDist(10,100000));
 
-		}
+		}*/
 
 
 
@@ -110,23 +110,24 @@ public class NoiseHandler
 			//the heightmap for this biome
 			ModuleBase heightMap = null;
 			//the number of terrain features that will be composed(selected)
-			int numFeatures = 1;//Random.Range(1,6);
+			int numFeatures = 8;// Random.Range(1,6);
 			//loop through and create all the features
 			for(int feature = 1; feature <= numFeatures; feature++)
 			{
-				double scale = eDist(10, 10000);
+				//scale is the inverse of the frequency and is used to influence amplitude
+				double scale = eDist(5, 10000);
 				//scale = 100;
 				//the starting noise for the final feature that will be modified
 				ModuleBase finalFeature = new Perlin(1/scale,//randDoub(.00001, 0.1), 
 													randDoub(1.8, 2.2), 
 													randDoub(.4, .6), 
-													Random.Range(1, 6), 
+													Random.Range(2, 6), 
 													Random.Range(int.MinValue, int.MaxValue), 
 													QualityMode.High);
 				
 				//the amplidude or max height of the terrain
 				//NOTE: later will be related to the frequency
-				double amplitude = scale/4;//randDoub(2, 100);
+				double amplitude = eDist(.5,scale/2);//randDoub(2, 100);
 				//bias is the number added to the noise before multiplying
 				//-1 makes canyons/indentions, 1 makes all feautures above sea level
 				//NOTE: later make a greater chance to be 1 or -1
@@ -150,11 +151,13 @@ public class NoiseHandler
 				}
 				else
 				{
+
+					double controlScale = eDist(100, 10000);
 					//the base control for the selector that adds this feature to the biome
-					ModuleBase baseControl = new Perlin(randDoub(.000001, 0.001), 
+					ModuleBase baseControl = new Perlin(1/controlScale, 
 						                        randDoub(1.8, 2.2), 
 						                        randDoub(.4, .6), 
-						                        Random.Range(1, 6), 
+						                        Random.Range(1, 3), 
 						Random.Range(int.MinValue, int.MaxValue), QualityMode.High);
 
 					//make possible edge controller
@@ -162,8 +165,8 @@ public class NoiseHandler
 
 					//the amount to add of this feature to the biome(0 is add none, 1 is completely cover)
 					//NOTE: later amount will be somewhat dependant on the feature number(feature #6 will have an average lower amount than feature #2)
-					double amount = Random.value;
-					double falloff = .5;
+					double amount = 1/feature;//Random.value;
+					double falloff = Random.value;
 					heightMap = addModule(finalFeature, heightMap, baseControl, amount, falloff);
 				}
 			}
@@ -182,6 +185,7 @@ public class NoiseHandler
 		Const testTexture = new Const(Sub.BASALT2);
 		substanceNoise.Add(testTexture);
 		finalTexture = new Const(0.0);
+		//finalTerrain = new Const(0.0);
 	}
 		
 	//returns a random float between the two values in an e^x distribution

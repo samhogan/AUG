@@ -142,8 +142,9 @@ public class LODSystem
 
 		//build the terrainobject and add its gameobject to the chunks list(may remove this last thing later)
 		//TerrainObject chunk = Build.buildObject<TerrainObject>(pos.toVector3(), Quaternion.identity);
-		GameObject terrainGO = new GameObject("Terrain Chunk " + pos.ToString());
-		TerrainObject chunk = terrainGO.AddComponent<TerrainObject>();
+		GameObject terrainGO = Pool.getTerrain();
+		terrainGO.name = "Terrain Chunk " + pos.ToString();
+		TerrainObject chunk = terrainGO.GetComponent<TerrainObject>();
 		chunks.Add(pos, chunk);
 		//Debug.Log("chunks added key :" + pos.ToString());
 		visChunks.Add(pos);
@@ -175,7 +176,8 @@ public class LODSystem
 		}
 		else//it is in normal space
 		{
-
+			terrainGO.layer = 0;
+			//terrainGO.transform.parent = null;
 			terrainGO.transform.localScale = new Vector3(scale, scale, scale)*TerrainObject.wsRatio;
 			terrainGO.transform.localPosition = Unitracker.getFloatingPos(pos.toVector3()*scale*TerrainObject.chunkWidth);
 
@@ -308,7 +310,7 @@ public class LODSystem
 						//finally remove from the chunks dictionary and utterly DESTROY IT (but it will later be pooled
 						chunks.Remove(newChunk);
 						//Object.Destroy(tobj);
-						GameObject.Destroy(tobj.gameObject);
+						Pool.deleteTerrain(tobj);
 						//Debug.Log("chunk " + newChunk.ToString() + " was deleted");
 					}
 				}

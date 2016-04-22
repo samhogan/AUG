@@ -12,11 +12,11 @@ public class TerrainObject : WorldObject
 
 	//voxel values for generating terrain surface+1 to link all the meshes
 	//these values are decimal numbers used by the marching cubes algorithm to generate a mesh
-	public float[ , , ] voxVals = new float[chunkSize+1, chunkSize+1, chunkSize+1];
+	public float[ , , ] voxVals;// = new float[chunkSize+1, chunkSize+1, chunkSize+1];
 
 	//the type of texture that will be rendered at each voxel
 	//NOTE: may later change to hold Subs rather than vectors
-	public Vector2[ , , ] voxType = new Vector2[chunkSize+1, chunkSize+1, chunkSize+1];
+	public Vector2[ , , ] voxType;// = new Vector2[chunkSize+1, chunkSize+1, chunkSize+1];
 
 	private MeshCollider coll;
 
@@ -25,11 +25,27 @@ public class TerrainObject : WorldObject
 	//if this terrain object is currently inactive and "split" into 8 smaller terrain objects
 	public bool isSplit;
 
-	void OnEnable()//onenable makes these references immediately after being created instead of in the next frame
+	void Awake()//onenable makes these references immediately after being created instead of in the next frame
 	{
+		coll = gameObject.AddComponent<MeshCollider>();
 		setReferences();
+		reset();
+	}
 
+
+	//resets all instance variables of this terrainObject
+	public void reset()
+	{
+		voxVals = new float[chunkSize+1, chunkSize+1, chunkSize+1];
+		voxType = new Vector2[chunkSize+1, chunkSize+1, chunkSize+1];
 		isSplit = false;
+		scale = -1;
+		filter.mesh = null;
+		//maybe do some clever preserving with this later idk
+		coll.sharedMesh = null;
+		transform.parent = null;
+
+
 	}
 
 	//creates the mesh from the voxel data and assigns it to the mesh filter and mesh collider
@@ -45,7 +61,7 @@ public class TerrainObject : WorldObject
 		//only add colliders for level 0 terrain objects (scale 1)
 		if(scale==1)
 		{
-			coll = gameObject.AddComponent<MeshCollider>();
+			//coll = gameObject.AddComponent<MeshCollider>();
 			coll.sharedMesh = mesh;
 		}
 		//transform.position.localScale = new Vector3(scale, scale, scale);
