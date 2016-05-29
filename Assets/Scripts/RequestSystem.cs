@@ -76,7 +76,7 @@ public class RequestSystem : MonoBehaviour
 	WorldPos currentChunk = new WorldPos(0,0,0);
 	//deletes chunks every some frames
 	int delTimer = 0;
-
+	int upTimer = 0;
 	// Update is called once per frame
 	//(for now) every frame up to 1 chunk is requested and up to 1 object is rendered
 	//NOTE: lets put this in a coroutine later once I know how one works
@@ -93,11 +93,11 @@ public class RequestSystem : MonoBehaviour
 			WorldPos curChunkPos = UnitConverter.getChunk(realPos);
 
 			//only request chunk generation (of surface objects) if the chunk is within the build heigth
-			if(curChunkPos.toVector3().magnitude < UniverseSystem.curPlanet.buildHeight)
+			/*if(curChunkPos.toVector3().magnitude < UniverseSystem.curPlanet.buildHeight)
 			{
 				findChunk(curChunkPos);
 
-			}
+			}*/
 			//if the player is in a new chunk, update the lod
 			if(curChunkPos!=currentChunk)
 			{
@@ -107,9 +107,14 @@ public class RequestSystem : MonoBehaviour
 				//UniverseSystem.curPlanet.lod.updateLOD(new WorldPos(curChunkPos.x/16, curChunkPos.y/16, curChunkPos.z/16));	
 			}
 			//Debug.Log("CMON!!!!!!!!!!!!");
+			//if(upTimer == 100)
+			/*if(Time.time<7)
+			{
+				UniverseSystem.curPlanet.lod.updateLOD(new WorldPos(curChunkPos.x / 16, curChunkPos.y / 16, curChunkPos.z / 16));	
+				upTimer = 0;
+			}
+			upTimer++;*/
 			UniverseSystem.curPlanet.lod.updateLOD(new WorldPos(curChunkPos.x/16, curChunkPos.y/16, curChunkPos.z/16));	
-			
-				//UniverseSystem.curPlanet.lod.updateLOD(new WorldPos(curChunkPos.x/16, curChunkPos.y/16, curChunkPos.z/16));	
 			
 			//print("objects to render " + objectsToRender.Count);
 
@@ -138,13 +143,13 @@ public class RequestSystem : MonoBehaviour
 			}
 
 			//every 10th frame request deletion of chunks
-			delTimer++;
+			/*delTimer++;
 			if(delTimer>=100)
 			{
 				delTimer = 0;
-				requestChunkDeletion(curChunkPos);
+				//requestChunkDeletion(curChunkPos);
 				//requestTerrain(curChunkPos);
-			}
+			}*/
 		}
 		//testing
 

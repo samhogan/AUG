@@ -80,9 +80,12 @@ public class LODSystem
 		//length of the side of lpos in units of 16 (or one side length of a level 0 lodpos)
 		float sideLength = Mathf.Pow(2,lpos.level);
 
+		//the distance from the chunk to the player's chunk
+		float dist = Vector3.Distance(new Vector3(pos.x + .5f, pos.y + .5f, pos.z + .5f), 
+			               new Vector3((lpos.x + .5f) * sideLength, (lpos.y + 0.5f) * sideLength, (lpos.z + .5f) * sideLength));
+		
 		//if the distance from the player's position to the lpos is less than its side length times some constant, return true
-		return Vector3.Distance(new Vector3(pos.x+.5f, pos.y+.5f, pos.z+.5f), 
-		                        new Vector3((lpos.x+.5f)*sideLength, (lpos.y+0.5f)*sideLength, (lpos.z+.5f)*sideLength)) < sideLength*1.2;
+		return dist < sideLength*1.2;
 	}
 
 	//renders the pieces of a chunk that has already been split
@@ -104,7 +107,7 @@ public class LODSystem
 		//the position of the first subchunk in this chunk
 		WorldPos newStart = new WorldPos(pos.x*2, pos.y*2, pos.z*2);
 		
-		//build all of the 8 chunks that contain land
+		//render all 8 chunks (that exist)
 		for(int x=0; x<=1; x++)
 		{
 			for(int y=0; y<=1; y++)

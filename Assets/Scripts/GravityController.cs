@@ -16,9 +16,9 @@ public class GravityController : MonoBehaviour {
 	{
 		//attracts player to 0,0 by changing gravity
 
-		Vector3 realPos = FloatingOrigin.getRealPos(transform.position);
-		//Physics.gravity = Vector3.Scale((realPos).normalized, new Vector3(-10,-10,-10));
-		
+		Vector3 realPos = Unitracker.getRealPos(transform.position);
+		Physics.gravity = Vector3.Scale((realPos).normalized, new Vector3(-10,-10,-10));
+		//print(realPos);//Physics.gravity);
 		//rb.rotation = 
 	}
 }
