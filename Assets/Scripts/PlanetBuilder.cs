@@ -210,12 +210,15 @@ public class PlanetBuilder
 
 	}
 
-	private static void nonePreset(out ModuleBase finalTerrain, out ModuleBase finalTexture)
+	public static void nonePreset(out ModuleBase finalTerrain, out ModuleBase finalTexture, out List<ModuleBase> substanceNoise)
 	{
 
-		finalTexture = new Const(Sub.BASALT2);
+		substanceNoise = new List<ModuleBase>();
+		substanceNoise.Add(new Const(Sub.DIRT));
 
-		finalTerrain = new Const(1);
+		finalTexture = new Const(0.0);
+
+		finalTerrain = new Const(0.0);
 
 
 	}

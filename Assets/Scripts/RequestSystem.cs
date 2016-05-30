@@ -128,6 +128,7 @@ public class RequestSystem : MonoBehaviour
 			//Debug.Log(UniverseSystem.curPlanet.lod.chunksToSplitRender.ToString());
 
 			//render terrain if there is some, or else render an object
+			//TODO: move to lodsystem
 			if(UniverseSystem.curPlanet.lod.chunksToSplitRender.Count > 0)
 			{
 				//Debug.Log("(rs) Chunks contains key :" + UniverseSystem.curPlanet.lod.chunksToSplitRender[0].ToString() + " " 

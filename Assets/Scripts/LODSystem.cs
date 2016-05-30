@@ -42,6 +42,7 @@ public class LODSystem
 			{
 				//Debug.Log(lpos);
 				chunksToSplit.Add(lpos);
+				break;
 			}
 		}
 
@@ -209,6 +210,9 @@ public class LODSystem
 					//retrieve the voxel data from noise
 					planet.noise.getVoxData(voxPos, out voxVal, out sub);
 
+					//voxVal = y < 4 ? 0 : 2;
+					//sub = Sub.ROCK2;
+
 					//fills in the appropriate voxel data for marching cubes
 					chunk.voxVals[x,y,z] = voxVal;//Noise.GetNoise((x+pos.x)/scale,(y+pos.y)/scale,(z+pos.z)/scale);
 					//if(x+voxPos.x > 0)
@@ -236,6 +240,54 @@ public class LODSystem
 		
 		
 	}
+
+
+	//fills the chunk with its voxel data
+	/*private void fillChunk(TerrainObject chunk, LODPos pos, int scale)
+	{
+		//loops through every voxel in the chunk (make own funtion later)
+		for (int x = 0; x<=chunkSize; x++) 
+		{
+			for (int y = 0; y<=chunkSize; y++) 
+			{
+				for (int z = 0; z<=chunkSize; z++) 
+				{
+
+					//the world position of the current voxel
+					Vector3 voxPos = new Vector3();//position of chunk+position of voxel within chunk
+					voxPos.x = (pos.x*16+x*TerrainObject.wsRatio)*scale;
+					voxPos.y = (pos.y*16+y*TerrainObject.wsRatio)*scale;
+					voxPos.z = (pos.z*16+z*TerrainObject.wsRatio)*scale;
+
+
+
+
+					Sub sub;//the substance of this voxel
+					float voxVal;//the voxel value of this voxel for marching cubes
+
+					//retrieve the voxel data from noise
+					planet.noise.getVoxData(voxPos, out voxVal, out sub);
+
+					//voxVal = y < 4 ? 0 : 2;
+					//sub = Sub.ROCK2;
+
+					//fills in the appropriate voxel data for marching cubes
+					chunk.voxVals[x,y,z] = voxVal;//Noise.GetNoise((x+pos.x)/scale,(y+pos.y)/scale,(z+pos.z)/scale);
+					//if(x+voxPos.x > 0)
+					//	chunk.voxVals[x, y, z] = 2;
+					//get the texture point of the substace at this vector
+					chunk.voxType[x, y, z] = Substance.subs[sub].colorPoint;
+					//puts a hole in the planet(just for fun
+					//if(voxPos.x<10 && voxPos.x>-10 && voxPos.z<10 && voxPos.z>-10)
+					//chunk.voxVals[x,y,z] = 2;
+
+
+				}
+
+			}
+
+		}
+	}*/
 
 	//splits up a terrain chunk into 8 smaller chunks 
 	public void splitChunk(LODPos pos)

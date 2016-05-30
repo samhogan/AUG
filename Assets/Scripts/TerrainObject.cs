@@ -29,6 +29,15 @@ public class TerrainObject : WorldObject
 	{
 		coll = gameObject.AddComponent<MeshCollider>();
 		setReferences();
+		voxVals = new float[chunkSize+1, chunkSize+1, chunkSize+1];
+		voxType = new Vector2[chunkSize+1, chunkSize+1, chunkSize+1];
+		/*for(int x = 0; x < 8; x++)
+			for(int y = 0; y < 8; y++)
+				for(int z = 0; z < 8; z++)
+				{
+					voxVals[x, y, z] = y < 4 ? 0 : 2;
+					voxType[x, y, z] = new Vector2(.3f,.4f);
+				}*/
 		reset();
 	}
 
@@ -36,8 +45,8 @@ public class TerrainObject : WorldObject
 	//resets all instance variables of this terrainObject
 	public void reset()
 	{
-		voxVals = new float[chunkSize+1, chunkSize+1, chunkSize+1];
-		voxType = new Vector2[chunkSize+1, chunkSize+1, chunkSize+1];
+		//voxVals = new float[chunkSize+1, chunkSize+1, chunkSize+1];
+		//voxType = new Vector2[chunkSize+1, chunkSize+1, chunkSize+1];
 		isSplit = false;
 		scale = -1;
 		filter.mesh = null;
