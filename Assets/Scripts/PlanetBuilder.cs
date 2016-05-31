@@ -11,18 +11,21 @@ public class PlanetBuilder
 
 
 	//generates finalTerrain and finalTexture for a planet
-	public static void buildTerrain(out ModuleBase finalTerrain, out ModuleBase finalTexture, out List<ModuleBase> substanceNoise)
+	public static void buildTerrain(out ModuleBase finalTerrain, /*out ModuleBase finalTexture,*/ out ModuleBase biomeSelector, out List<ModuleBase> biomeTextures)
 	{
 
 		finalTerrain = new Const(0.0);
-		substanceNoise = new List<ModuleBase>();
+
+		//finalTexture = new Const(0.0);
+		biomeSelector = new Const(0.0);
+		biomeTextures = new List<ModuleBase>();
 
 
 		//list that contains all substances that have been used
 		List<Sub> subList = new List<Sub>();
 
 		//the number of "biomes" or types of terrain that use different texture ids
-		int numBiomes = 1;
+		int numBiomes = 3;
 
 		//loop through and create all the biomes and compose them
 		for(int biome = 1; biome<=numBiomes; biome++)
@@ -33,11 +36,13 @@ public class PlanetBuilder
 			//if in first iteration, generate a base layer of rock (although can have any terrain features)
 			//generate texture
 
+			//height map and textures for this biome
+			ModuleBase biomeTerrain = null;
+			ModuleBase biomeTexture = null;
 
-			//the heightmap for this biome
-			ModuleBase heightMap = null;
 			//the number of terrain features that will be composed(selected)
-			int numFeatures = 8;// Random.Range(1,6);
+			int numFeatures = 5;// Random.Range(1,6);
+
 			//loop through and create all the features
 			for(int feature = 1; feature <= numFeatures; feature++)
 			{
@@ -45,12 +50,13 @@ public class PlanetBuilder
 				double scale = eDist(5, 10000);
 				//scale = 100;
 				//the starting noise for the final feature that will be modified
-				ModuleBase finalFeature = new Perlin(1/scale,//randDoub(.00001, 0.1), 
+				ModuleBase featureTerrain = new Perlin(1/scale,//randDoub(.00001, 0.1), 
 					randDoub(1.8, 2.2), 
 					randDoub(.4, .6), 
-					Random.Range(2, 6), 
+					6,//Random.Range(2, 6), 
 					Random.Range(int.MinValue, int.MaxValue), 
 					QualityMode.High);
+				
 
 				//the amplidude or max height of the terrain
 				//NOTE: later will be related to the frequency
@@ -60,7 +66,7 @@ public class PlanetBuilder
 				//NOTE: later make a greater chance to be 1 or -1
 				double bias = randDoub(-1, 1);
 
-				finalFeature = new ScaleBias(amplitude, bias * amplitude, finalFeature);
+				featureTerrain = new ScaleBias(amplitude, bias * amplitude, featureTerrain);
 
 				//the number of subfeatures to add
 				//a subfeature can be adding more noise, terracing, exponentiation, etc. but NOT selecting
@@ -74,7 +80,8 @@ public class PlanetBuilder
 				//if this is the first feature, make it the entire finalFeature to be added to in the next iteration
 				if(feature == 1)
 				{
-					heightMap = finalFeature;
+					biomeTerrain = featureTerrain;
+					biomeTexture = new Const(Random.Range(0,14));
 				}
 				else
 				{
@@ -84,7 +91,7 @@ public class PlanetBuilder
 					ModuleBase baseControl = new Perlin(1/controlScale, 
 						randDoub(1.8, 2.2), 
 						randDoub(.4, .6), 
-						Random.Range(1, 3), 
+						3,//Random.Range(1, 3), 
 						Random.Range(int.MinValue, int.MaxValue), QualityMode.High);
 
 					//make possible edge controller
@@ -94,24 +101,45 @@ public class PlanetBuilder
 					//NOTE: later amount will be somewhat dependant on the feature number(feature #6 will have an average lower amount than feature #2)
 					double amount = 1/feature;//Random.value;
 					double falloff = Random.value;
-					heightMap = addModule(finalFeature, heightMap, baseControl, amount, falloff);
+					biomeTerrain = addModule(featureTerrain, biomeTerrain, baseControl, amount, falloff);
 				}
 			}
 
 			//if it is the first biome, add biome 100% to planet as a base
 			if(biome == 1)
 			{
-				finalTerrain = heightMap;
+				finalTerrain = biomeTerrain;
+				//biomeSelector = new Const(0.0);
 			}
 			else
 			{
+
+
+				double controlScale = 100000;//eDist(100000, 100000);
+				ModuleBase baseControl = new Perlin(1/controlScale, 
+					randDoub(1.8, 2.2), 
+					randDoub(.4, .6), 
+					3,//Random.Range(1, 3), 
+					Random.Range(int.MinValue, int.MaxValue), QualityMode.High);
+
+				double amount = 1.0/biome;//Random.value;
+		
+				double falloff = Random.value;
+				biomeTerrain = addModule(biomeTerrain, finalTerrain, baseControl, amount, falloff);
+
+				//add the biome number to the biome selector 
+				biomeSelector = addModule(new Const(biome-1), biomeSelector, baseControl, amount, 0);
+				//biomeTextures.Add(biomeTexture);
+
 			}
+
+			biomeTextures.Add(biomeTexture);
+
 
 		}
 
-		Const testTexture = new Const(Sub.BASALT2);
-		substanceNoise.Add(testTexture);
-		finalTexture = new Const(0.0);
+		//Const testTexture = new Const(Random.Range(0,14));
+		//biomeTextures.Add(testTexture);
 		//finalTerrain = new Const(0.0);
 	}
 
@@ -198,7 +226,7 @@ public class PlanetBuilder
 
 		ModuleBase finalcliff = new ScaleBias(50, 50, cliffthings);
 		ModuleBase innerControl = new Perlin(.005, 2, .4, 3, 2356, QualityMode.High);
-		ModuleBase outerControl = new Perlin(.001, 2, .4, 3, 2356, QualityMode.High);
+		ModuleBase outerControl = new Perlin(.001, 2, .4, 3, 235, QualityMode.High);
 		Select cliffSelector = addModule(finalcliff, plains, innerControl, .5, .1);
 		Select cliffSelectorouter = addModule(cliffSelector, plains, outerControl, .2, .3);
 

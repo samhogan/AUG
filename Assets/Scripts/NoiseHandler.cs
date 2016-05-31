@@ -58,8 +58,8 @@ public class NoiseHandler
 		//nonePreset();
 		//buildTerrain();
 		//PlanetBuilder.nonePreset(out finalTerrain, out finalTexture, out substanceNoise);
-		PlanetBuilder.marsPreset(out finalTerrain, out finalTexture, out substanceNoise);
-		//PlanetBuilder.buildTerrain(out finalTerrain, out finalTexture, out substanceNoise);
+		//PlanetBuilder.marsPreset(out finalTerrain, out finalTexture, out substanceNoise);
+		PlanetBuilder.buildTerrain(out finalTerrain, out finalTexture, out substanceNoise);
 		//addMountains();
 		//addDeserts();
 		//addIce();
@@ -108,6 +108,8 @@ public class NoiseHandler
 		//int tid;//the id of the texture module to use from substanceNoise
 		//sub = Sub.ICE;
 		float noise = (float)finalTerrain.GetValue(surfPos.x, surfPos.y, surfPos.z);
+
+
 		//float noise = 2;//(float)finalTerrain.GetValue(surfPos.x, surfPos.y, surfPos.z);
 
 		//Debug.Log(tid);

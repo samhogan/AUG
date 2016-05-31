@@ -41,6 +41,8 @@ public class Substance
 	};
 
 
+//	public static Sub rock = { Sub.ROCK, Sub.ROCK2, Sub.BASALT, Sub.BASALT2, Sub.BASALT3 };
+
 }
 
 //all the substances enumerated

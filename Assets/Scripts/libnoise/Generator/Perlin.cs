@@ -147,6 +147,7 @@ namespace LibNoise.Generator
                 cp *= _persistence;
             }
             return value;
+
         }
 
 		//sam
@@ -155,6 +156,8 @@ namespace LibNoise.Generator
 			tid = textID;
 			return GetValue(x, y, z);
 		}
+
+
 
         #endregion
     }
