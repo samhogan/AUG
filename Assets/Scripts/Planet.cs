@@ -76,10 +76,14 @@ public class Planet
 
 		meshobj.transform.localScale = new Vector3(scaledRadius*2, scaledRadius*2, scaledRadius*2);
 
-		for(int x=-1; x<=0; x++)
-			for(int y=-1; y<=0; y++)
-				for(int z=-1; z<=0; z++)
-					lod.CreateChunk(new LODPos(startLev,x,y,z), true);
+		for(int x = -1; x <= 0; x++)
+			for(int y = -1; y <= 0; y++)
+				for(int z = -1; z <= 0; z++)
+				{
+					LODPos lp = new LODPos(startLev, x, y, z);
+					lod.CreateChunk(lp, true);
+					//lod.splitChunk(lp);
+				}
 
 		//lod.splitChunk(new LODPos(14,0,0,0));
 		//lod.splitChunk(new LODPos(13,1,1,1));

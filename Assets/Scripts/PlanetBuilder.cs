@@ -10,59 +10,66 @@ public class PlanetBuilder
 {
 
 
-	/*public static void genPlanetData(out ModuleBase finalTerrain, out ModuleBase finalTexture)
+	//height noise probability (perlin, billow, ridged)
+	private static ProbItems hnProb = new ProbItems(new double[]{3,1,1});
+
+
+	//should probably overload buildFeature, but this improves readability i think
+	public static void genPlanetData(out ModuleBase finalTerrain, out ModuleBase finalTexture)
 	{
-		finalTerrain = buildFeature();
-	}*/
+		float maxNoiseScale;//pretty much useless info for the final terrain
+		buildFeature(out finalTerrain, out finalTexture, out maxNoiseScale, 1);
+	}
+
+
 
 	//a feature is either some noise with a texture or a composition of two features
 	//the final terrain of a planet is a very complex feature made up of many features
 	//this is funny: a feature is a composition of features; recursive logic and the function is recursive!
-	public static void buildFeature(out ModuleBase terrain, out ModuleBase texture, int lev)
+	//noiseScale is the max scale of noise from the inner iterations to prevent large mountains from being selected on small scales
+	public static void buildFeature(out ModuleBase terrain, out ModuleBase texture, out float noiseScale, int lev)
 	{
-		if(Random.value < .5)
+		if(Random.value < 1/lev && lev<5)
 		{
-			double controlScale = eDist(100, 100000);
+
+			ModuleBase terrain1, terrain2, texture1, texture2;
+			float nScale1, nScale2;
+
+			buildFeature(out terrain1, out texture1, out nScale1, lev+1);
+			buildFeature(out terrain2, out texture2, out nScale2, lev+1);
+
+			noiseScale = Mathf.Max(nScale1, nScale2);
+
+			//TODO: some probability that edist lower bound is lower than noisescale
+			double controlScale = eDist(Mathf.Max(noiseScale, 100), 100000);
 			//the base control for the selector that adds two new features
-			ModuleBase baseControl = new Perlin(1 / controlScale, 
-				                         randDoub(1.8, 2.2), 
-				                         randDoub(.4, .6), 
-				                         3,//Random.Range(1, 3), 
-				                         Random.Range(int.MinValue, int.MaxValue), QualityMode.High);
+			ModuleBase baseControl = getGradientNoise(hnProb, Random.value, controlScale);
 
 			//make possible edge controller
 			//loop and make inner controllers
 
 			//the amount to add of this feature to the biome(0 is add none, 1 is completely cover)
 			//NOTE: later amount will be somewhat dependant on the feature number(feature #6 will have an average lower amount than feature #2)
-			double amount = Random.value;
+			double amount = .5;//Random.value;
 			double falloff = Random.value;
-
-			ModuleBase terrain1, terrain2, texture1, texture2;
-
-			buildFeature(out terrain1, out texture1);
-			buildFeature(out terrain2, out texture2);
 
 
 			terrain = addModule(terrain1, terrain2, baseControl, amount, falloff);
 			texture = addModule(texture1, texture2, baseControl, amount, 0);
+			
 		}
 		else
 		{
 			//scale is the inverse of the frequency and is used to influence amplitude
-			double scale = eDist(1, 15000);
+			float scale = eDist(1, 15000);
 			//scale = 100;
 			//the starting noise for the final feature that will be modified
-			terrain = new Perlin(1/scale,//randDoub(.00001, 0.1), 
-				randDoub(1.8, 2.2), 
-				randDoub(.4, .6), 
-				Random.Range(2, 6), 
-				Random.Range(int.MinValue, int.MaxValue), 
-				QualityMode.High);
+
+			terrain = getGradientNoise(hnProb, Random.value, scale);
 
 			//the amplidude or max height of the terrain
 			//NOTE: later will be related to the frequency
-			double amplitude = scale/4;//eDist(.5,scale/2);//randDoub(2, 100);
+			double amplitude = eDist(.5,scale/4);//randDoub(2, 100);
 			//bias is the number added to the noise before multiplying
 			//-1 makes canyons/indentions, 1 makes all feautures above sea level
 			//NOTE: later make a greater chance to be 1 or -1
@@ -70,10 +77,49 @@ public class PlanetBuilder
 
 			terrain = new ScaleBias(amplitude, bias * amplitude, terrain);
 			texture = new Const(Random.Range(0,14));
+			noiseScale = scale;
 		}
 
 
 	}
+
+	//get a random gradient noise function(perlin, billow, ridged, maybe voronoi later)
+	//TODO: paramatize all other properties
+	private static ModuleBase getGradientNoise(ProbItems prob, double val, double scale)
+	{
+		switch((int)prob.getValue(Random.value))
+		{
+		case 0: 
+			return new Perlin(1/scale,//randDoub(.00001, 0.1), 
+				randDoub(1.8, 2.2), 
+				randDoub(.4, .6), 
+				Random.Range(2, 6), 
+				Random.Range(int.MinValue, int.MaxValue), 
+				QualityMode.High);
+			break;
+		case 1:
+			return new Billow(1/scale,
+				randDoub(1.8, 2.2), 
+				randDoub(.4, .6), 
+				Random.Range(2, 6), 
+				Random.Range(int.MinValue, int.MaxValue), 
+				QualityMode.High);
+			break;
+		case 2:
+			return new RidgedMultifractal(1/scale,
+				randDoub(1.8, 2.2),
+				Random.Range(2, 6), 
+				Random.Range(int.MinValue, int.MaxValue), 
+				QualityMode.High);
+			break;
+		default:
+			return new Const(0.0);
+			break;
+		}
+	}
+
+
+
 
 	//generates finalTerrain and finalTexture for a planet
 	public static void buildTerrain(out ModuleBase finalTerrain, /*out ModuleBase finalTexture,*/ out ModuleBase biomeSelector, out List<ModuleBase> biomeTextures)

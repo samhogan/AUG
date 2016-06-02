@@ -60,7 +60,7 @@ public class NoiseHandler
 		//PlanetBuilder.nonePreset(out finalTerrain, out finalTexture, out substanceNoise);
 		//PlanetBuilder.marsPreset(out finalTerrain, out finalTexture, out substanceNoise);
 		//PlanetBuilder.buildTerrain(out finalTerrain, out finalTexture, out substanceNoise);
-		PlanetBuilder.buildFeature(out finalTerrain, out finalTexture);
+		PlanetBuilder.genPlanetData(out finalTerrain, out finalTexture);
 		//addMountains();
 		//addDeserts();
 		//addIce();
