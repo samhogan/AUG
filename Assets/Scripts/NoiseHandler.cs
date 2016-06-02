@@ -59,7 +59,8 @@ public class NoiseHandler
 		//buildTerrain();
 		//PlanetBuilder.nonePreset(out finalTerrain, out finalTexture, out substanceNoise);
 		//PlanetBuilder.marsPreset(out finalTerrain, out finalTexture, out substanceNoise);
-		PlanetBuilder.buildTerrain(out finalTerrain, out finalTexture, out substanceNoise);
+		//PlanetBuilder.buildTerrain(out finalTerrain, out finalTexture, out substanceNoise);
+		PlanetBuilder.buildFeature(out finalTerrain, out finalTexture);
 		//addMountains();
 		//addDeserts();
 		//addIce();
@@ -113,10 +114,10 @@ public class NoiseHandler
 		//float noise = 2;//(float)finalTerrain.GetValue(surfPos.x, surfPos.y, surfPos.z);
 
 		//Debug.Log(tid);
-		int tid = (int)finalTexture.GetValue(surfPos.x, surfPos.y, surfPos.z);
+		//////int tid = (int)finalTexture.GetValue(surfPos.x, surfPos.y, surfPos.z);
 		//sub = Sub.SAND;//(Sub)substanceNoise[tid].GetValue(pos.x, pos.y, pos.z);
-		sub = (Sub)substanceNoise[tid].GetValue(pos.x, pos.y, pos.z);
-		//sub = (Sub)finalTexture.GetValue(pos.x, pos.y, pos.z);
+		//////sub = (Sub)substanceNoise[tid].GetValue(pos.x, pos.y, pos.z);
+		sub = (Sub)finalTexture.GetValue(pos.x, pos.y, pos.z);
 		//the marching cubes value is the distance to the voxel / the altitude(point on the surface) above or below that voxel
 		val = distxyz/(radius + noise);
 

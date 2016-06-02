@@ -88,6 +88,8 @@ public class RequestSystem : MonoBehaviour
 		//only generate stuff for a planet if you are on a planet
 		if(Unitracker.onPlanet)
 		{
+
+			print((realPos.magnitude - UniverseSystem.curPlanet.radius)*3.28084 + " feet");
 			//Debug.Log(UniverseSystem.curPlanet.noise.getTemp(realPos));
 			//the current chunk the player is in
 			WorldPos curChunkPos = UnitConverter.getChunk(realPos);

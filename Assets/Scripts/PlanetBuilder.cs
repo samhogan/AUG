@@ -10,6 +10,71 @@ public class PlanetBuilder
 {
 
 
+	/*public static void genPlanetData(out ModuleBase finalTerrain, out ModuleBase finalTexture)
+	{
+		finalTerrain = buildFeature();
+	}*/
+
+	//a feature is either some noise with a texture or a composition of two features
+	//the final terrain of a planet is a very complex feature made up of many features
+	//this is funny: a feature is a composition of features; recursive logic and the function is recursive!
+	public static void buildFeature(out ModuleBase terrain, out ModuleBase texture, int lev)
+	{
+		if(Random.value < .5)
+		{
+			double controlScale = eDist(100, 100000);
+			//the base control for the selector that adds two new features
+			ModuleBase baseControl = new Perlin(1 / controlScale, 
+				                         randDoub(1.8, 2.2), 
+				                         randDoub(.4, .6), 
+				                         3,//Random.Range(1, 3), 
+				                         Random.Range(int.MinValue, int.MaxValue), QualityMode.High);
+
+			//make possible edge controller
+			//loop and make inner controllers
+
+			//the amount to add of this feature to the biome(0 is add none, 1 is completely cover)
+			//NOTE: later amount will be somewhat dependant on the feature number(feature #6 will have an average lower amount than feature #2)
+			double amount = Random.value;
+			double falloff = Random.value;
+
+			ModuleBase terrain1, terrain2, texture1, texture2;
+
+			buildFeature(out terrain1, out texture1);
+			buildFeature(out terrain2, out texture2);
+
+
+			terrain = addModule(terrain1, terrain2, baseControl, amount, falloff);
+			texture = addModule(texture1, texture2, baseControl, amount, 0);
+		}
+		else
+		{
+			//scale is the inverse of the frequency and is used to influence amplitude
+			double scale = eDist(1, 15000);
+			//scale = 100;
+			//the starting noise for the final feature that will be modified
+			terrain = new Perlin(1/scale,//randDoub(.00001, 0.1), 
+				randDoub(1.8, 2.2), 
+				randDoub(.4, .6), 
+				Random.Range(2, 6), 
+				Random.Range(int.MinValue, int.MaxValue), 
+				QualityMode.High);
+
+			//the amplidude or max height of the terrain
+			//NOTE: later will be related to the frequency
+			double amplitude = scale/4;//eDist(.5,scale/2);//randDoub(2, 100);
+			//bias is the number added to the noise before multiplying
+			//-1 makes canyons/indentions, 1 makes all feautures above sea level
+			//NOTE: later make a greater chance to be 1 or -1
+			double bias = 1;//randDoub(-1, 1);
+
+			terrain = new ScaleBias(amplitude, bias * amplitude, terrain);
+			texture = new Const(Random.Range(0,14));
+		}
+
+
+	}
+
 	//generates finalTerrain and finalTexture for a planet
 	public static void buildTerrain(out ModuleBase finalTerrain, /*out ModuleBase finalTexture,*/ out ModuleBase biomeSelector, out List<ModuleBase> biomeTextures)
 	{
@@ -41,30 +106,29 @@ public class PlanetBuilder
 			ModuleBase biomeTexture = null;
 
 			//the number of terrain features that will be composed(selected)
-			int numFeatures = 5;// Random.Range(1,6);
+			int numFeatures = 4;// Random.Range(1,6);
 
 			//loop through and create all the features
 			for(int feature = 1; feature <= numFeatures; feature++)
 			{
 				//scale is the inverse of the frequency and is used to influence amplitude
-				double scale = eDist(5, 10000);
+				double scale = eDist(1, 15000);
 				//scale = 100;
 				//the starting noise for the final feature that will be modified
 				ModuleBase featureTerrain = new Perlin(1/scale,//randDoub(.00001, 0.1), 
 					randDoub(1.8, 2.2), 
 					randDoub(.4, .6), 
-					6,//Random.Range(2, 6), 
+					Random.Range(2, 6), 
 					Random.Range(int.MinValue, int.MaxValue), 
 					QualityMode.High);
 				
-
 				//the amplidude or max height of the terrain
 				//NOTE: later will be related to the frequency
-				double amplitude = eDist(.5,scale/2);//randDoub(2, 100);
+				double amplitude = scale/4;//eDist(.5,scale/2);//randDoub(2, 100);
 				//bias is the number added to the noise before multiplying
 				//-1 makes canyons/indentions, 1 makes all feautures above sea level
 				//NOTE: later make a greater chance to be 1 or -1
-				double bias = randDoub(-1, 1);
+				double bias = 1;//randDoub(-1, 1);
 
 				featureTerrain = new ScaleBias(amplitude, bias * amplitude, featureTerrain);
 
@@ -86,7 +150,7 @@ public class PlanetBuilder
 				else
 				{
 
-					double controlScale = eDist(100, 10000);
+					double controlScale = eDist(Mathf.Max((float)scale,100), 20000);
 					//the base control for the selector that adds this feature to the biome
 					ModuleBase baseControl = new Perlin(1/controlScale, 
 						randDoub(1.8, 2.2), 
@@ -125,7 +189,7 @@ public class PlanetBuilder
 				double amount = 1.0/biome;//Random.value;
 		
 				double falloff = Random.value;
-				biomeTerrain = addModule(biomeTerrain, finalTerrain, baseControl, amount, falloff);
+				finalTerrain = addModule(biomeTerrain, finalTerrain, baseControl, amount, 0);//falloff);
 
 				//add the biome number to the biome selector 
 				biomeSelector = addModule(new Const(biome-1), biomeSelector, baseControl, amount, 0);
