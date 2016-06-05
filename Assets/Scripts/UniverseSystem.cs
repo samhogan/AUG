@@ -40,6 +40,12 @@ public class UniverseSystem
 		Planet planetfun = new Planet(1000000, new UniPos(new Vector3(0,0,0), 2000, 200, 50));
 		planets.Add(planetfun);
 
+		/*for(int i = 0; i<10; i++)
+		{
+			Planet planetfun = new Planet(Random.Range(10000,1000000), new UniPos(new Vector3(0,0,0), 200*i, 200, 50));
+			planets.Add(planetfun);
+		}*/
+
 		//Planet planetfun = new Planet(6000000, new UniPos(new Vector3(0,0,0), 1000, 200, 50));
 		//planets.Add(planetfun);
 	}

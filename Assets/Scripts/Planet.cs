@@ -56,7 +56,7 @@ public class Planet
 	//instantiates the unispace rep of the planet
 	void createRep(UniPos pos)
 	{
-		scaledRep =  new GameObject("Planet 8493yuhbgo86");
+		scaledRep =  new GameObject("Planet " + Random.Range(0,float.MaxValue) + "radius: " + radius);
 
 
 		//the gameobject that holds the scaledRep's mesh data so it can be scaled

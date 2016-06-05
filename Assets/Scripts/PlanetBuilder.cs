@@ -29,7 +29,8 @@ public class PlanetBuilder
 	//noiseScale is the max scale of noise from the inner iterations to prevent large mountains from being selected on small scales
 	public static void buildFeature(out ModuleBase terrain, out ModuleBase texture, out float noiseScale, int lev)
 	{
-		if(Random.value < 1/lev && lev<5)
+		Debug.Log("level " + lev);
+		if(Random.value < 1.0/lev && lev<4)
 		{
 
 			ModuleBase terrain1, terrain2, texture1, texture2;
@@ -41,10 +42,12 @@ public class PlanetBuilder
 			noiseScale = Mathf.Max(nScale1, nScale2);
 
 			//TODO: some probability that edist lower bound is lower than noisescale
-			double controlScale = eDist(Mathf.Max(noiseScale, 100), 100000);
+			double controlScale = eDist(Mathf.Max(noiseScale, 100), 1000000);
 			//the base control for the selector that adds two new features
 			ModuleBase baseControl = getGradientNoise(hnProb, Random.value, controlScale);
-
+			//baseControl = new Scale(50, 1, 1, baseControl);
+			//create a cache module because this value will be calculated twice (once for terrain and once for texture)(possibly)
+			baseControl = new Cache(baseControl);
 			//make possible edge controller
 			//loop and make inner controllers
 
@@ -75,6 +78,22 @@ public class PlanetBuilder
 			//NOTE: later make a greater chance to be 1 or -1
 			double bias = 1;//randDoub(-1, 1);
 
+			//terrain = new Displace(terrain, getGradientNoise(hnProb, Random.value, 100), getGradientNoise(hnProb, Random.value, 100), getGradientNoise(hnProb, Random.value, 100));
+			//terrain = new Scale(50,1,1,terrain);
+			/*Curve c = new Curve(terrain);
+			c.Add(.5, 1);
+			terrain = c;*/
+
+			//terrain = new Invert(terrain);
+			/*Terrace cliffthings = new Terrace(terrain);
+			cliffthings.Add(-1);
+			cliffthings.Add(-.875);
+			cliffthings.Add(-.75);
+			cliffthings.Add(-.5);
+			cliffthings.Add(0);
+			cliffthings.Add(1);
+			terrain = cliffthings;*/
+
 			terrain = new ScaleBias(amplitude, bias * amplitude, terrain);
 			texture = new Const(Random.Range(0,14));
 			noiseScale = scale;
@@ -87,7 +106,7 @@ public class PlanetBuilder
 	//TODO: paramatize all other properties
 	private static ModuleBase getGradientNoise(ProbItems prob, double val, double scale)
 	{
-		switch((int)prob.getValue(Random.value))
+		switch(1)//(int)prob.getValue(Random.value))
 		{
 		case 0: 
 			return new Perlin(1/scale,//randDoub(.00001, 0.1), 
