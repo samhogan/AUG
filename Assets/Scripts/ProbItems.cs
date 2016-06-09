@@ -26,8 +26,8 @@ public class ProbItems : Probability
 		for(int i = 0; i<cumulativeWeights.Length; i++)
 		{
 			if(cumulativeWeights[i]>=frac)
-			if(items!=null)
-				return items[i];
+			if(values!=null)
+				return values[i];
 			else
 				return i;
 		}

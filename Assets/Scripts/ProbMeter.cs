@@ -1,9 +1,10 @@
 ﻿using UnityEngine;
 using System.Collections;
 
+//the probmeter is my master creation and if i understood it, i would explain it to you
 public class ProbMeter : Probability
 {
-	public ProbMeter(double[] ranges, double[] weights) : base(ranges, weights)
+	public ProbMeter(double[] vals, double[] weights) : base(vals, weights)
 	{
 
 	}
@@ -19,7 +20,13 @@ public class ProbMeter : Probability
 		for(int i = 0; i<cumulativeWeights.Length; i++)
 		{
 			if(cumulativeWeights[i]>=frac)
-				return items[i];
+			{
+				//good luck
+				double lowerWeightBound = i>0 ? cumulativeWeights[i-1] : 0;
+				double perBet = (frac-lowerWeightBound)/(cumulativeWeights[i]-lowerWeightBound);
+				double valDist = values[i+1]-values[i];
+				return values[i]+valDist*perBet;
+			}
 		}
 
 		//idunno why not?

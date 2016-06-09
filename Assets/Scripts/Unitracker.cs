@@ -17,6 +17,8 @@ public class Unitracker : MonoBehaviour
 	//half the uniscale 
 	private static int halfus = uniscale/2;
 
+	public bool startOnPlanet = true;
+
 	//how far the unitracker has to travel in unity units to be moved back by floating origin
 	private static int unithreshold = 1000;
 	private static int halfut = unithreshold/2;
@@ -68,7 +70,7 @@ public class Unitracker : MonoBehaviour
 	void initialPositioning()
 	{
 
-		bool startOnPlanet = true;
+		//bool startOnPlanet = false;
 
 		if(startOnPlanet)
 		{

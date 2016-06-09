@@ -6,10 +6,10 @@ public class TestScript : MonoBehaviour {
 	// Use this for initialization
 	void Start () 
 	{
-		ProbItems p = new ProbItems(new double[]{2,1,1});
+		ProbMeter p = new ProbMeter(new double[]{0,2,4,8}, new double[]{2,1,1} );
+		Debug.Log(p.getValue(.25));
 		Debug.Log(p.getValue(.5));
-		Debug.Log(p.getValue(.6));
-		Debug.Log(p.getValue(.2));
+		Debug.Log(p.getValue(1));
 
 	}
 	

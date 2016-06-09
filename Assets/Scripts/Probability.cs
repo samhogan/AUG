@@ -3,16 +3,23 @@ using System.Collections;
 
 public abstract class Probability 
 {
-	protected double total;
+	protected double total;//total of weights
 	protected double[] cumulativeWeights;
-	protected double[] items;
+	protected double[] values;
 
-	public Probability(double[] its, double[] weights)
+
+	public double[] Values
+	{
+		set{values = value;}
+	}
+
+
+	public Probability(double[] vals, double[] weights)
 	{
 		//foreach(int weight in weights)
 		//	total+=weight;
 
-		items = its;
+		values = vals;
 
 		total = 0;
 		cumulativeWeights = new double[weights.Length];
@@ -25,6 +32,7 @@ public abstract class Probability
 
 
 	}
+
 
 	public abstract double getValue(double percent);
 }

@@ -1,7 +1,8 @@
 ﻿using UnityEngine;
 using System.Collections;
 using System.Collections.Generic;
-
+using System;
+using System.Threading;
 //this monobehavior script facillitates the generation of every system(terrain, surface)
 //and attaches to a gameobject that things will be generated around
 //this picks 3d spots around the player that tell each system what to generate
@@ -89,7 +90,7 @@ public class RequestSystem : MonoBehaviour
 		if(Unitracker.onPlanet)
 		{
 
-			print((realPos.magnitude - UniverseSystem.curPlanet.radius)*3.28084 + " feet");
+			//print((realPos.magnitude - UniverseSystem.curPlanet.radius)*3.28084 + " feet");
 			//Debug.Log(UniverseSystem.curPlanet.noise.getTemp(realPos));
 			//the current chunk the player is in
 			WorldPos curChunkPos = UnitConverter.getChunk(realPos);
@@ -116,6 +117,9 @@ public class RequestSystem : MonoBehaviour
 				upTimer = 0;
 			}
 			upTimer++;*/
+
+			//Thread t = new Thread(() => UniverseSystem.curPlanet.lod.updateLOD(new WorldPos(curChunkPos.x/16, curChunkPos.y/16, curChunkPos.z/16)));
+			//t.Start();
 			UniverseSystem.curPlanet.lod.updateLOD(new WorldPos(curChunkPos.x/16, curChunkPos.y/16, curChunkPos.z/16));	
 			
 			//print("objects to render " + objectsToRender.Count);
