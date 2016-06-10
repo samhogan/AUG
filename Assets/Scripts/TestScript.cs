@@ -11,6 +11,24 @@ public class TestScript : MonoBehaviour {
 		Debug.Log(p.getValue(.5));
 		Debug.Log(p.getValue(1));
 
+		int[] count = { 0, 0, 0, 0 };
+
+		for(int i = 0; i<100000000; i++)
+		{
+			float num = PlanetBuilder.eDist(.5, 10000);
+			if(num<10)
+				count[0]++;
+			else if(num<100)
+				count[1]++;
+			else if(num<1000)
+				count[2]++;
+			else if(num<10000)
+				count[3]++;
+			 
+		}
+
+		print(count[0] + " " + count[1]+" "+count[2]+" "+count[3]);
+
 	}
 	
 	// Update is called once per frame

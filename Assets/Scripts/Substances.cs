@@ -71,6 +71,9 @@ public class Substance
 		{Sub.IronDioxide, new Substance(10,30,10)}, 
 		{Sub.IronDioxide2, new Substance(10,31, 0)}, 
 		{Sub.Gold, new Substance(18,27,0.01)},
+		{Sub.Granite, new Substance(27,31,33)},//igneous
+		{Sub.Andesite, new Substance(15,0,33)},//igneous
+		//{Sub.Anorthosite, new Substance(15,0,33)},//igneous
 	};
 
 
@@ -96,4 +99,7 @@ public enum Sub
 	IronDioxide,
 	IronDioxide2,
 	Gold,
+	Granite,
+	Andesite,
+	Anorthosite,
 }

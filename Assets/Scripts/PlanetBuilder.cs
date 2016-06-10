@@ -13,9 +13,9 @@ public class PlanetBuilder
 	//height noise probability (perlin, billow, ridged)
 	private static ProbItems hnProb = new ProbItems(new double[]{3,1,1});
 	//bias probability (1=above ground)
-	private static ProbMeter biasProb = new ProbMeter(new double[]{-1,-1,1,1}, new double[]{3,1,10});
+	private static ProbMeter biasProb = new ProbMeter(new double[]{-1,-1,1,1}, new double[]{3,3,10});
 	//multiplier for upper limit of possible terrain amplitude
-	private static ProbMeter amplitudeProb = new ProbMeter(new double[]{.25,.25,7}, new double[]{8,1});
+	private static ProbMeter amplitudeProb = new ProbMeter(new double[]{.4,.4,7}, new double[]{8,1});
 	//the probability that the abundance of a substance on a planet will be close to its universal abundance
 	//TODO: add 1 more node
 	private static ProbMeter abundProb = new ProbMeter(new double[]{}, new double[]{1, 6, 1});
@@ -43,8 +43,8 @@ public class PlanetBuilder
 	//noiseScale is the max scale of noise from the inner iterations to prevent large mountains from being selected on small scales
 	public static void buildFeature(out ModuleBase terrain, out ModuleBase texture, out float noiseScale, int lev, List<Sub> subList, out float abundance)
 	{
-		Debug.Log("level " + lev);
-		if(Random.value < 1.0/lev && lev<4)
+		//Debug.Log("level " + lev);
+		if(lev<4)//Random.value < 1.0/lev && lev<4)
 		{
 
 			ModuleBase terrain1, terrain2, texture1, texture2;
@@ -103,7 +103,7 @@ public class PlanetBuilder
 				QualityMode.High);*/
 			//the amplidude or max height of the terrain
 			//NOTE: later will be related to the frequency
-			double amplitude = eDist(.5,scale*amplitudeProb.getValue(Random.value));//randDoub(2, 100);
+			double amplitude = eDist(1,scale*amplitudeProb.getValue(Random.value));//randDoub(2, 100);
 			//bias is the number added to the noise before multiplying
 			//-1 makes canyons/indentions, 1 makes all feautures above sea level
 			//NOTE: later make a greater chance to be 1 or -1
@@ -125,9 +125,9 @@ public class PlanetBuilder
 			cliffthings.Add(1);
 			terrain = cliffthings;*/
 
-			if(Random.value<1)//.4)
+			if(Random.value<.4)
 			{
-				int num = 2;//Random.Range(0, 4);
+				int num = Random.Range(0, 4);
 				switch(num)
 				{
 				case 0://mulitply
@@ -150,13 +150,14 @@ public class PlanetBuilder
 					ModuleBase addedTerrain = getGradientNoise(hnProb, Random.value, scale);
 					double amplitudem = eDist(.5, scale/4);
 					addedTerrain = new ScaleBias(amplitude, 0, addedTerrain);
-					terrain = new Add(terrain, addedTerrain);
+					//terrain = new Add(terrain, addedTerrain);
 					break;
 				default:
 					break;
 
 				}
 			}
+				
 
 			terrain = new ScaleBias(amplitude, bias * amplitude, terrain);
 			texture = buildTexture(subList, out abundance);
@@ -414,7 +415,7 @@ public class PlanetBuilder
 
 	//returns a random float between the two values in an exponential distribution
 	//(could use log base anything but ln is available so why not)
-	private static float eDist(double min, double max)
+	public static float eDist(double min, double max)
 	{
 		double emin = Mathf.Log((float)min);
 		double emax = Mathf.Log((float)max);
