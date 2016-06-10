@@ -19,17 +19,17 @@ public class Substance
 		
 	}
 
-
-	public Substance(int x, int y, double sa) : this(0, 0, 153, sa)
+	//takes in a hex value for the substance color
+	public Substance(int color, double sa) : this((color >> 16) & 255, (color >> 8) & 255, color & 255, sa)
 	{
 	}
 
 	public Substance(int r, int g, int b, double sa)
 	{
 		//calculate the color position in the atlas
-		int bpos = Mathf.CeilToInt(b/17f);
-		float xcp = (bpos%4)*16+Mathf.CeilToInt(g/17f);
-		float ycp = (bpos/4)*16+Mathf.CeilToInt(r/17f);
+		int bpos = Mathf.RoundToInt(b/17f);
+		float xcp = (bpos%4)*16+Mathf.RoundToInt(g/17f);
+		float ycp = (bpos/4)*16+Mathf.RoundToInt(r/17f);
 			
 
 		xcp /= atlasWidth;//texture points are in the range [0,1]
@@ -82,11 +82,22 @@ public class Substance
 		{Sub.IronDioxide, new Substance(169,63,0,10)}, 
 		{Sub.IronDioxide2, new Substance(169,31,0, 0)}, 
 		{Sub.Gold, new Substance(255,242,29,0.01)},
-		{Sub.Granite, new Substance(217,163,132,33)},//igneous
+		{Sub.Granite, new Substance(0xe47449,33)},//igneous
 		{Sub.Andesite, new Substance(180,183,183,33)},//igneous
-		{Sub.Anorthosite, new Substance(172,162,140,33)},//igneous
+		{Sub.Anorthosite, new Substance(0xbdae9f,33)},//igneous
+		{Sub.Aplite, new Substance(0xd4d7b8,10)},//igneous
+		{Sub.Basanite, new Substance(0x81828a,10)},//igneous
+		{Sub.Carbonatite, new Substance(0xc8b386,10)},//igneous
+		{Sub.Dacite, new Substance(0x6b5d42,10)},//igneous
+		{Sub.Diabase, new Substance(0x353537,30)},//igneous
+		{Sub.Diorite, new Substance(0x716e62,20)},//igneous
+		{Sub.Dunite, new Substance(0x709054,20)},//igneous
+		{Sub.Foyaite, new Substance(0x4f394f,5)},//igneous
+		{Sub.Gabbro, new Substance(0x150c05,30)},//igneous
+		{Sub.Granodiorite, new Substance(0xa0776b,10)},//igneous
+		{Sub.Harzburgite, new Substance(0xd6bea4,10)},//igneous
+		{Sub.Hawaiite, new Substance(0x59524a,10)},//igneous
 	};
-
 
 
 //	public static Sub rock = { Sub.ROCK, Sub.ROCK2, Sub.BASALT, Sub.BASALT2, Sub.BASALT3 };
@@ -113,4 +124,17 @@ public enum Sub
 	Granite,
 	Andesite,
 	Anorthosite,
+	Aplite,
+	Basanite,
+	Carbonatite,
+	Dacite,
+	Diabase,
+	Diorite,
+	Dunite,
+	Foyaite,
+	Gabbro,
+	Granodiorite,
+	Harzburgite,
+	Hawaiite,
+
 }
