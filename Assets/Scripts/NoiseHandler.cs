@@ -4,6 +4,8 @@ using LibNoise;
 using LibNoise.Generator;
 using LibNoise.Operator;
 using System.Collections.Generic;
+using System;
+using System.Threading;
 
 //one instance per planet, controls simplex noise based things such as altitude, population density, etc.
 public class NoiseHandler
@@ -60,6 +62,8 @@ public class NoiseHandler
 		//PlanetBuilder.nonePreset(out finalTerrain, out finalTexture, out substanceNoise);
 		//PlanetBuilder.marsPreset(out finalTerrain, out finalTexture, out substanceNoise);
 		//PlanetBuilder.buildTerrain(out finalTerrain, out finalTexture, out substanceNoise);
+
+
 		PlanetBuilder.genPlanetData(out finalTerrain, out finalTexture);
 		//addMountains();
 		//addDeserts();
@@ -108,6 +112,7 @@ public class NoiseHandler
 		//the substance noise to use at this voxel
 		//int tid;//the id of the texture module to use from substanceNoise
 		//sub = Sub.ICE;
+
 		float noise = (float)finalTerrain.GetValue(surfPos.x, surfPos.y, surfPos.z);
 
 

@@ -1,8 +1,7 @@
 ﻿using UnityEngine;
 using System.Collections;
 using System.Collections.Generic;
-using System;
-using System.Threading;
+
 //this monobehavior script facillitates the generation of every system(terrain, surface)
 //and attaches to a gameobject that things will be generated around
 //this picks 3d spots around the player that tell each system what to generate

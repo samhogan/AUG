@@ -13,23 +13,26 @@ public class PlanetBuilder
 	//height noise probability (perlin, billow, ridged)
 	private static ProbItems hnProb = new ProbItems(new double[]{3,1,1});
 	//bias probability (1=above ground)
-	private static ProbMeter biasProb = new ProbMeter(new double[]{-1,-1,1,1}, new double[]{3,3,10});
+	private static ProbMeter biasProb = new ProbMeter(new double[]{-1,-1,1,1}, new double[]{4,4,10});
 	//multiplier for upper limit of possible terrain amplitude
 	private static ProbMeter amplitudeProb = new ProbMeter(new double[]{.4,.4,7}, new double[]{8,1});
 	//the probability that the abundance of a substance on a planet will be close to its universal abundance
-	//TODO: add 1 more node
-	private static ProbMeter abundProb = new ProbMeter(new double[]{}, new double[]{1, 6, 1});
+	private static ProbMeter planAbundProb = new ProbMeter(new double[]{}, new double[]{1, 6, 1});
+	//the probability that the abundance of a substance in a feature will be close to its planetary abundance
+	//TODO: add more nodes
+	private static ProbMeter featAbundProb = new ProbMeter(new double[]{}, new double[]{1, 6, 1});
+	//
 
 	//should probably overload buildFeature, but this improves readability i think
 	public static void genPlanetData(out ModuleBase finalTerrain, out ModuleBase finalTexture)
 	{
 		float maxNoiseScale;//pretty much useless info for the final terrain
-		List<Sub> subList = new List<Sub>();
+		Dictionary<Sub, double> subList = new Dictionary<Sub, double>();
 		float abundance;
 		buildFeature(out finalTerrain, out finalTexture, out maxNoiseScale, 1, subList, out abundance);
 
 		string subs = "";
-		foreach(Sub s in subList)
+		foreach(Sub s in subList.Keys)
 			subs+=s+", ";
 		
 		Debug.Log(subs);
@@ -41,10 +44,10 @@ public class PlanetBuilder
 	//the final terrain of a planet is a very complex feature made up of many features
 	//this is funny: a feature is a composition of features; recursive logic and the function is recursive!
 	//noiseScale is the max scale of noise from the inner iterations to prevent large mountains from being selected on small scales
-	public static void buildFeature(out ModuleBase terrain, out ModuleBase texture, out float noiseScale, int lev, List<Sub> subList, out float abundance)
+	public static void buildFeature(out ModuleBase terrain, out ModuleBase texture, out float noiseScale, int lev, Dictionary<Sub, double> subList, out float abundance)
 	{
 		//Debug.Log("level " + lev);
-		if(lev<4)//Random.value < 1.0/lev && lev<4)
+		if(Random.value < 1.3/lev && lev<4)
 		{
 
 			ModuleBase terrain1, terrain2, texture1, texture2;
@@ -66,17 +69,10 @@ public class PlanetBuilder
 			//make possible edge controller
 			//loop and make inner controllers
 
-			//percent abundance of feature 1
-			float ab1percent = ab1/(ab1+ab2);
-
-			//reset abundProb values to account for these two features
-			abundProb.Values = new double[]{0, ab1percent*.8, Mathf.Max(ab1percent*1.2f, 1f), 1 };
-
-
 
 			//the amount to add of this feature to the biome(0 is add none, 1 is completely cover)
 			//NOTE: later amount will be somewhat dependant on the feature number(feature #6 will have an average lower amount than feature #2)
-			double amount = abundProb.getValue(Random.value);
+			double amount = getAmount(ab1,ab2);
 			double falloff = Random.value;
 
 
@@ -90,7 +86,7 @@ public class PlanetBuilder
 		else
 		{
 			//scale is the inverse of the frequency and is used to influence amplitude
-			float scale = eDist(1, 20000);
+			float scale = eDist(80, 20000);
 			//scale = 100;
 			//the starting noise for the final feature that will be modified
 
@@ -146,11 +142,11 @@ public class PlanetBuilder
 					terrain = temp;
 					break;
 				case 3:
-					float scalem = eDist(1, 10000);
+					float scalem = eDist(1, 1000);
 					ModuleBase addedTerrain = getGradientNoise(hnProb, Random.value, scale);
-					double amplitudem = eDist(.5, scale/4);
+					double amplitudem = eDist(1, scale/4);
 					addedTerrain = new ScaleBias(amplitude, 0, addedTerrain);
-					//terrain = new Add(terrain, addedTerrain);
+					terrain = new Add(terrain, addedTerrain);
 					break;
 				default:
 					break;
@@ -160,7 +156,7 @@ public class PlanetBuilder
 				
 
 			terrain = new ScaleBias(amplitude, bias * amplitude, terrain);
-			texture = buildTexture(subList, out abundance);
+			texture = buildTexture(subList, out abundance, 1);
 			noiseScale = scale;
 		}
 
@@ -204,19 +200,61 @@ public class PlanetBuilder
 
 	//builds a simple texture for a base feature
 	//also return its abundance and if it's temperature dependent
-	private static ModuleBase buildTexture(List<Sub> subList, out float abundance)
+	private static ModuleBase buildTexture(Dictionary<Sub, double> subList, out float abundance, int lev)
 	{
-
-		Sub newSub;
-		if(Random.value<.5 && subList.Count>0)
-			newSub = subList[Random.Range(0, subList.Count)];
-		else
+		//build a compound texture
+		if(Random.value<.5 && lev<3)
 		{
-			newSub = (Sub)Substance.surfProb.getValue(Random.value);
-			subList.Add(newSub);
+			float ab1, ab2;
+			ModuleBase text1 = buildTexture(subList, out ab1, lev+1);
+			ModuleBase text2 = buildTexture(subList, out ab2, lev+1);
+
+			double controlScale = eDist(1, 1000);
+			//the base control for the selector that adds two new features
+			ModuleBase baseControl = getGradientNoise(hnProb, Random.value, controlScale);
+			//baseControl = new Cylinders(1/controlScale);
+
+			double amount = getAmount(ab1, ab2);
+
+			//the abundance of this texture is that of the most abundand substance within it
+			abundance = Mathf.Max(ab1, ab2);
+
+			return addModule(text1, text2, baseControl, amount, 0);
 		}
-		abundance = (float)Substance.subs[newSub].surfAb;
-		return new Const((double)newSub);
+		else//get a solid texture
+		{
+			Sub newSub;
+			if(Random.value<.5 && subList.Count>0)//get an already used substance
+			{
+				//newSub = subList[Random.Range(0, subList.Count)];
+				//newSub = subList.Keys
+				List<Sub> keyList = new List<Sub>(subList.Keys);
+				newSub = keyList[Random.Range(0, keyList.Count)];
+
+			}
+			else//get a new substance
+			{
+				//random substance based on universal abundance
+				newSub = (Sub)Substance.surfProb.getValue(Random.value);
+
+
+				//add the new substance to the list
+				if(!subList.ContainsKey(newSub))
+				{
+					//its universal abundance
+					double uniAb = Substance.subs[newSub].surfAb;
+					planAbundProb.Values = new double[]{0, uniAb*.5, Mathf.Min((float)uniAb*2f, 100f), 100 };
+					//its planetary abundance
+					double planab = planAbundProb.getValue(Random.value);
+
+					subList.Add(newSub, planab);
+				
+				}
+			}
+
+			abundance = (float)subList[newSub];
+			return new Const(newSub);
+		}
 	}
 
 	//get a random gradient noise function(perlin, billow, ridged, maybe voronoi later)
@@ -255,139 +293,22 @@ public class PlanetBuilder
 	}
 
 
-
-
-	//generates finalTerrain and finalTexture for a planet
-	public static void buildTerrain(out ModuleBase finalTerrain, /*out ModuleBase finalTexture,*/ out ModuleBase biomeSelector, out List<ModuleBase> biomeTextures)
+	//returns the amount to add one module to another based on their abundance in the universe
+	private static double getAmount(float ab1, float ab2)
 	{
+		//percent abundance of feature 1
+		float ab1percent = ab1/(ab1+ab2);
 
-		finalTerrain = new Const(0.0);
-
-		//finalTexture = new Const(0.0);
-		biomeSelector = new Const(0.0);
-		biomeTextures = new List<ModuleBase>();
-
-
-		//list that contains all substances that have been used
-		List<Sub> subList = new List<Sub>();
-
-		//the number of "biomes" or types of terrain that use different texture ids
-		int numBiomes = 3;
-
-		//loop through and create all the biomes and compose them
-		for(int biome = 1; biome<=numBiomes; biome++)
-		{
+		//reset abundProb values to account for these two features
+		//TODO: add another node
+		featAbundProb.Values = new double[]{0, ab1percent*.6, Mathf.Min(ab1percent*1.3f, 1f), 1 };
 
 
+		//possible TODO: later amount will be somewhat dependant on the feature number(feature #6 will have an average lower amount than feature #2)
+		return featAbundProb.getValue(Random.value);
 
-			//if in first iteration, generate a base layer of rock (although can have any terrain features)
-			//generate texture
-
-			//height map and textures for this biome
-			ModuleBase biomeTerrain = null;
-			ModuleBase biomeTexture = null;
-
-			//the number of terrain features that will be composed(selected)
-			int numFeatures = 4;// Random.Range(1,6);
-
-			//loop through and create all the features
-			for(int feature = 1; feature <= numFeatures; feature++)
-			{
-				//scale is the inverse of the frequency and is used to influence amplitude
-				double scale = eDist(1, 15000);
-				//scale = 100;
-				//the starting noise for the final feature that will be modified
-				ModuleBase featureTerrain = new Perlin(1/scale,//randDoub(.00001, 0.1), 
-					randDoub(1.8, 2.2), 
-					randDoub(.4, .6), 
-					Random.Range(2, 6), 
-					Random.Range(int.MinValue, int.MaxValue), 
-					QualityMode.High);
-				
-				//the amplidude or max height of the terrain
-				//NOTE: later will be related to the frequency
-				double amplitude = scale/4;//eDist(.5,scale/2);//randDoub(2, 100);
-				//bias is the number added to the noise before multiplying
-				//-1 makes canyons/indentions, 1 makes all feautures above sea level
-				//NOTE: later make a greater chance to be 1 or -1
-				double bias = 1;//randDoub(-1, 1);
-
-				featureTerrain = new ScaleBias(amplitude, bias * amplitude, featureTerrain);
-
-				//the number of subfeatures to add
-				//a subfeature can be adding more noise, terracing, exponentiation, etc. but NOT selecting
-				int numSubFeatures = 0;
-				for(int subfeature = 1; subfeature <= numSubFeatures; subfeature++)
-				{
-					//
-				}
-
-
-				//if this is the first feature, make it the entire finalFeature to be added to in the next iteration
-				if(feature == 1)
-				{
-					biomeTerrain = featureTerrain;
-					biomeTexture = new Const(Random.Range(0,14));
-				}
-				else
-				{
-
-					double controlScale = eDist(Mathf.Max((float)scale,100), 20000);
-					//the base control for the selector that adds this feature to the biome
-					ModuleBase baseControl = new Perlin(1/controlScale, 
-						randDoub(1.8, 2.2), 
-						randDoub(.4, .6), 
-						3,//Random.Range(1, 3), 
-						Random.Range(int.MinValue, int.MaxValue), QualityMode.High);
-
-					//make possible edge controller
-					//loop and make inner controllers
-
-					//the amount to add of this feature to the biome(0 is add none, 1 is completely cover)
-					//NOTE: later amount will be somewhat dependant on the feature number(feature #6 will have an average lower amount than feature #2)
-					double amount = 1/feature;//Random.value;
-					double falloff = Random.value;
-					biomeTerrain = addModule(featureTerrain, biomeTerrain, baseControl, amount, falloff);
-				}
-			}
-
-			//if it is the first biome, add biome 100% to planet as a base
-			if(biome == 1)
-			{
-				finalTerrain = biomeTerrain;
-				//biomeSelector = new Const(0.0);
-			}
-			else
-			{
-
-
-				double controlScale = 100000;//eDist(100000, 100000);
-				ModuleBase baseControl = new Perlin(1/controlScale, 
-					randDoub(1.8, 2.2), 
-					randDoub(.4, .6), 
-					3,//Random.Range(1, 3), 
-					Random.Range(int.MinValue, int.MaxValue), QualityMode.High);
-
-				double amount = 1.0/biome;//Random.value;
-		
-				double falloff = Random.value;
-				finalTerrain = addModule(biomeTerrain, finalTerrain, baseControl, amount, 0);//falloff);
-
-				//add the biome number to the biome selector 
-				biomeSelector = addModule(new Const(biome-1), biomeSelector, baseControl, amount, 0);
-				//biomeTextures.Add(biomeTexture);
-
-			}
-
-			biomeTextures.Add(biomeTexture);
-
-
-		}
-
-		//Const testTexture = new Const(Random.Range(0,14));
-		//biomeTextures.Add(testTexture);
-		//finalTerrain = new Const(0.0);
 	}
+
 
 	//adds a module on top of another (creates a selector) 
 	//adds module addedMod to module baseMod based on control in a certain amount, amount ranges from 0(add none) to 1 (completely cover)
