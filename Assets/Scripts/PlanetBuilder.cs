@@ -15,7 +15,7 @@ public class PlanetBuilder
 	//bias probability (1=above ground)
 	private static ProbMeter biasProb = new ProbMeter(new double[]{-1,-1,1,1}, new double[]{4,4,10});
 	//multiplier for upper limit of possible terrain amplitude
-	private static ProbMeter amplitudeProb = new ProbMeter(new double[]{.4,.4,7}, new double[]{8,1});
+	private static ProbMeter amplitudeProb = new ProbMeter(new double[]{.4,.4,2}, new double[]{8,1});
 	//the probability that the abundance of a substance on a planet will be close to its universal abundance
 	private static ProbMeter planAbundProb = new ProbMeter(new double[]{}, new double[]{1, 6, 1});
 	//the probability that the abundance of a substance in a feature will be close to its planetary abundance
@@ -143,9 +143,9 @@ public class PlanetBuilder
 					break;
 				case 3:
 					float scalem = eDist(1, 1000);
-					ModuleBase addedTerrain = getGradientNoise(hnProb, Random.value, scale);
-					double amplitudem = eDist(1, scale/4);
-					addedTerrain = new ScaleBias(amplitude, 0, addedTerrain);
+					ModuleBase addedTerrain = getGradientNoise(hnProb, Random.value, scalem);
+					double amplitudem = eDist(1, scalem*.25);
+					addedTerrain = new ScaleBias(amplitudem, 0, addedTerrain);
 					terrain = new Add(terrain, addedTerrain);
 					break;
 				default:
@@ -156,6 +156,7 @@ public class PlanetBuilder
 				
 
 			terrain = new ScaleBias(amplitude, bias * amplitude, terrain);
+			//texture = Random.value<.7 ? buildTexture(subList, out abundance, 1) : null;
 			texture = buildTexture(subList, out abundance, 1);
 			noiseScale = scale;
 		}
@@ -203,7 +204,7 @@ public class PlanetBuilder
 	private static ModuleBase buildTexture(Dictionary<Sub, double> subList, out float abundance, int lev)
 	{
 		//build a compound texture
-		if(Random.value<.5 && lev<3)
+		if(Random.value<.3 && lev<3)
 		{
 			float ab1, ab2;
 			ModuleBase text1 = buildTexture(subList, out ab1, lev+1);

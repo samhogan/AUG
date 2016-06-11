@@ -33,18 +33,18 @@ public class UniverseSystem
 		//Planet earth = new Planet(10000);
 		//Planet earth = new Planet(200);
 
-		Planet earth = new Planet(250000, new UniPos(new Vector3(0,0,0), 100, 0, 100));
+		/*Planet earth = new Planet(250000, new UniPos(new Vector3(0,0,0), 100, 0, 100));
 		planets.Add(earth);
 		//curPlanet = earth;
 
 		Planet planetfun = new Planet(1000000, new UniPos(new Vector3(0,0,0), 2000, 200, 50));
 		planets.Add(planetfun);
-
-		/*for(int i = 0; i<10; i++)
+*/
+		for(int i = 0; i<20; i++)
 		{
-			Planet planetfun = new Planet(Random.Range(10000,1000000), new UniPos(new Vector3(0,0,0), 200*i, 200, 50));
+			Planet planetfun = new Planet(Random.Range(10000,1000000), new UniPos(new Vector3(0,0,0), 200*i, 00, 200));
 			planets.Add(planetfun);
-		}*/
+		}
 
 		//Planet planetfun = new Planet(6000000, new UniPos(new Vector3(0,0,0), 1000, 200, 50));
 		//planets.Add(planetfun);

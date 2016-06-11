@@ -97,6 +97,15 @@ public class Substance
 		{Sub.Granodiorite, new Substance(0xa0776b,10)},//igneous
 		{Sub.Harzburgite, new Substance(0xd6bea4,10)},//igneous
 		{Sub.Hawaiite, new Substance(0x59524a,10)},//igneous
+		{Sub.Arkose, new Substance(0xc4804b,10)},//sedimentary
+		{Sub.Bauxite, new Substance(0xe13f14,20)},//sedimentary
+		{Sub.Chalk, new Substance(0xece3da,0)},//sedimentary
+		{Sub.Chert, new Substance(0xbaaa98,10)},//sedimentary
+		{Sub.Coal, new Substance(0x3a353b,0)},//sedimentary
+		{Sub.Diatomite, new Substance(0xbcb2a8,10)},//sedimentary
+		{Sub.Dolomite, new Substance(0xb2abe8,10)},//sedimentary
+		{Sub.Limestone, new Substance(0xe6dcd3,15)},//sedimentary
+		{Sub.Sandstone, new Substance(0xb96231,15)},//sedimentary
 	};
 
 
@@ -136,5 +145,13 @@ public enum Sub
 	Granodiorite,
 	Harzburgite,
 	Hawaiite,
-
+	Arkose,
+	Bauxite,
+	Chalk,
+	Chert,
+	Coal,
+	Diatomite,
+	Dolomite,
+	Limestone,
+	Sandstone,
 }
