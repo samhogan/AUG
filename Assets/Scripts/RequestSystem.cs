@@ -119,7 +119,8 @@ public class RequestSystem : MonoBehaviour
 
 			//Thread t = new Thread(() => UniverseSystem.curPlanet.lod.updateLOD(new WorldPos(curChunkPos.x/16, curChunkPos.y/16, curChunkPos.z/16)));
 			//t.Start();
-			UniverseSystem.curPlanet.lod.updateLOD(new WorldPos(curChunkPos.x/16, curChunkPos.y/16, curChunkPos.z/16));	
+			//UniverseSystem.curPlanet.lod.updateLOD(new WorldPos(curChunkPos.x/16, curChunkPos.y/16, curChunkPos.z/16));	
+			UniverseSystem.curPlanet.lod.updateWorld(new WorldPos(curChunkPos.x/16, curChunkPos.y/16, curChunkPos.z/16));	
 			
 			//print("objects to render " + objectsToRender.Count);
 
@@ -134,7 +135,7 @@ public class RequestSystem : MonoBehaviour
 
 			//render terrain if there is some, or else render an object
 			//TODO: move to lodsystem
-			if(UniverseSystem.curPlanet.lod.chunksToSplitRender.Count > 0)
+			/*if(UniverseSystem.curPlanet.lod.chunksToSplitRender.Count > 0)
 			{
 				//Debug.Log("(rs) Chunks contains key :" + UniverseSystem.curPlanet.lod.chunksToSplitRender[0].ToString() + " " 
 				  //        + UniverseSystem.curPlanet.lod.chunks.ContainsKey(UniverseSystem.curPlanet.lod.chunksToSplitRender[0]));
@@ -146,7 +147,7 @@ public class RequestSystem : MonoBehaviour
 			{
 				objectsToRender[0].Render();
 				objectsToRender.RemoveAt(0);
-			}
+			}*/
 
 			//every 10th frame request deletion of chunks
 			/*delTimer++;

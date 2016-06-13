@@ -1,6 +1,8 @@
 ﻿using UnityEngine;
 using System.Collections;
 using System.Collections.Generic;
+using System;
+using System.Threading;
 
 //handles the generation of terrain in multiple levels of detail
 public class LODSystem
@@ -15,11 +17,12 @@ public class LODSystem
 	//
 	List<LODPos> splitChunks = new List<LODPos>();
 
-	//the list of chunks that exist and are not split (are visable)
+	//the list of chunks that exist and are not split (are visible)
 	List<LODPos> visChunks = new List<LODPos>();
 
 	//list of chunks that have been split, but thier pieces still need to be rendered
 	public List<LODPos> chunksToSplitRender = new List<LODPos>();
+	//public List<LODPos> chunksToSplitCalx = new List<LODPos>();
 
 	//the level at which chunks appear in unispace rather than in normal space
 	public static int uniCutoff = 5;
@@ -29,9 +32,65 @@ public class LODSystem
 		planet = p;
 	}
 
+	//is chunk noise being calculated?
+	bool calculating = false;
+
+	public void updateWorld(WorldPos pos)
+	{
+		if(!calculating)
+		{
+
+			foreach(LODPos lpos in chunksToSplitRender)
+			{
+				splitRender(lpos);
+			}
+			chunksToSplitRender.Clear();
+
+			List<LODPos> chunksToSplit = new List<LODPos>();
+			//for every chunk that is not split, check if it is close enough to be split
+			foreach(LODPos lpos in visChunks)
+			{
+				//if the distance from the player's position to the lpos is close enough and its not a level 0 pos, add it to the split list
+				if(lodposInRange(pos, lpos) && lpos.level>0)
+				{
+					chunksToSplit.Add(lpos);
+				}
+			}
+
+			//split all those chunks
+			for(int i=chunksToSplit.Count-1; i>=0; i--)
+			{
+				splitChunk(chunksToSplit[i]);
+				//Debug.Log("Apparently a chunk was split");
+			}
+
+			if(chunksToSplit.Count>0)
+			{
+				calculating = true;
+				Thread t = new Thread(calcChunks);
+				t.Start();
+				//calcChunks();
+			}
+		}
+
+
+	}
+
+
+	//a threaded method that calculated the noise values for all children of the chunksToSplitRender queue
+	void calcChunks()
+	{
+		foreach(LODPos pos in chunksToSplitRender)
+		{
+			splitCalc(pos);
+		}
+		calculating = false;
+	}
+
+
 	//updates level of detail by subdividing/combining chunks
 	//given a level 0 lodpos (which is just a worldpos)
-	public void updateLOD(WorldPos pos)
+	/*public void updateLOD(WorldPos pos)
 	{
 		List<LODPos> chunksToSplit = new List<LODPos>();
 		//for every chunk that is not split, check if it is close enough to be split
@@ -42,7 +101,7 @@ public class LODSystem
 			{
 				//Debug.Log(lpos);
 				chunksToSplit.Add(lpos);
-				break;
+				//break;
 			}
 		}
 
@@ -73,7 +132,7 @@ public class LODSystem
 		}
 
 
-	}
+	}*/
 
 	//is the lodpos close enough to be split up?
 	bool lodposInRange(WorldPos pos, LODPos lpos)
@@ -87,6 +146,32 @@ public class LODSystem
 		
 		//if the distance from the player's position to the lpos is less than its side length times some constant, return true
 		return dist < sideLength*1.2;
+	}
+
+	//calculate the noise values and mesh data for each child chunk
+	public void splitCalc(LODPos pos)
+	{
+		int newLev = pos.level-1;
+		//the position of the first subchunk in this chunk
+		WorldPos newStart = new WorldPos(pos.x*2, pos.y*2, pos.z*2);
+
+		//render all 8 chunks (that exist)
+		for(int x=0; x<=1; x++)
+		{
+			for(int y=0; y<=1; y++)
+			{
+				for(int z=0; z<=1; z++)
+				{	
+					LODPos newChunk = new LODPos(newLev, newStart.x+x, newStart.y+y, newStart.z+z);
+					TerrainObject tobj = null;
+					if(chunks.TryGetValue(newChunk, out tobj))
+					{
+						tobj.calculateNoise();
+						//tobj.calculateMesh();	
+					}
+				}
+			}
+		}
 	}
 
 	//renders the pieces of a chunk that has already been split
@@ -136,7 +221,8 @@ public class LODSystem
 	{
 		CreateChunk(pos, false);
 	}
-	//creates and instantiates a terrain chunk (but does not render it yet)
+
+	//creates (instantiates) a terrain chunk (but does not render it yet)
 	public void CreateChunk(LODPos pos, bool render) 
 	{
 		//if the chunk has aready been created, dont build it again!
@@ -149,145 +235,19 @@ public class LODSystem
 		GameObject terrainGO = Pool.getTerrain();
 		terrainGO.name = "Terrain Chunk " + pos.ToString();
 		TerrainObject chunk = terrainGO.GetComponent<TerrainObject>();
+		chunk.init(pos, planet);
 		chunks.Add(pos, chunk);
 		//Debug.Log("chunks added key :" + pos.ToString());
 		visChunks.Add(pos);
 
-		//this lod chunk scale
-		//level 0 has scale 1, level 1 has scale 2, level 2 has scale 4, etc.
-		float scale = (int)(Mathf.Pow(2,pos.level));//TerrainObject.wsRatio;
-		chunk.scale = scale;
-
-
-		//positions and scales the gameobject (maybe should move this elsewhere)
-		//if it should be in unispace
-		if(pos.level > uniCutoff)
-		{
-
-			//add it to unispace and make its parent proud
-			terrainGO.transform.SetParent(planet.scaledRep.transform);
-			terrainGO.layer = 8;//add to Unispace layer
-
-
-			//finds the adjusted scale of this terrain obj when in unispace
-			float absScale = ((float)scale)/Unitracker.uniscale;
-			terrainGO.transform.localScale = new Vector3(absScale, absScale, absScale)*TerrainObject.wsRatio;
-
-			//the adjusted position of this terrain obj whin in unispace
-			terrainGO.transform.localPosition = pos.toVector3()*TerrainObject.chunkWidth*absScale;
-			terrainGO.transform.localRotation = Quaternion.identity;
-
-		}
-		else//it is in normal space
-		{
-			terrainGO.layer = 0;
-			//terrainGO.transform.parent = null;
-			terrainGO.transform.localScale = new Vector3(scale, scale, scale)*TerrainObject.wsRatio;
-			terrainGO.transform.localPosition = Unitracker.getFloatingPos(pos.toVector3()*scale*TerrainObject.chunkWidth);
-
-		}
-
-		//loops through every voxel in the chunk (make own funtion later)
-		for (int x = 0; x<=chunkSize; x++) 
-		{
-			for (int y = 0; y<=chunkSize; y++) 
-			{
-				for (int z = 0; z<=chunkSize; z++) 
-				{
-					
-					//the world position of the current voxel
-					Vector3 voxPos = new Vector3();//position of chunk+position of voxel within chunk
-					voxPos.x = (pos.x*16+x*TerrainObject.wsRatio)*scale;
-					voxPos.y = (pos.y*16+y*TerrainObject.wsRatio)*scale;
-					voxPos.z = (pos.z*16+z*TerrainObject.wsRatio)*scale;
-
-	
-
-
-					Sub sub;//the substance of this voxel
-					float voxVal;//the voxel value of this voxel for marching cubes
-
-					//retrieve the voxel data from noise
-					planet.noise.getVoxData(voxPos, out voxVal, out sub);
-
-					//voxVal = y < 4 ? 0 : 2;
-					//sub = Sub.ROCK2;
-
-					//fills in the appropriate voxel data for marching cubes
-					chunk.voxVals[x,y,z] = voxVal;//Noise.GetNoise((x+pos.x)/scale,(y+pos.y)/scale,(z+pos.z)/scale);
-					//if(x+voxPos.x > 0)
-					//	chunk.voxVals[x, y, z] = 2;
-					//get the texture point of the substace at this vector
-					chunk.voxType[x, y, z] = Substance.subs[sub].colorPoint;
-					//puts a hole in the planet(just for fun
-					//if(voxPos.x<10 && voxPos.x>-10 && voxPos.z<10 && voxPos.z>-10)
-					//chunk.voxVals[x,y,z] = 2;
-					
-					
-				}
-				
-			}
-			
-		}
-
-		//here is a museum of the history of 
-		//TerrainLoader.addToRender(chunk);
-		//Loader.addToRender(chunk);
-		//if(Time.time<3)
-		if(render)
-			chunk.Render();//renders the chunk immediately
+		///if(render)
+		//	chunk.Render();//renders the chunk immediately
 		//RequestSystem.terrainToRender.Add(chunk);
 		
 		
 	}
 
 
-	//fills the chunk with its voxel data
-	/*private void fillChunk(TerrainObject chunk, LODPos pos, int scale)
-	{
-		//loops through every voxel in the chunk (make own funtion later)
-		for (int x = 0; x<=chunkSize; x++) 
-		{
-			for (int y = 0; y<=chunkSize; y++) 
-			{
-				for (int z = 0; z<=chunkSize; z++) 
-				{
-
-					//the world position of the current voxel
-					Vector3 voxPos = new Vector3();//position of chunk+position of voxel within chunk
-					voxPos.x = (pos.x*16+x*TerrainObject.wsRatio)*scale;
-					voxPos.y = (pos.y*16+y*TerrainObject.wsRatio)*scale;
-					voxPos.z = (pos.z*16+z*TerrainObject.wsRatio)*scale;
-
-
-
-
-					Sub sub;//the substance of this voxel
-					float voxVal;//the voxel value of this voxel for marching cubes
-
-					//retrieve the voxel data from noise
-					planet.noise.getVoxData(voxPos, out voxVal, out sub);
-
-					//voxVal = y < 4 ? 0 : 2;
-					//sub = Sub.ROCK2;
-
-					//fills in the appropriate voxel data for marching cubes
-					chunk.voxVals[x,y,z] = voxVal;//Noise.GetNoise((x+pos.x)/scale,(y+pos.y)/scale,(z+pos.z)/scale);
-					//if(x+voxPos.x > 0)
-					//	chunk.voxVals[x, y, z] = 2;
-					//get the texture point of the substace at this vector
-					chunk.voxType[x, y, z] = Substance.subs[sub].colorPoint;
-					//puts a hole in the planet(just for fun
-					//if(voxPos.x<10 && voxPos.x>-10 && voxPos.z<10 && voxPos.z>-10)
-					//chunk.voxVals[x,y,z] = 2;
-
-
-				}
-
-			}
-
-		}
-	}*/
 
 	//splits up a terrain chunk into 8 smaller chunks 
 	public void splitChunk(LODPos pos)

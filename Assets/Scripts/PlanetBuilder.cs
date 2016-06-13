@@ -107,9 +107,17 @@ public class PlanetBuilder
 
 			//terrain = new Displace(terrain, getGradientNoise(hnProb, Random.value, 100), getGradientNoise(hnProb, Random.value, 100), getGradientNoise(hnProb, Random.value, 100));
 			//terrain = new Scale(50,1,1,terrain);
-			/*Curve c = new Curve(terrain);
-			c.Add(.5, 1);
-			terrain = c;*/
+			Curve c = new Curve(terrain);
+			for(int i = 0; i<5; i++)
+			{
+				c.Add(Random.value*2-1, Random.value*2-1);
+			}
+			/*c.Add(1, 1);
+			c.Add(-1, -1);
+			c.Add(0, 0);
+			c.Add(.3,.7);*/
+
+			terrain = c;
 
 			//terrain = new Invert(terrain);
 			/*Terrace cliffthings = new Terrace(terrain);
@@ -142,12 +150,12 @@ public class PlanetBuilder
 					terrain = temp;
 					break;
 				case 3:
-					float scalem = eDist(1, 1000);
+					/*float scalem = eDist(1, 1000);
 					ModuleBase addedTerrain = getGradientNoise(hnProb, Random.value, scalem);
 					double amplitudem = eDist(1, scalem*.25);
 					addedTerrain = new ScaleBias(amplitudem, 0, addedTerrain);
 					terrain = new Add(terrain, addedTerrain);
-					break;
+					break;*/
 				default:
 					break;
 
@@ -302,7 +310,7 @@ public class PlanetBuilder
 
 		//reset abundProb values to account for these two features
 		//TODO: add another node
-		featAbundProb.Values = new double[]{0, ab1percent*.6, Mathf.Min(ab1percent*1.3f, 1f), 1 };
+		featAbundProb.Values = new double[]{0, ab1percent*.6, Mathf.Min(ab1percent*1.3f, .90f), 1 };
 
 
 		//possible TODO: later amount will be somewhat dependant on the feature number(feature #6 will have an average lower amount than feature #2)
@@ -419,7 +427,31 @@ public class PlanetBuilder
 
 	}
 
+	public static void testPreset(out ModuleBase finalTerrain, out ModuleBase finalTexture)
+	{
+		float f;
+		finalTexture = buildTexture(new Dictionary<Sub, double>(), out f, 1);
 
+		float scale = 100000f;
+		finalTerrain = new Billow(1/scale,
+			2, 
+			.5, 
+			1, 
+			123414,//Random.Range(int.MinValue, int.MaxValue), 
+			QualityMode.High);
+
+	/*	Curve c = new Curve(finalTerrain);
+		c.Add(-1, 0);
+		c.Add(0, 0);
+		c.Add(.5, 0);
+		c.Add(1, -1);*/
+
+		finalTerrain = new Min(new Const(-.9), new Invert(finalTerrain));
+
+		finalTerrain = new ScaleBias(scale*.1, 0, finalTerrain);
+		//finalTerrain = new Invert(finalTerrain);
+
+	}
 	/*private void addContinents()
 	{
 		Perlin continents = new Perlin(.000001, 2, .5, 6, 6734, QualityMode.High);
