@@ -432,7 +432,7 @@ public class PlanetBuilder
 		float f;
 		finalTexture = buildTexture(new Dictionary<Sub, double>(), out f, 1);
 
-		float scale = 100000f;
+		float scale = 1000f;
 		finalTerrain = new Billow(1/scale,
 			2, 
 			.5, 
@@ -446,7 +446,7 @@ public class PlanetBuilder
 		c.Add(.5, 0);
 		c.Add(1, -1);*/
 
-		finalTerrain = new Min(new Const(-.9), new Invert(finalTerrain));
+		//finalTerrain = new Min(new Const(-.9), new Invert(finalTerrain));
 
 		finalTerrain = new ScaleBias(scale*.1, 0, finalTerrain);
 		//finalTerrain = new Invert(finalTerrain);

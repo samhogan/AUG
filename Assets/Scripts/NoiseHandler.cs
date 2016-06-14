@@ -64,8 +64,8 @@ public class NoiseHandler
 		//PlanetBuilder.buildTerrain(out finalTerrain, out finalTexture, out substanceNoise);
 
 
-		PlanetBuilder.genPlanetData(out finalTerrain, out finalTexture);
-		//PlanetBuilder.testPreset(out finalTerrain, out finalTexture);
+		//PlanetBuilder.genPlanetData(out finalTerrain, out finalTexture);
+		PlanetBuilder.testPreset(out finalTerrain, out finalTexture);
 		//addMountains();
 		//addDeserts();
 		//addIce();
