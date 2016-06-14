@@ -276,8 +276,11 @@ public class LODSystem
 		//Debug.Log("chunks added key :" + pos.ToString());
 		visChunks.Add(pos);
 
-		///if(render)
-		//	chunk.Render();//renders the chunk immediately
+		if(render)
+		{
+			chunk.calculateNoise();
+			chunk.Render();//renders the chunk immediately
+		}
 		//RequestSystem.terrainToRender.Add(chunk);
 		
 		

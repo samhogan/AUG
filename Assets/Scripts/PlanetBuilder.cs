@@ -23,13 +23,15 @@ public class PlanetBuilder
 	private static ProbMeter featAbundProb = new ProbMeter(new double[]{}, new double[]{1, 6, 1});
 	//
 
+	private static ProbItems baseFeatModProb = new ProbItems(new double[]{1,1});
+
 	//should probably overload buildFeature, but this improves readability i think
 	public static void genPlanetData(out ModuleBase finalTerrain, out ModuleBase finalTexture)
 	{
 		float maxNoiseScale;//pretty much useless info for the final terrain
 		Dictionary<Sub, double> subList = new Dictionary<Sub, double>();
 		float abundance;
-		buildFeature(out finalTerrain, out finalTexture, out maxNoiseScale, 1, subList, out abundance);
+		buildFeature(out finalTerrain, out finalTexture, out maxNoiseScale, 1, subList, out abundance, true);
 
 		string subs = "";
 		foreach(Sub s in subList.Keys)
@@ -44,7 +46,7 @@ public class PlanetBuilder
 	//the final terrain of a planet is a very complex feature made up of many features
 	//this is funny: a feature is a composition of features; recursive logic and the function is recursive!
 	//noiseScale is the max scale of noise from the inner iterations to prevent large mountains from being selected on small scales
-	public static void buildFeature(out ModuleBase terrain, out ModuleBase texture, out float noiseScale, int lev, Dictionary<Sub, double> subList, out float abundance)
+	public static void buildFeature(out ModuleBase terrain, out ModuleBase texture, out float noiseScale, int lev, Dictionary<Sub, double> subList, out float abundance, bool needsTexture)
 	{
 		//Debug.Log("level " + lev);
 		if(Random.value < 1.3/lev && lev<4)
@@ -54,8 +56,19 @@ public class PlanetBuilder
 			float nScale1, nScale2;
 			float ab1, ab2;//the relative abundance of the substances of each feature
 
-			buildFeature(out terrain1, out texture1, out nScale1, lev+1, subList, out ab1);
-			buildFeature(out terrain2, out texture2, out nScale2, lev+1, subList, out ab2);
+
+			/*bool textureThis = false;
+			//possibly create a mulitfeature texture
+			if(needsTexture && Random.value<.2)
+			{
+				textureThis = true;
+				needsTexture = false;
+			}*/
+
+
+
+			buildFeature(out terrain1, out texture1, out nScale1, lev+1, subList, out ab1, needsTexture);
+			buildFeature(out terrain2, out texture2, out nScale2, lev+1, subList, out ab2, needsTexture);
 
 			noiseScale = Mathf.Max(nScale1, nScale2);
 
@@ -77,6 +90,9 @@ public class PlanetBuilder
 
 
 			terrain = addModule(terrain1, terrain2, baseControl, amount, falloff);
+
+			//if(textureThis)
+			//	texture = buildTexture(subList, 
 			texture = addModule(texture1, texture2, baseControl, amount, 0);
 
 			//the abundance of this final feature is that of the most abundand substance within it
@@ -91,12 +107,13 @@ public class PlanetBuilder
 			//the starting noise for the final feature that will be modified
 
 			terrain = getGradientNoise(hnProb, Random.value, scale);
-			/*terrain = new Perlin(1/scale,//randDoub(.00001, 0.1), 
-				randDoub(1.8, 2.2), 
-				randDoub(.4, .6), 
-				4, 
-				Random.Range(int.MinValue, int.MaxValue), 
-				QualityMode.High);*/
+
+			//apply a random modification to the primordial noise
+			//possibly in the future multiple mods can be applied
+			if(Random.value<.3)
+				terrain = modMod(terrain, (int)baseFeatModProb.getValue(Random.value));
+
+
 			//the amplidude or max height of the terrain
 			//NOTE: later will be related to the frequency
 			double amplitude = eDist(1,scale*amplitudeProb.getValue(Random.value));//randDoub(2, 100);
@@ -104,106 +121,65 @@ public class PlanetBuilder
 			//-1 makes canyons/indentions, 1 makes all feautures above sea level
 			//NOTE: later make a greater chance to be 1 or -1
 			double bias = biasProb.getValue(Random.value);//.1;//randDoub(-1, 1);
-
-			//terrain = new Displace(terrain, getGradientNoise(hnProb, Random.value, 100), getGradientNoise(hnProb, Random.value, 100), getGradientNoise(hnProb, Random.value, 100));
-			//terrain = new Scale(50,1,1,terrain);
-			Curve c = new Curve(terrain);
-			for(int i = 0; i<5; i++)
-			{
-				c.Add(Random.value*2-1, Random.value*2-1);
-			}
-			/*c.Add(1, 1);
-			c.Add(-1, -1);
-			c.Add(0, 0);
-			c.Add(.3,.7);*/
-
-			terrain = c;
-
-			//terrain = new Invert(terrain);
-			/*Terrace cliffthings = new Terrace(terrain);
-			cliffthings.Add(-1);
-			cliffthings.Add(-.875);
-			cliffthings.Add(-.75);
-			cliffthings.Add(-.5);
-			cliffthings.Add(0);
-			cliffthings.Add(1);
-			terrain = cliffthings;*/
-
-			if(Random.value<.4)
-			{
-				int num = Random.Range(0, 4);
-				switch(num)
-				{
-				case 0://mulitply
-					//terrain = new Multiply(terrain, new Const(randDoub(.01,10)));
-					break;
-				case 1:
-					//terrain = new Power(terrain, new Const(randDoub(0,2)));
-					break;
-				case 2:
-					Terrace temp = new Terrace(terrain);
-					int numPoints = Random.Range(1, 10);
-					for(int i = 0; i<numPoints; i++)
-					{
-						temp.Add(randDoub(-1, 1));
-					}
-					terrain = temp;
-					break;
-				case 3:
-					/*float scalem = eDist(1, 1000);
-					ModuleBase addedTerrain = getGradientNoise(hnProb, Random.value, scalem);
-					double amplitudem = eDist(1, scalem*.25);
-					addedTerrain = new ScaleBias(amplitudem, 0, addedTerrain);
-					terrain = new Add(terrain, addedTerrain);
-					break;*/
-				default:
-					break;
-
-				}
-			}
+		
 				
-
+			//now apply the bias and amplitude
 			terrain = new ScaleBias(amplitude, bias * amplitude, terrain);
+
+			//apply a random post modification
+			if(Random.value<.2)
+			{
+				terrain = modMod(terrain, 2);
+			}
+
 			//texture = Random.value<.7 ? buildTexture(subList, out abundance, 1) : null;
-			texture = buildTexture(subList, out abundance, 1);
+			//build a texture if it still needs one
+			texture = needsTexture ? buildTexture(subList, out abundance, 1) : null;
 			noiseScale = scale;
 		}
 
 
-		//add mods
-		/*if(Random.value<.4)
+
+
+	}
+
+
+	/// <summary>
+	/// modifies a module
+	/// </summary>
+	/// <returns>The mod.</returns>
+	/// <param name="baseMod">Base mod.</param>
+	/// <param name="modType">Mod type.</param>
+	private static ModuleBase modMod(ModuleBase baseMod, int modType)
+	{
+
+		switch(modType)
 		{
-			int num = Random.Range(0, 4);
-			switch(num)
+		case 0: 
+			Curve c = new Curve(baseMod);
+			for(int i = 0; i<4; i++)
 			{
-			case 0://mulitply
-				//terrain = new Multiply(terrain, new Const(randDoub(.01,10)));
-				break;
-			case 1:
-				//terrain = new Power(terrain, new Const(randDoub(0,2)));
-				break;
-			case 2:
-				Terrace temp = new Terrace(terrain);
-				int numPoints = Random.Range(1, 10);
-				for(int i = 0; i<numPoints; i++)
-				{
-					temp.Add(randDoub(-100, 100));
-				}
-				terrain = temp;
-				break;
-			case 3:
-				float scale = eDist(1, 10000);
-				ModuleBase addedTerrain = getGradientNoise(hnProb, Random.value, scale);
-				double amplitude = eDist(.5, scale/4);
-				addedTerrain = new ScaleBias(amplitude, 0, addedTerrain);
-				terrain = new Add(terrain, addedTerrain);
-				break;
-			default:
-				break;
-
+				c.Add(Random.value*2-1, Random.value*2-1);
 			}
-		}*/
+			return c;
+		case 1:
+			Terrace terr = new Terrace(baseMod);
+			int numPoints = Random.Range(1, 10);
+			for(int i = 0; i<numPoints; i++)
+			{
+				terr.Add(randDoub(-1, 1));
+			}
+			return terr;
+		case 2:
+			float scale = eDist(1, 10000);
+			ModuleBase addedTerrain = getGradientNoise(hnProb, Random.value, scale);
+			double amplitude = eDist(.5, scale/4);
+			addedTerrain = new ScaleBias(amplitude, 0, addedTerrain);
+			return new Add(baseMod, addedTerrain);
+		default:
+			return new Checker();
 
+		}
 
 	}
 
@@ -266,8 +242,17 @@ public class PlanetBuilder
 		}
 	}
 
-	//get a random gradient noise function(perlin, billow, ridged, maybe voronoi later)
+
+
+
 	//TODO: paramatize all other properties
+	/// <summary>
+	/// get a random gradient noise function(perlin, billow, ridged, maybe voronoi later)
+	/// </summary>
+	/// <returns>The gradient noise.</returns>
+	/// <param name="prob">Prob.</param>
+	/// <param name="val">Value.</param>
+	/// <param name="scale">Scale.</param>
 	private static ModuleBase getGradientNoise(ProbItems prob, double val, double scale)
 	{
 		switch((int)prob.getValue(Random.value))
@@ -302,7 +287,13 @@ public class PlanetBuilder
 	}
 
 
-	//returns the amount to add one module to another based on their abundance in the universe
+
+	/// <summary>
+	/// returns the amount to add one module to another based on their abundance in the universe
+	/// </summary>
+	/// <returns>The amount.</returns>
+	/// <param name="ab1">the abundance of 1 substance/feature</param>
+	/// <param name="ab2">Ab2.</param>
 	private static double getAmount(float ab1, float ab2)
 	{
 		//percent abundance of feature 1
@@ -432,13 +423,17 @@ public class PlanetBuilder
 		float f;
 		finalTexture = buildTexture(new Dictionary<Sub, double>(), out f, 1);
 
-		float scale = 1000f;
-		finalTerrain = new Billow(1/scale,
+		float scale = 100000f;
+
+		finalTerrain = new Voronoi(1/scale, 0, 2623246, true);
+
+
+		/*finalTerrain = new Billow(1/scale,
 			2, 
 			.5, 
 			1, 
 			123414,//Random.Range(int.MinValue, int.MaxValue), 
-			QualityMode.High);
+			QualityMode.High);*/
 
 	/*	Curve c = new Curve(finalTerrain);
 		c.Add(-1, 0);
@@ -448,8 +443,11 @@ public class PlanetBuilder
 
 		//finalTerrain = new Min(new Const(-.9), new Invert(finalTerrain));
 
-		finalTerrain = new ScaleBias(scale*.1, 0, finalTerrain);
+		finalTerrain = new ScaleBias(scale*.5, 0, finalTerrain);
 		//finalTerrain = new Invert(finalTerrain);
+
+
+
 
 	}
 	/*private void addContinents()
