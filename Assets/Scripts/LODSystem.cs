@@ -34,19 +34,26 @@ public class LODSystem
 
 	//is chunk noise being calculated?
 	bool calculating = false;
+	int maxBuild = 5;
 
+	//updates the lod and starts a new thread for calculating chunk data
 	public void updateWorld(WorldPos pos)
 	{
 		if(!calculating)
 		{
-
+			//render all chunks that were just splitcalced
 			foreach(LODPos lpos in chunksToSplitRender)
 			{
 				splitRender(lpos);
 			}
 			chunksToSplitRender.Clear();
 
+
+
 			List<LODPos> chunksToSplit = new List<LODPos>();
+
+
+			int count = 0;
 			//for every chunk that is not split, check if it is close enough to be split
 			foreach(LODPos lpos in visChunks)
 			{
@@ -54,16 +61,31 @@ public class LODSystem
 				if(lodposInRange(pos, lpos) && lpos.level>0)
 				{
 					chunksToSplit.Add(lpos);
+					if(++count>5) break;
 				}
+
+
+			}
+
+
+			List<LODPos> chunksToCombine = new List<LODPos>();
+			//for every chunk that is split, check if it is far enough to be combined
+			foreach(LODPos lpos in splitChunks)
+			{
+				//Debug.Log(lpos.ToString() + " " + chunks.ContainsKey(lpos));
+				if(!lodposInRange(pos, lpos))
+					chunksToCombine.Add(lpos);
 			}
 
 			//split all those chunks
-			for(int i=chunksToSplit.Count-1; i>=0; i--)
+			foreach(LODPos chunk in chunksToSplit)//(int i=chunksToSplit.Count-1; i>=0; i--)
 			{
-				splitChunk(chunksToSplit[i]);
+				splitChunk(chunk);
+				//splitChunk(chunksToSplit[i]);
 				//Debug.Log("Apparently a chunk was split");
 			}
 
+			//start a new thread to calculate chunks if there are new chunks to calculate
 			if(chunksToSplit.Count>0)
 			{
 				calculating = true;
@@ -71,6 +93,20 @@ public class LODSystem
 				t.Start();
 				//calcChunks();
 			}
+
+			//combine all of those chunks
+			//there is no discrepancy with the other thread because math
+			for(int i=chunksToCombine.Count-1; i>=0; i--)
+			{
+
+				//Debug.Log(lpos.ToString() + " " + chunks.ContainsKey(lpos));
+				//Debug.Log("a chunk is being combined");
+				combineChunk(chunksToCombine[i]);
+			}
+
+
+
+
 		}
 
 
