@@ -95,11 +95,11 @@ public class RequestSystem : MonoBehaviour
 			WorldPos curChunkPos = UnitConverter.getChunk(realPos);
 
 			//only request chunk generation (of surface objects) if the chunk is within the build heigth
-			/*if(curChunkPos.toVector3().magnitude < UniverseSystem.curPlanet.buildHeight)
+			if(curChunkPos.toVector3().magnitude < UniverseSystem.curPlanet.buildHeight)
 			{
-				findChunk(curChunkPos);
+				//findChunk(curChunkPos);
 
-			}*/
+			}
 			//if the player is in a new chunk, update the lod
 			if(curChunkPos!=currentChunk)
 			{
@@ -142,8 +142,8 @@ public class RequestSystem : MonoBehaviour
 				UniverseSystem.curPlanet.lod.splitRender(UniverseSystem.curPlanet.lod.chunksToSplitRender[0]);	
 
 				UniverseSystem.curPlanet.lod.chunksToSplitRender.RemoveAt(0);
-			}
-			else if(objectsToRender.Count > 0)
+			}*/
+			/*if(objectsToRender.Count > 0)
 			{
 				objectsToRender[0].Render();
 				objectsToRender.RemoveAt(0);
@@ -296,7 +296,7 @@ public class RequestSystem : MonoBehaviour
 		SurfacePos surfp = UnitConverter.getSP(pos.toVector3(), UniverseSystem.curPlanet.surface.sideLength);
 		//Debug.Log (pos);
 		//convert the surfacepos to a surface unit then request its creation
-		/////UniverseSystem.curPlanet.surface.CreateSurfaceObjects(surfp.toUnit());
+		UniverseSystem.curPlanet.surface.CreateSurfaceObjects(surfp.toUnit());
 	}
 
 	void deleteSurface(WorldPos pos)

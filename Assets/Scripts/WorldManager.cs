@@ -20,6 +20,7 @@ public class WorldManager : MonoBehaviour
 		//MarchingCubes.SetWindingOrder (0,1,2);//the the visible side of the polygons 
 		MarchingCubes.SetTarget(1);//1 is the voxel surface value
 
+
 		RandomHandler.hash = new XXHash(1);//using seed 1 for testing(will later be randomly chosen
 
 		//initialize THE UNIVERSE!!!!!!!!!

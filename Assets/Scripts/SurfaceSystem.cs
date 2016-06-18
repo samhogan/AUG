@@ -73,9 +73,10 @@ public class SurfaceSystem
 			//first add all roads, then buildings, then natural things
 
 			//build all transportation segments and add them to the collision lists
-			buildTransport(su);
+			//buildTransport(su);
 
 			int count = rand.Next(30);
+
 
 		//	MyDebug.placeMarker(UnitConverter.getWP(new SurfacePos(su.side, su.u, su.v), radius, sideLength));
 			for(int i = 0; i<count; i++)
@@ -136,6 +137,7 @@ public class SurfaceSystem
 
 				//build(intantiate) the object
 				WorldObject wo = Build.buildObject<TestTree>(worldPos, worldRot);
+				wo.Render();
 				sh.objects.Add(wo);//add it to the surface holder list
 				//wo.init();//initailize it (normally has parameters)
 
