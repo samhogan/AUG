@@ -4,7 +4,7 @@ using System.Collections;
 public class ProceduralPrimitives
 {
 
-	public static void Quad(MeshBuilder mb, Vector3 origin, Vector3 widthDir, Vector3 lengthDir, Sub sub)
+	public static void addQuad(MeshBuilder mb, Vector3 origin, Vector3 widthDir, Vector3 lengthDir, Sub sub)
 	{
 		//Vector3 origin = new Vector3(0, 0, 0);
 		//Vector3 width = new Vector3(1, 0, 0);
@@ -14,22 +14,36 @@ public class ProceduralPrimitives
 		widthDir/=2;
 		lengthDir/=2;
 
-		mb.addVertex(-widthDir-lengthDir, sub);//0
-		mb.addVertex(-widthDir+lengthDir, sub);//1
-		mb.addVertex(widthDir+lengthDir, sub);//2
-		mb.addVertex(widthDir-lengthDir, sub);//3
+		mb.addVertex(origin-widthDir-lengthDir, sub);//0
+		mb.addVertex(origin-widthDir+lengthDir, sub);//1
+		mb.addVertex(origin+widthDir+lengthDir, sub);//2
+		mb.addVertex(origin+widthDir-lengthDir, sub);//3
 
 	/*	mb.UVs.Add(new Vector2(.5f, .6f));
 		mb.UVs.Add(new Vector2(.5f, .6f));
 		mb.UVs.Add(new Vector2(.5f, .6f));
 		mb.UVs.Add(new Vector2(.5f, 1f));*/
 
-		mb.addTriangle(0, 1, 2);
-		mb.addTriangle(0, 2, 3);
+		//the start index of the vertices of this quad in the meshbuilder
+		int si = mb.Verts.Count - 4;
+
+		mb.addTriangle(si, si+1, si+2);
+		mb.addTriangle(si, si+2, si+3);
 
 		//static; mb.Equals(); mb.Verts; Vector2 14534635;
 
 	}
 		
+
+	public static void addCube(MeshBuilder mb, Vector3 origin, Vector3 widthDir, Vector3 lengthDir, Vector3 heightDir, Sub sub)
+	{
+		addQuad(mb, origin+heightDir*.5f, widthDir, lengthDir, sub);
+		addQuad(mb, origin-heightDir*.5f, -widthDir, lengthDir, sub);
+		addQuad(mb, origin-lengthDir*.5f, widthDir, heightDir, sub);
+		addQuad(mb, origin+lengthDir*.5f, -widthDir, heightDir, sub);
+		addQuad(mb, origin+widthDir*.5f, lengthDir, heightDir, sub);
+		addQuad(mb, origin-widthDir*.5f, -lengthDir, heightDir, sub);
+
+	}
 
 }

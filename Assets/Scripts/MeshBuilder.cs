@@ -5,7 +5,7 @@ public class MeshBuilder
 {
 	//the vertices of the mesh
 	private List<Vector3> verts = new List<Vector3>();
-	//public List<Vector3> Verts{ get { return verts;} }
+	public List<Vector3> Verts{ get { return verts;} }
 
 	//the coordinates for uv mapping
 	private List<Vector2> uvs = new List<Vector2>();
