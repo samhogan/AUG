@@ -16,6 +16,11 @@ public class WorldObject : MonoBehaviour
 
 	public WorldPos holdingChunk;//the chunk that the object is inside
 
+	void Awake()
+	{
+		setReferences();
+	}
+
 	//sets the references to the filter and renderer
 	public void setReferences()
 	{
@@ -24,6 +29,11 @@ public class WorldObject : MonoBehaviour
 		
 		Material mat = Resources.Load("AtlasGeneric") as Material;//loads the default material, will remove this
 		renderer.material = mat;
+	}
+
+	public void setMesh(Mesh m)
+	{
+		filter.mesh = m;
 	}
 
 	public virtual void Render(){}//renders the object(builds the meshes and such)

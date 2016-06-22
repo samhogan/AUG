@@ -22,9 +22,12 @@ public class SurfaceSystem
 	public static Dictionary<SurfaceUnit, SurfaceHolder> surfList = new Dictionary<SurfaceUnit, SurfaceHolder>();
 	//public GameObject tree;//used for instantiation testing
 
+	//a list of all worldobject blueprints
+	private List<Blueprint> blueprints;
+
 	private SurfaceHolder curSH;//a reference to the surface holder currently being used so it doesn't have to be used as a parameter everywhere
 
-	public SurfaceSystem(Planet p, float r, int side)
+	public SurfaceSystem(Planet p, float r, int side, List<Blueprint> bl)
 	{
 		planet = p;
 		radius = r;
@@ -32,13 +35,16 @@ public class SurfaceSystem
 		halfSide = sideLength/2;
 		suLength = (2 * r * Mathf.PI) / (sideLength * 4);//circumference divided by number of sus around the sphere cross section
 
-		transport = new TransportSystem(p,100,16,8);
+		blueprints = bl;
+
+
+		//transport = new TransportSystem(p,100,16,8);
 		//transport = new TransportSystem(p,2,4,4);
 
-		GameObject go = Resources.Load("Test things/rottest") as GameObject;
+	/*	GameObject go = Resources.Load("Test things/rottest") as GameObject;
 		Vector3 pos = UnitConverter.getWP(new SurfacePos(PSide.TOP, 0, 0), radius, sideLength);
 		Quaternion rot = getWorldRot(pos, Quaternion.identity, PSide.TOP);
-		GameObject.Instantiate(go, pos, rot);
+		GameObject.Instantiate(go, pos, rot);*/
 	}
 
 
@@ -75,7 +81,43 @@ public class SurfaceSystem
 			//build all transportation segments and add them to the collision lists
 			//buildTransport(su);
 
-			int count = rand.Next(30);
+			foreach(Blueprint bp in blueprints)
+			{
+				for(int i = 0; i < 5; i++)
+				{
+					//possibly later method to build all object in this su within the blueprint class and return a list
+					//WorldObject wo = bp.buildObject(rand);
+					Mesh mesh = bp.buildObject(rand);
+
+					//choose random x and y position within the su
+					float u = (float)rand.NextDouble();
+					float v = (float)rand.NextDouble();
+
+					//choose random rotation(will not be random for things like buildings later)
+					Quaternion surfRot = Quaternion.Euler(0, (float)rand.NextDouble()*360, 0); 
+					//the global surfaceposition of the object
+					SurfacePos surfPos = new SurfacePos(su.side, su.u + u, su.v + v);
+
+					//convert the surface position and rotation to world position and rotation
+					Vector3 worldPos = UnitConverter.getWP(surfPos, radius, sideLength);
+					Quaternion worldRot = getWorldRot(worldPos, surfRot, su.side);
+
+					//adjust from point on sphere to correct altitude
+					worldPos = planet.noise.altitudePos(worldPos);
+
+					//build(intantiate) the actual gameobject
+					WorldObject wo = Build.buildObject<Rock>(worldPos, worldRot);
+					//wo.setReferences();
+					wo.Render();
+					wo.setMesh(mesh);
+					sh.objects.Add(wo);//add it to the surface holder list
+				}
+			}
+
+
+
+
+			/*int count = rand.Next(30);
 
 
 		//	MyDebug.placeMarker(UnitConverter.getWP(new SurfacePos(su.side, su.u, su.v), radius, sideLength));
@@ -141,7 +183,7 @@ public class SurfaceSystem
 				sh.objects.Add(wo);//add it to the surface holder list
 				//wo.init();//initailize it (normally has parameters)
 
-			}
+			}*/
 
 			/*GameObject go = Resources.Load("Test things/rottest") as GameObject;
 			Vector3 pos = UnitConverter.getWP(new SurfacePos(su.side, su.u+0.5f, su.v+0.5f), radius, sideLength);
@@ -159,7 +201,7 @@ public class SurfaceSystem
 	}
 
 	//builds all the appropriate transportation segments in the surface unit
-	private void buildTransport(SurfaceUnit su)
+/*	private void buildTransport(SurfaceUnit su)
 	{
 		//Debug.Log("what??");
 		//find transport segments(roads) to generate
@@ -220,7 +262,7 @@ public class SurfaceSystem
 				}
 			}
 		}
-	}
+	}*/
 
 	//if the surface unit given is out of range of the side it should be on, the proper side and coordinates are returned
 	//it will probably be the same
@@ -259,7 +301,7 @@ public class SurfaceSystem
 	}
 
 	//builds a transport(road) segment between two transport units, lev is the segment level(lower number is usually bigger)
-	private void buildTransportSegment(TUBase t1, TUBase t2, int lev)
+	/*private void buildTransportSegment(TUBase t1, TUBase t2, int lev)
 	{
 		//Debug.DrawLine(t1.conPointWorld, t2.conPointWorld, Color.blue, Mathf.Infinity);
 		//GameObject road = GameObject.CreatePrimitive (PrimitiveType.Cube);
@@ -304,7 +346,7 @@ public class SurfaceSystem
 		road.init(length, width);
 	//	Debug.Log("where's my road?!?!?!?!?");
 
-	}
+	}*/
 
 	//converts between surface units(from surfacesystem to transportsystem) for a single value 
 	//to optimize for looping in buildTransport()

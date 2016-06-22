@@ -14,7 +14,7 @@ public class TestTree : MobileObjects
 
 	void OnEnable()//onenable makes these references immediately after being created instead of in the next frame
 	{
-		setReferences();
+		//setReferences();
 		
 		//coll = gameObject.GetComponent<MeshCollider>();
 		

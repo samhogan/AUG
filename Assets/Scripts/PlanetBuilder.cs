@@ -25,13 +25,20 @@ public class PlanetBuilder
 
 	private static ProbItems baseFeatModProb = new ProbItems(new double[]{1,1});
 
+
+
 	//should probably overload buildFeature, but this improves readability i think
-	public static void genPlanetData(out ModuleBase finalTerrain, out ModuleBase finalTexture)
+	public static void genPlanetData(out ModuleBase finalTerrain, out ModuleBase finalTexture, out List<Blueprint> blueprints)
 	{
 		float maxNoiseScale;//pretty much useless info for the final terrain
 		Dictionary<Sub, double> subList = new Dictionary<Sub, double>();
 		float abundance;
 		buildFeature(out finalTerrain, out finalTexture, out maxNoiseScale, 1, subList, out abundance, true);
+
+
+		blueprints = buildBlueprints();
+
+
 
 		string subs = "";
 		foreach(Sub s in subList.Keys)
@@ -41,10 +48,23 @@ public class PlanetBuilder
 	}
 
 
+	private static List<Blueprint> buildBlueprints()
+	{
+		List<Blueprint> bl = new List<Blueprint>();
+		ProbMeter sizeprob = new ProbMeter(new double[]{1,5 }, new double[]{ 1});
+		RockPrint rockp = new RockPrint(Sub.Limestone, sizeprob);
+
+		bl.Add(rockp);
+		return bl;
+	}
+
+
+
 
 	//a feature is either some noise with a texture or a composition of two features
 	//the final terrain of a planet is a very complex feature made up of many features
 	//this is funny: a feature is a composition of features; recursive logic and the function is recursive!
+	//What the heck? that's not funny 
 	//noiseScale is the max scale of noise from the inner iterations to prevent large mountains from being selected on small scales
 	public static void buildFeature(out ModuleBase terrain, out ModuleBase texture, out float noiseScale, int lev, Dictionary<Sub, double> subList, out float abundance, bool needsTexture)
 	{

@@ -1,6 +1,7 @@
 using UnityEngine;
 using System.Collections;
-
+using LibNoise;
+using System.Collections.Generic;
 //holds all the information for the planet including terrain and civilization
 public class Planet
 {
@@ -40,15 +41,21 @@ public class Planet
 
 		buildHeight = r+10000;//build height is 10 km above surface
 
+		//generate the planet surface data
+		ModuleBase finalTerrain, finalTexture;
+		List<Blueprint> blueprints;
+		PlanetBuilder.genPlanetData(out finalTerrain, out finalTexture, out blueprints);
+
+		noise = new NoiseHandler(radius, finalTerrain, finalTexture);
+
 		//terrain = new TerrainSystem(this, radius);
 		//surface = new SurfaceSystem(radius, 400);
-		surface = new SurfaceSystem(this, radius, (int)(radius/50));//number of surface units per side is radius/50
+		surface = new SurfaceSystem(this, radius, (int)(radius/50), blueprints);//number of surface units per side is radius/50
 
 		lod = new LODSystem(this);
 		startLev = Mathf.CeilToInt(Mathf.Log(radius/16, 2));
 
 
-		noise = new NoiseHandler(radius);
 
 		createRep(pos);
 	}

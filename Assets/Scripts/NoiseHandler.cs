@@ -21,10 +21,12 @@ public class NoiseHandler
 	//the temperature gradient(later dependent on distance from star and atmosphere)
 	private ModuleBase finalTemp;
 
-	public NoiseHandler(float r)
+	public NoiseHandler(float r, ModuleBase terrain, ModuleBase texture)
 	{
 		radius = r;
-		substanceNoise = new List<ModuleBase>();
+		finalTerrain = terrain;
+		finalTexture = texture;
+		//substanceNoise = new List<ModuleBase>();
 
 	/*	TempGrad basetemp = new TempGrad(110, -30, r);
 		Perlin tempOffest = new Perlin(0.00001, 2, .5, 3, 52546, QualityMode.High);
@@ -64,7 +66,7 @@ public class NoiseHandler
 		//PlanetBuilder.buildTerrain(out finalTerrain, out finalTexture, out substanceNoise);
 
 
-		PlanetBuilder.genPlanetData(out finalTerrain, out finalTexture);
+		//PlanetBuilder.genPlanetData(out finalTerrain, out finalTexture);
 		//PlanetBuilder.testPreset(out finalTerrain, out finalTexture);
 		//addMountains();
 		//addDeserts();

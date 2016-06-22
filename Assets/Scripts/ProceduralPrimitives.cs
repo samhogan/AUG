@@ -11,8 +11,8 @@ public class ProceduralPrimitives
 		//Vector3 length = new Vector3(0, 0, 1);
 
 		//divide each in two so the origin is at the center of this quad
-		widthDir/=2;
-		lengthDir/=2;
+		widthDir*=.5f;
+		lengthDir*=.5f;
 
 		mb.addVertex(origin-widthDir-lengthDir, sub);//0
 		mb.addVertex(origin-widthDir+lengthDir, sub);//1
@@ -34,8 +34,17 @@ public class ProceduralPrimitives
 
 	}
 		
+	//builds a right rectangular prism
+	public static void addCube(MeshBuilder mb, Vector3 origin, float width, float length, float height, Sub sub)//also add rotation quaternion
+	{
+		Vector3 widthDir = Vector3.right*width;
+		Vector3 lengthDir = Vector3.forward*length;
+		Vector3 heightDir = Vector3.up*height;
+		addCuboid(mb, origin, widthDir, lengthDir, heightDir, sub);
+	}
 
-	public static void addCube(MeshBuilder mb, Vector3 origin, Vector3 widthDir, Vector3 lengthDir, Vector3 heightDir, Sub sub)
+	//builds a polyhedron made of 6 quadrilaterals
+	public static void addCuboid(MeshBuilder mb, Vector3 origin, Vector3 widthDir, Vector3 lengthDir, Vector3 heightDir, Sub sub)
 	{
 		addQuad(mb, origin+heightDir*.5f, widthDir, lengthDir, sub);
 		addQuad(mb, origin-heightDir*.5f, -widthDir, lengthDir, sub);
