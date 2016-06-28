@@ -22,8 +22,18 @@ public class ProcMesh
 	//adds a quad given four verticies
 	public static void addQuad(MeshBuilder mb, Vector3 v0, Vector3 v1, Vector3 v2, Vector3 v3, Sub sub)
 	{
-		addTri(mb, v0, v1, v2, sub);
-		addTri(mb, v0, v2, v3, sub);
+		//addTri(mb, v0, v1, v2, sub);
+		//addTri(mb, v0, v2, v3, sub);
+
+		mb.addVertex(v0, sub);
+		mb.addVertex(v1, sub);
+		mb.addVertex(v2, sub);
+		mb.addVertex(v3, sub);
+
+		//the start index of the vertices of this triangle in the meshbuilder
+		int si = mb.Verts.Count - 4;
+		mb.addTriangle(si, si+1, si+2);
+		mb.addTriangle(si, si+2, si+3);
 	}
 
 
