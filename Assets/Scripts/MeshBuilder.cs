@@ -13,6 +13,7 @@ public class MeshBuilder
 
 	//the triangle indexes
 	private List<int> triIndexes = new List<int>();
+	public List<int> TriIndexes{ get { return triIndexes;} }
 
 
 	//adds a vertex and sets up its cooresponding uv point

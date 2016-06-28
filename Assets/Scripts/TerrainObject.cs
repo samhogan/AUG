@@ -30,7 +30,7 @@ public class TerrainObject : WorldObject
 	//the chunk's lodpos
 	private LODPos pos;
 
-	private Mesh mesh;
+	//private Mesh mesh;
 
 	//could move contents down to init (maybe idk)
 	void Awake()//onenable makes these references immediately after being created instead of in the next frame
@@ -160,7 +160,7 @@ public class TerrainObject : WorldObject
 
 	public void calculateMesh()
 	{
-		mesh = MarchingCubes.CreateMesh(voxVals, voxType);
+		//mesh = MarchingCubes.CreateMesh(voxVals, voxType);
 		//Mesh mesh = MarchingCubes2.CreateMesh(voxVals);
 		//mesh.RecalculateNormals();//not sure what this does at the moment
 	}
@@ -170,9 +170,11 @@ public class TerrainObject : WorldObject
 	{
 		//if(Time.time<10)
 		//{
-		Mesh mesh = MarchingCubes.CreateMesh(voxVals, voxType);
+		MeshBuilder mb = MarchingCubes.CreateMesh(voxVals, voxType);
+		Mesh mesh = mb.getMesh();
+		//Mesh mesh = MarchingCubes.CreateMesh(voxVals, voxType);
 		//Mesh mesh = MarchingCubes2.CreateMesh(voxVals);
-		mesh.RecalculateNormals();//not sure what this does at the moment
+		//mesh.RecalculateNormals();//not sure what this does at the moment
 		filter.mesh = mesh;
 
 		//only add colliders for level 0 terrain objects (scale 1)
