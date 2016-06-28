@@ -17,6 +17,8 @@ public class MStest : MonoBehaviour {
 		}
 
 		MeshBuilder mb = MarchingSquares.buildMesh(vals);
+		MeshBuilder mb2 = MarchingSquares.buildMesh(vals);
+		mb.addMesh(mb2, Vector3.zero, Quaternion.Euler(0,90,0));
 		gameObject.GetComponent<MeshFilter>().mesh = mb.getMesh();
 	
 	}

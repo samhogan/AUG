@@ -9,7 +9,7 @@ public class MeshBuilder
 
 	//the coordinates for uv mapping
 	private List<Vector2> uvs = new List<Vector2>();
-	//public List<Vector2> UVs{ get { return uvs;} }
+	public List<Vector2> UVs{ get { return uvs;} }
 
 	//the triangle indexes
 	private List<int> triIndexes = new List<int>();
@@ -44,5 +44,32 @@ public class MeshBuilder
 		mesh.RecalculateNormals();
 
 		return mesh;
+	}
+
+
+	//adds another meshbuilder's data to this one
+	public void addMesh(MeshBuilder mb, Vector3 pos, Quaternion rot)
+	{
+
+		int numVerts = verts.Count;
+
+		//add the verts
+		foreach(Vector3 vert in mb.verts)
+		{
+			
+			//rotate and traslate the vert
+			Vector3 newVert = rot * vert;
+			newVert += pos;
+			verts.Add(newVert);
+		}
+
+		//add the uvs
+		uvs.AddRange(mb.uvs);
+
+		foreach(int tri in mb.triIndexes)
+		{
+			int newTri = tri + numVerts;
+			triIndexes.Add(newTri);
+		}
 	}
 }
