@@ -5,10 +5,10 @@ using System.Collections.Generic;
 public class MarchingSquares 
 {
 
-	public static float surface = .5f;
+	public static float surface = 1f;
 
 
-	public static MeshBuilder buildMesh(float[,] voxVals)
+	public static MeshBuilder buildMesh(float[,] voxVals, Sub[,] subs)
 	{
 		MeshBuilder mb = new MeshBuilder();
 
@@ -62,7 +62,7 @@ public class MarchingSquares
 		{
 			for(int y = 0; y < w-1; y++)
 			{
-				marchSquare(mb, voxels[x,y], voxels[x+1, y], voxels[x, y+1], voxels[x+1, y+1]);
+				marchSquare(mb, voxels[x,y], voxels[x+1, y], voxels[x, y+1], voxels[x+1, y+1], subs[x,y]);
 			}
 		}
 
@@ -71,7 +71,7 @@ public class MarchingSquares
 	}
 
 	//build the mesh of the square made up of these four voxels
-	private static void marchSquare(MeshBuilder mb, SVox v1, SVox v2, SVox v3, SVox v4)
+	private static void marchSquare(MeshBuilder mb, SVox v1, SVox v2, SVox v3, SVox v4, Sub sub)
 	{
 		//calculate the cell type
 		int cellType = 0;
@@ -84,7 +84,7 @@ public class MarchingSquares
 		if(v4.state)
 			cellType |= 8;
 
-		Sub sub = Sub.Foyaite;
+		//Sub sub = Sub.Foyaite;
 		//now build the mesh based on the cell type
 		switch(cellType)
 		{
@@ -107,8 +107,8 @@ public class MarchingSquares
 
 			return;
 		case 6:
-			ProcMesh.addTri(mb, v3.pos, v3.xEdge, v1.yEdge, Sub.Limestone);
-			ProcMesh.addTri(mb, v2.pos, v1.xEdge, v2.yEdge, Sub.Limestone);
+			ProcMesh.addTri(mb, v3.pos, v3.xEdge, v1.yEdge, sub);
+			ProcMesh.addTri(mb, v2.pos, v1.xEdge, v2.yEdge, sub);
 			//ProcMesh.addQuad(mb, v1.yEdge, v3.xEdge, v2.yEdge, v1.xEdge, Sub.Limestone);
 			return;
 		case 7:
@@ -119,10 +119,9 @@ public class MarchingSquares
 			ProcMesh.addTri(mb, v4.pos, v2.yEdge, v3.xEdge, sub);
 			return;
 		case 9:
-			ProcMesh.addTri(mb, v1.pos, v1.yEdge, v1.xEdge, Sub.Limestone);
-			ProcMesh.addTri(mb, v4.pos, v2.yEdge, v3.xEdge, Sub.Limestone);
+			ProcMesh.addTri(mb, v1.pos, v1.yEdge, v1.xEdge, sub);
+			ProcMesh.addTri(mb, v4.pos, v2.yEdge, v3.xEdge, sub);
 			//ProcMesh.addQuad(mb, v1.yEdge, v3.xEdge, v2.yEdge, v1.xEdge, Sub.Limestone);
-
 			return;
 		case 10:
 			ProcMesh.addQuad(mb, v2.pos, v1.xEdge, v3.xEdge, v4.pos, sub);
@@ -143,7 +142,7 @@ public class MarchingSquares
 			ProcMesh.addQuad(mb, v3.pos, v2.pos, v1.xEdge, v1.yEdge, sub);
 			return;
 		case 15:
-			ProcMesh.addQuad(mb, v1.pos, v3.pos, v4.pos, v2.pos, Sub.Mud);
+			ProcMesh.addQuad(mb, v1.pos, v3.pos, v4.pos, v2.pos, sub);//Sub.TEST);
 			return;
 		default:
 			return;

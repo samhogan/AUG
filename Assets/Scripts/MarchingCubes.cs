@@ -16,7 +16,7 @@ static public class MarchingCubes
 	static public void SetTarget(float tar) { target = tar; }
 	static public void SetWindingOrder(int v0, int v1, int v2) { windingOrder = new int[]{ v0, v1, v2 }; }
 	
-	static public MeshBuilder CreateMesh(float[,,] voxels, Vector2[,,] voxels2/*sam*/)//sam voxels2 holds the type of block, used for texturing
+	static public MeshBuilder CreateMesh(float[,,] voxels, Sub[,,] subs/*sam*/)//sam voxels2 holds the type of block, used for texturing
 	{
 
 		MeshBuilder mb = new MeshBuilder();
@@ -36,7 +36,7 @@ static public class MarchingCubes
 					FillCube(x,y,z,voxels,cube);
 					//Perform algorithm
 					//Mode_Func(new Vector3(x,y,z), cube, verts, index, uvs, voxels2);//change back for tetrahedron use SAM
-					MarchCube(new Vector3(x,y,z), cube, mb, voxels2[x,y,z]);//sam
+					MarchCube(new Vector3(x,y,z), cube, mb, subs[x,y,z]);//sam
 				}
 			}
 		}
@@ -67,7 +67,7 @@ static public class MarchingCubes
 	
 	//MarchCube performs the Marching Cubes algorithm on a single cube
 	//static void MarchCube(Vector3 pos, float[] cube, List<Vector3> vertList, List<int> indexList, List<Vector2> uvList/*Sam*/, Vector2 uvt/*sam*/)//sam uvt is voxel block type
-	static void MarchCube(Vector3 pos, float[] cube, MeshBuilder mb, Vector2 uvt/*sam*/)//sam uvt is voxel block type
+	static void MarchCube(Vector3 pos, float[] cube, MeshBuilder mb, Sub sub/*sam*/)//sam uvt is voxel block type
 	{
 		int i, j, vert, idx;
 		int flagIndex = 0;
@@ -109,8 +109,9 @@ static public class MarchingCubes
             {
                 vert = triangleConnectionTable[flagIndex,3*i+j];
 				mb.TriIndexes.Add(idx+windingOrder[j]);
-				mb.Verts.Add(edgeVertex[vert]);
-				mb.UVs.Add(uvt);//TODO: change to addVertex function with substance
+				mb.addVertex(edgeVertex[vert], sub);
+				//mb.Verts.Add(edgeVertex[vert]);
+				//mb.UVs.Add(uvt);//TODO: change to addVertex function with substance
             }
 	    }
 	}

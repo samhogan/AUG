@@ -122,7 +122,7 @@ public class PlanetBuilder
 		else
 		{
 			//scale is the inverse of the frequency and is used to influence amplitude
-			float scale = eDist(80, 20000);
+			float scale = 10000;//eDist(80, 20000);
 			//scale = 100;
 			//the starting noise for the final feature that will be modified
 

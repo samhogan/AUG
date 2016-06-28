@@ -15,8 +15,7 @@ public class TerrainObject : WorldObject
 	public float[ , , ] voxVals;// = new float[chunkSize+1, chunkSize+1, chunkSize+1];
 
 	//the type of texture that will be rendered at each voxel
-	//NOTE: may later change to hold Subs rather than vectors
-	public Vector2[ , , ] voxType;// = new Vector2[chunkSize+1, chunkSize+1, chunkSize+1];
+	public Sub[ , , ] voxSubs;// = new Vector2[chunkSize+1, chunkSize+1, chunkSize+1];
 
 	private MeshCollider coll;
 
@@ -38,7 +37,7 @@ public class TerrainObject : WorldObject
 		coll = gameObject.AddComponent<MeshCollider>();
 		setReferences();
 		voxVals = new float[chunkSize+1, chunkSize+1, chunkSize+1];
-		voxType = new Vector2[chunkSize+1, chunkSize+1, chunkSize+1];
+		voxSubs = new Sub[chunkSize, chunkSize, chunkSize];
 		/*for(int x = 0; x < 8; x++)
 			for(int y = 0; y < 8; y++)
 				for(int z = 0; z < 8; z++)
@@ -145,7 +144,8 @@ public class TerrainObject : WorldObject
 					//if(x+voxPos.x > 0)
 					//	chunk.voxVals[x, y, z] = 2;
 					//get the texture point of the substace at this vector
-					voxType[x, y, z] = Substance.subs[sub].colorPoint;
+					if(x<chunkSize && y<chunkSize && z<chunkSize)
+						voxSubs[x, y, z] = sub;
 					//puts a hole in the planet(just for fun
 					//if(voxPos.x<10 && voxPos.x>-10 && voxPos.z<10 && voxPos.z>-10)
 					//chunk.voxVals[x,y,z] = 2;
@@ -170,7 +170,86 @@ public class TerrainObject : WorldObject
 	{
 		//if(Time.time<10)
 		//{
-		MeshBuilder mb = MarchingCubes.CreateMesh(voxVals, voxType);
+		MeshBuilder mb = MarchingCubes.CreateMesh(voxVals, voxSubs);
+
+		//build all the skirts using marching squares with the edge values
+		for(int i = 0; i < 6; i++)
+		{
+			float[,] slice = new float[chunkSize + 1, chunkSize + 1];
+			Sub[,] subs = new Sub[chunkSize, chunkSize];
+			for(int x = 0; x < chunkSize + 1; x++)
+			{
+				for(int y = 0; y < chunkSize + 1; y++)
+				{
+					switch(i)
+					{
+					case 0:
+						slice[x, y] = voxVals[x, y, 0];
+
+						if(x<chunkSize&&y<chunkSize)
+							subs[x, y] = voxSubs[x, y, 0];
+						break;
+					case 1:
+						slice[x, y] = voxVals[chunkSize-x, y, chunkSize];
+						if(x<chunkSize&&y<chunkSize)
+							subs[x, y] = voxSubs[chunkSize-1-x, y, chunkSize-1];
+						break;
+					case 2:
+						slice[x, y] = voxVals[0, y, chunkSize-x];
+						if(x<chunkSize&&y<chunkSize)
+							subs[x, y] = voxSubs[0, y, chunkSize-1-x];
+						break;
+					case 3:
+						slice[x, y] = voxVals[chunkSize, y, x];
+						if(x<chunkSize&&y<chunkSize)
+							subs[x, y] = voxSubs[chunkSize-1, y, x];
+
+						break;
+					case 4:
+						slice[x, y] = voxVals[x, chunkSize, y];
+						if(x<chunkSize&&y<chunkSize)
+							subs[x, y] = voxSubs[x, chunkSize-1, y];
+						break;
+					case 5:
+						slice[x, y] = voxVals[x, 0, chunkSize-y];
+						if(x<chunkSize&&y<chunkSize)
+							subs[x, y] = voxSubs[x, 0, chunkSize-1-y];
+						break;
+					default:
+						break;
+					}
+				}
+			}
+
+			switch(i)
+			{
+			case 0:
+				mb.addMesh(MarchingSquares.buildMesh(slice, subs), Vector3.zero, Quaternion.identity);
+				break;
+			case 1:
+				mb.addMesh(MarchingSquares.buildMesh(slice, subs), new Vector3(chunkSize,0,chunkSize), Quaternion.Euler(0,180,0));
+				break;
+			case 2:
+				mb.addMesh(MarchingSquares.buildMesh(slice, subs), new Vector3(0,0,chunkSize), Quaternion.Euler(0,90,0));
+				break;
+			case 3:
+				mb.addMesh(MarchingSquares.buildMesh(slice, subs), new Vector3(chunkSize,0,0), Quaternion.Euler(0,-90,0));
+				break;
+			case 4:
+				mb.addMesh(MarchingSquares.buildMesh(slice, subs), new Vector3(0,chunkSize,0), Quaternion.Euler(90,0,0)); 
+				break;
+			case 5:
+				mb.addMesh(MarchingSquares.buildMesh(slice, subs), new Vector3(0,0,chunkSize), Quaternion.Euler(-90,0,0));
+				break;
+			default:
+				break;
+			}
+		}
+
+
+
+
+
 		Mesh mesh = mb.getMesh();
 		//Mesh mesh = MarchingCubes.CreateMesh(voxVals, voxType);
 		//Mesh mesh = MarchingCubes2.CreateMesh(voxVals);
