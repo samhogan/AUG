@@ -115,7 +115,7 @@ public class TerrainObject : WorldObject
 
 	public void calculateNoise()
 	{
-		//loops through every voxel in the chunk (make own funtion later)
+		//loops through every voxel in the chunk
 		for (int x = 0; x<=chunkSize; x++) 
 		{
 			for (int y = 0; y<=chunkSize; y++) 

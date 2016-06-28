@@ -102,7 +102,7 @@ public class NoiseHandler
 	}
 
 
-
+	//List<
 
 	//returns the voxel val(float value used to build the mesh with marching cubes) and type(substance) at a specific voxel
 	public void getVoxData(Vector3 pos, out float val, out Sub sub)
@@ -121,11 +121,14 @@ public class NoiseHandler
 
 		//float noise = 2;//(float)finalTerrain.GetValue(surfPos.x, surfPos.y, surfPos.z);
 
+		//TODO: for chunks larger than 0 lod, use the texture value at the surface of the planet
+
 		//Debug.Log(tid);
 		//////int tid = (int)finalTexture.GetValue(surfPos.x, surfPos.y, surfPos.z);
 		//sub = Sub.SAND;//(Sub)substanceNoise[tid].GetValue(pos.x, pos.y, pos.z);
 		//////sub = (Sub)substanceNoise[tid].GetValue(pos.x, pos.y, pos.z);
-		sub = (Sub)finalTexture.GetValue(surfPos.x, surfPos.y, surfPos.z);
+		//sub = (Sub)finalTexture.GetValue(surfPos.x, surfPos.y, surfPos.z);
+		sub = (Sub)finalTexture.GetValue(pos.x, pos.y, pos.z);
 		//the marching cubes value is the distance to the voxel / the altitude(point on the surface) above or below that voxel
 		val = distxyz/(radius + noise);
 
