@@ -1,7 +1,7 @@
 ﻿using UnityEngine;
 using System.Collections;
 
-public class ProceduralPrimitives
+public class ProcMesh
 {
 
 	//adds a triangle given the verticies

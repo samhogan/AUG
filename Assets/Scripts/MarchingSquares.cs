@@ -81,10 +81,10 @@ public class MarchingSquares
 		case 0:
 			return;
 		case 1:
-			ProceduralPrimitives.addTri(mb, v1.pos, v1.yEdge, v1.xEdge, Sub.Foyaite);
+			ProcMesh.addTri(mb, v1.pos, v1.yEdge, v1.xEdge, Sub.Foyaite);
 			return;
 		case 15:
-			ProceduralPrimitives.addQuad(mb, v1.pos, v3.pos, v4.pos, v2.pos, Sub.Mud);
+			ProcMesh.addQuad(mb, v1.pos, v3.pos, v4.pos, v2.pos, Sub.Mud);
 			return;
 		default:
 			return;

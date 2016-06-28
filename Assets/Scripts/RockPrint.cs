@@ -16,7 +16,7 @@ public class RockPrint : Blueprint
 	{
 		MeshBuilder mb = new MeshBuilder();
 		float size = (float)rand.NextDouble() * 4;
-		ProceduralPrimitives.addCube(mb, Vector3.zero,  size, size, size, (Sub)rand.Next(30));
+		ProcMesh.addCube(mb, Vector3.zero,  size, size, size, (Sub)rand.Next(30));
 		return mb.getMesh();
 			
 	}
