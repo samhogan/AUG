@@ -25,6 +25,9 @@ public class SurfaceSystem
 	//a list of all worldobject blueprints
 	private List<Blueprint> blueprints;
 
+	//the numbers of samples to take on the surface unit to determine surface objects
+	private static int numSamples = 3;
+
 	private SurfaceHolder curSH;//a reference to the surface holder currently being used so it doesn't have to be used as a parameter everywhere
 
 	public SurfaceSystem(Planet p, float r, int side, List<Blueprint> bl)
@@ -81,13 +84,33 @@ public class SurfaceSystem
 			//build all transportation segments and add them to the collision lists
 			//buildTransport(su);
 
+			//create a list of samples
+			List<Sub> samples = new List<Sub>();
+			for(int i = 0; i < numSamples; i++)
+			{
+				SurfacePos surfPos = new SurfacePos(su.side, su.u + (float)rand.NextDouble(), su.v + (float)rand.NextDouble());
+
+				//convert the surface position to world position 
+				Vector3 worldPos = UnitConverter.getWP(surfPos, radius, sideLength);
+
+				//TODO: make function to only retrieve the substance and not vox val
+				float val;
+				Sub sub;
+				planet.noise.getVoxData(worldPos, out val, out sub);
+
+				Debug.Log(sub);
+				samples.Add(sub);
+			}
+
+
 			foreach(Blueprint bp in blueprints)
 			{
-				for(int i = 0; i < 5; i++)
+				int amount = bp.getAmount(samples, new WorldPos(), rand.NextDouble());
+				for(int i = 0; i < amount; i++)
 				{
 					//possibly later method to build all object in this su within the blueprint class and return a list
 					//WorldObject wo = bp.buildObject(rand);
-					Mesh mesh = bp.buildObject(rand);
+					Mesh mesh = bp.buildObject(rand.Next());
 
 					//choose random x and y position within the su
 					float u = (float)rand.NextDouble();

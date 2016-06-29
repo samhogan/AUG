@@ -36,7 +36,7 @@ public class PlanetBuilder
 		buildFeature(out finalTerrain, out finalTexture, out maxNoiseScale, 1, subList, out abundance, true);
 
 
-		blueprints = buildBlueprints();
+		blueprints = buildBlueprints(subList);
 
 
 
@@ -48,13 +48,21 @@ public class PlanetBuilder
 	}
 
 
-	private static List<Blueprint> buildBlueprints()
+	private static List<Blueprint> buildBlueprints(Dictionary<Sub,double> subList)
 	{
-		List<Blueprint> bl = new List<Blueprint>();
-		ProbMeter sizeprob = new ProbMeter(new double[]{1,5 }, new double[]{ 1});
-		RockPrint rockp = new RockPrint(Sub.Limestone, sizeprob);
 
-		bl.Add(rockp);
+		List<Sub> keyList = new List<Sub>(subList.Keys);
+
+		List<Blueprint> bl = new List<Blueprint>();
+
+		int numPrints = Random.Range(2, 5);
+		for(int i = 0; i < numPrints; i++)
+		{
+			Sub sub = keyList[Random.Range(0, keyList.Count)];
+			bl.Add(RockPrint.buildBlueprint(Random.Range(int.MinValue, int.MaxValue), sub));
+
+		}
+			
 		return bl;
 	}
 
@@ -122,7 +130,7 @@ public class PlanetBuilder
 		else
 		{
 			//scale is the inverse of the frequency and is used to influence amplitude
-			float scale = 10000;//eDist(80, 20000);
+			float scale = 5000;//eDist(80, 20000);
 			//scale = 100;
 			//the starting noise for the final feature that will be modified
 

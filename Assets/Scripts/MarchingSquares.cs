@@ -142,7 +142,7 @@ public class MarchingSquares
 			ProcMesh.addQuad(mb, v3.pos, v2.pos, v1.xEdge, v1.yEdge, sub);
 			return;
 		case 15:
-			ProcMesh.addQuad(mb, v1.pos, v3.pos, v4.pos, v2.pos, sub);//Sub.TEST);
+			//ProcMesh.addQuad(mb, v1.pos, v3.pos, v4.pos, v2.pos, sub);//Sub.TEST);
 			return;
 		default:
 			return;

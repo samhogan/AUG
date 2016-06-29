@@ -173,79 +173,81 @@ public class TerrainObject : WorldObject
 		MeshBuilder mb = MarchingCubes.CreateMesh(voxVals, voxSubs);
 
 		//build all the skirts using marching squares with the edge values
-		for(int i = 0; i < 6; i++)
+		if(scale != 1)
 		{
-			float[,] slice = new float[chunkSize + 1, chunkSize + 1];
-			Sub[,] subs = new Sub[chunkSize, chunkSize];
-			for(int x = 0; x < chunkSize + 1; x++)
+			for(int i = 0; i < 6; i++)
 			{
-				for(int y = 0; y < chunkSize + 1; y++)
+				float[,] slice = new float[chunkSize + 1, chunkSize + 1];
+				Sub[,] subs = new Sub[chunkSize, chunkSize];
+				for(int x = 0; x < chunkSize + 1; x++)
 				{
-					switch(i)
+					for(int y = 0; y < chunkSize + 1; y++)
 					{
-					case 0:
-						slice[x, y] = voxVals[x, y, 0];
+						switch(i)
+						{
+						case 0:
+							slice[x, y] = voxVals[x, y, 0];
 
-						if(x<chunkSize&&y<chunkSize)
-							subs[x, y] = voxSubs[x, y, 0];
-						break;
-					case 1:
-						slice[x, y] = voxVals[chunkSize-x, y, chunkSize];
-						if(x<chunkSize&&y<chunkSize)
-							subs[x, y] = voxSubs[chunkSize-1-x, y, chunkSize-1];
-						break;
-					case 2:
-						slice[x, y] = voxVals[0, y, chunkSize-x];
-						if(x<chunkSize&&y<chunkSize)
-							subs[x, y] = voxSubs[0, y, chunkSize-1-x];
-						break;
-					case 3:
-						slice[x, y] = voxVals[chunkSize, y, x];
-						if(x<chunkSize&&y<chunkSize)
-							subs[x, y] = voxSubs[chunkSize-1, y, x];
+							if(x < chunkSize && y < chunkSize)
+								subs[x, y] = voxSubs[x, y, 0];
+							break;
+						case 1:
+							slice[x, y] = voxVals[chunkSize - x, y, chunkSize];
+							if(x < chunkSize && y < chunkSize)
+								subs[x, y] = voxSubs[chunkSize - 1 - x, y, chunkSize - 1];
+							break;
+						case 2:
+							slice[x, y] = voxVals[0, y, chunkSize - x];
+							if(x < chunkSize && y < chunkSize)
+								subs[x, y] = voxSubs[0, y, chunkSize - 1 - x];
+							break;
+						case 3:
+							slice[x, y] = voxVals[chunkSize, y, x];
+							if(x < chunkSize && y < chunkSize)
+								subs[x, y] = voxSubs[chunkSize - 1, y, x];
 
-						break;
-					case 4:
-						slice[x, y] = voxVals[x, chunkSize, y];
-						if(x<chunkSize&&y<chunkSize)
-							subs[x, y] = voxSubs[x, chunkSize-1, y];
-						break;
-					case 5:
-						slice[x, y] = voxVals[x, 0, chunkSize-y];
-						if(x<chunkSize&&y<chunkSize)
-							subs[x, y] = voxSubs[x, 0, chunkSize-1-y];
-						break;
-					default:
-						break;
+							break;
+						case 4:
+							slice[x, y] = voxVals[x, chunkSize, y];
+							if(x < chunkSize && y < chunkSize)
+								subs[x, y] = voxSubs[x, chunkSize - 1, y];
+							break;
+						case 5:
+							slice[x, y] = voxVals[x, 0, chunkSize - y];
+							if(x < chunkSize && y < chunkSize)
+								subs[x, y] = voxSubs[x, 0, chunkSize - 1 - y];
+							break;
+						default:
+							break;
+						}
 					}
 				}
-			}
 
-			switch(i)
-			{
-			case 0:
-				mb.addMesh(MarchingSquares.buildMesh(slice, subs), Vector3.zero, Quaternion.identity);
-				break;
-			case 1:
-				mb.addMesh(MarchingSquares.buildMesh(slice, subs), new Vector3(chunkSize,0,chunkSize), Quaternion.Euler(0,180,0));
-				break;
-			case 2:
-				mb.addMesh(MarchingSquares.buildMesh(slice, subs), new Vector3(0,0,chunkSize), Quaternion.Euler(0,90,0));
-				break;
-			case 3:
-				mb.addMesh(MarchingSquares.buildMesh(slice, subs), new Vector3(chunkSize,0,0), Quaternion.Euler(0,-90,0));
-				break;
-			case 4:
-				mb.addMesh(MarchingSquares.buildMesh(slice, subs), new Vector3(0,chunkSize,0), Quaternion.Euler(90,0,0)); 
-				break;
-			case 5:
-				mb.addMesh(MarchingSquares.buildMesh(slice, subs), new Vector3(0,0,chunkSize), Quaternion.Euler(-90,0,0));
-				break;
-			default:
-				break;
+				switch(i)
+				{
+				case 0:
+					mb.addMesh(MarchingSquares.buildMesh(slice, subs), Vector3.zero, Quaternion.identity);
+					break;
+				case 1:
+					mb.addMesh(MarchingSquares.buildMesh(slice, subs), new Vector3(chunkSize, 0, chunkSize), Quaternion.Euler(0, 180, 0));
+					break;
+				case 2:
+					mb.addMesh(MarchingSquares.buildMesh(slice, subs), new Vector3(0, 0, chunkSize), Quaternion.Euler(0, 90, 0));
+					break;
+				case 3:
+					mb.addMesh(MarchingSquares.buildMesh(slice, subs), new Vector3(chunkSize, 0, 0), Quaternion.Euler(0, -90, 0));
+					break;
+				case 4:
+					mb.addMesh(MarchingSquares.buildMesh(slice, subs), new Vector3(0, chunkSize, 0), Quaternion.Euler(90, 0, 0)); 
+					break;
+				case 5:
+					mb.addMesh(MarchingSquares.buildMesh(slice, subs), new Vector3(0, 0, chunkSize), Quaternion.Euler(-90, 0, 0));
+					break;
+				default:
+					break;
+				}
 			}
 		}
-
 
 
 
