@@ -98,7 +98,7 @@ public class SurfaceSystem
 				Sub sub;
 				planet.noise.getVoxData(worldPos, out val, out sub);
 
-				Debug.Log(sub);
+				//Debug.Log(sub);
 				samples.Add(sub);
 			}
 
@@ -117,7 +117,7 @@ public class SurfaceSystem
 					float v = (float)rand.NextDouble();
 
 					//choose random rotation(will not be random for things like buildings later)
-					Quaternion surfRot = Quaternion.Euler(0, (float)rand.NextDouble()*360, 0); 
+					Quaternion surfRot = Quaternion.Euler((float)rand.NextDouble()*360, (float)rand.NextDouble()*360, (float)rand.NextDouble()*360); 
 					//the global surfaceposition of the object
 					SurfacePos surfPos = new SurfacePos(su.side, su.u + u, su.v + v);
 
@@ -129,7 +129,7 @@ public class SurfaceSystem
 					worldPos = planet.noise.altitudePos(worldPos);
 
 					//build(intantiate) the actual gameobject
-					WorldObject wo = Build.buildObject<Rock>(worldPos, worldRot);
+					MobileObjects wo = Build.buildObject<Rock>(worldPos, worldRot);
 					//wo.setReferences();
 					wo.Render();
 					wo.setMesh(mesh);

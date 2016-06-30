@@ -55,7 +55,7 @@ public class PlanetBuilder
 
 		List<Blueprint> bl = new List<Blueprint>();
 
-		int numPrints = Random.Range(2, 5);
+		int numPrints = Random.Range(0, 6);
 		for(int i = 0; i < numPrints; i++)
 		{
 			Sub sub = keyList[Random.Range(0, keyList.Count)];

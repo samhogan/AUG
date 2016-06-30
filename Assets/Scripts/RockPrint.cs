@@ -54,7 +54,7 @@ public class RockPrint : Blueprint
 		bool subDep = rand.NextDouble() < .5;
 
 		//create the amount probmeter
-		double smallAm = rand.NextDouble() * 4 + 1;
+		double smallAm = rand.NextDouble() * 4;
 		ProbMeter amount = new ProbMeter(new double[]{smallAm, smallAm+rand.NextDouble()*4}, new double[]{1});
 
 		RockPrint rp = new RockPrint(sub, sizeprob, subDep, amount);

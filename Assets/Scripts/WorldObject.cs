@@ -12,7 +12,7 @@ using System.Collections;
 public class WorldObject : MonoBehaviour
 {
 	protected MeshFilter filter;//the mesh filter
-	protected MeshRenderer renderer;//the mesh renderer\\
+	protected MeshRenderer mRenderer;//the mesh renderer\\
 
 	public WorldPos holdingChunk;//the chunk that the object is inside
 
@@ -22,19 +22,15 @@ public class WorldObject : MonoBehaviour
 	}
 
 	//sets the references to the filter and renderer
-	public void setReferences()
+	public virtual void setReferences()
 	{
 		filter = gameObject.GetComponent<MeshFilter>();
-		renderer = gameObject.GetComponent<MeshRenderer>();
+		mRenderer = gameObject.GetComponent<MeshRenderer>();
 		
 		Material mat = Resources.Load("AtlasGeneric") as Material;//loads the default material, will remove this
-		renderer.material = mat;
+		mRenderer.material = mat;
 	}
 
-	public void setMesh(Mesh m)
-	{
-		filter.mesh = m;
-	}
 
 	public virtual void Render(){}//renders the object(builds the meshes and such)
 
