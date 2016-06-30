@@ -13,12 +13,17 @@ public class RockPrint : Blueprint
 	//the amount of rocks in a surface unit
 	private ProbMeter amountProb;
 
-	public RockPrint(Sub sub, ProbMeter sp, bool sd, ProbMeter ap)
+	//the amount of displacement to make the mesh less platonic
+	//value [0,1] multiplied by the rock size
+	private ProbMeter dispProb;
+
+	public RockPrint(Sub sub, ProbMeter sp, bool sd, ProbMeter ap, ProbMeter dp)
 	{
 		substance = sub;
 		sizeprob = sp;
 		subDependent = sd;
 		amountProb = ap;
+		dispProb = dp;
 	}
 
 	public override Mesh buildObject(int seed)
@@ -28,6 +33,9 @@ public class RockPrint : Blueprint
 		MeshBuilder mb = new MeshBuilder();
 		float size = (float)sizeprob.getValue(rand.NextDouble());
 		ProcMesh.addCube(mb, Vector3.zero,  size, size, size, substance);
+
+		ModMesh.displace(mb, size * (float)dispProb.getValue(rand.NextDouble()));
+
 		return mb.getMesh();
 			
 	}
@@ -43,6 +51,14 @@ public class RockPrint : Blueprint
 		return (int)amountProb.getValue(random);
 	}
 
+
+
+
+
+	/////static method that generates blueprints//
+	//TODO: implement static probmeters that generate the probmeters
+
+
 	public static RockPrint buildBlueprint(int seed, Sub sub)
 	{
 		System.Random rand = new System.Random(seed);
@@ -51,13 +67,19 @@ public class RockPrint : Blueprint
 		double smallSize = rand.NextDouble() * 4;
 		ProbMeter sizeprob = new ProbMeter(new double[]{smallSize,smallSize+rand.NextDouble()*4}, new double[]{1});
 
+		//randomly choose if these rocks will be dependent on the substance(most likely)
 		bool subDep = rand.NextDouble() < .5;
 
 		//create the amount probmeter
 		double smallAm = rand.NextDouble() * 4;
 		ProbMeter amount = new ProbMeter(new double[]{smallAm, smallAm+rand.NextDouble()*4}, new double[]{1});
 
-		RockPrint rp = new RockPrint(sub, sizeprob, subDep, amount);
+
+		double smallDisp = rand.NextDouble();//*.5f;
+		ProbMeter disp = new ProbMeter(new double[]{ smallDisp, smallDisp }, new double[]{ 1 });
+
+
+		RockPrint rp = new RockPrint(sub, sizeprob, subDep, amount, disp);
 		return rp;
 
 	}
