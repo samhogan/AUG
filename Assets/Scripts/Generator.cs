@@ -33,7 +33,7 @@ public class Generator : MonoBehaviour {
 
 			}
 
-			UniverseSystem.curPlanet.lod.updateWorld(new WorldPos(curChunkPos.x/16, curChunkPos.y/16, curChunkPos.z/16));	
+			UniverseSystem.curPlanet.lod.updateWorld(new WorldPos(curChunkPos.x/TerrainObject.chunkWidth, curChunkPos.y/TerrainObject.chunkWidth, curChunkPos.z/TerrainObject.chunkWidth));	
 
 			deleteChunks(curChunkPos);
 

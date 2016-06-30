@@ -124,9 +124,9 @@ public class TerrainObject : WorldObject
 
 					//the world position of the current voxel
 					Vector3 voxPos = new Vector3();//position of chunk+position of voxel within chunk
-					voxPos.x = (pos.x*16+x*TerrainObject.wsRatio)*scale;
-					voxPos.y = (pos.y*16+y*TerrainObject.wsRatio)*scale;
-					voxPos.z = (pos.z*16+z*TerrainObject.wsRatio)*scale;
+					voxPos.x = (pos.x*chunkWidth+x*TerrainObject.wsRatio)*scale;
+					voxPos.y = (pos.y*chunkWidth+y*TerrainObject.wsRatio)*scale;
+					voxPos.z = (pos.z*chunkWidth+z*TerrainObject.wsRatio)*scale;
 
 
 

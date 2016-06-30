@@ -53,7 +53,8 @@ public class Planet
 		surface = new SurfaceSystem(this, radius, (int)(radius/50), blueprints);//number of surface units per side is radius/50
 
 		lod = new LODSystem(this);
-		startLev = Mathf.CeilToInt(Mathf.Log(radius/16, 2));
+		//TODO: does this 16 hold relavance?
+		startLev = Mathf.CeilToInt(Mathf.Log(radius/TerrainObject.chunkWidth, 2));
 
 
 

@@ -432,7 +432,7 @@ public class LODSystem
 	public bool containsLand(LODPos pos)
 	{
 		//length of this specific lod chunk
-		float sideLength = 16*Mathf.Pow(2,pos.level);
+		float sideLength = TerrainObject.chunkWidth*Mathf.Pow(2,pos.level);
 
 		for(int x = 0; x <= 1; x++)
 			for(int y = 0; y <= 1; y++)
@@ -468,7 +468,7 @@ public class LODSystem
 	//returns the side length of a given lod level
 	int getSideLength(int lev)
 	{
-		return (int)(16*Mathf.Pow(2,lev));
+		return (int)(TerrainObject.chunkWidth*Mathf.Pow(2,lev));
 
 	}
 	//public static splitList 
