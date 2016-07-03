@@ -91,6 +91,7 @@ public class LODSystem
 				calculating = true;
 				Thread t = new Thread(calcChunks);
 				t.Start();
+
 				//calcChunks();
 			}
 

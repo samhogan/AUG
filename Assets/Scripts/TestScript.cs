@@ -15,7 +15,7 @@ public class TestScript : MonoBehaviour {
 
 		for(int i = 0; i<100000000; i++)
 		{
-			float num = PlanetBuilder.eDist(.5, 10000);
+			float num = PlanetBuilder.eDist(.5, 10000, Random.value);
 			if(num<10)
 				count[0]++;
 			else if(num<100)

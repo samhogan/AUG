@@ -104,6 +104,70 @@ public class NoiseHandler
 
 	//List<
 
+	//a cache for height data to be reused
+	//Dictionary <SurfacePos, float> heightData = new Dictionary<SurfacePos, float>();
+	Dictionary <Vector3, float> heightData = new Dictionary<Vector3, float>();
+	List<Vector3> cachedPoints = new List<Vector3>();
+	//Hashtable hd = new Hashtable();
+
+	public static int calcs = 0;
+	//returns the voxel data for mc
+	public float getVoxVal(Vector3 pos, int scale)
+	{
+		//the distance from the center of the planet to the current voxel
+		float distxyz = pos.magnitude;
+
+		Vector3 surfPos = pos.normalized*radius;// get the spot at sea level of the planet(this is to prevent weird overhangs and stuff
+
+
+
+
+		/*SurfacePos surf = UnitConverter.getSP(surfPos, 98174*4);//(int)(radius * .5f * Mathf.PI/TerrainObject.wsRatio));
+		//SurfacePos surf = new SurfacePos(PSide.BACK, 1, 1);//UnitConverter.getSP(surfPos, 98174);//(int)(radius * .5f * Mathf.PI/TerrainObject.wsRatio));
+
+		//round to the nearest lev
+		surf.u = Mathf.Round(surf.u);// / scale) * scale;
+		surf.v = Mathf.Round(surf.v);// / scale) * scale;
+*/
+		//surfPos.x = Mathf.Round(surfPos.x / scale /4) * scale*4;
+
+		float noise;
+		//if(heightData.TryGetValue(surf, out noise))
+		if(heightData.TryGetValue(pos, out noise))
+		{
+			//noise = heightData[surf];
+			calcs++;
+		}
+		else
+		{
+			//Vector3 newSurf = UnitConverter.getWP(surf, radius, 98174*4);
+			//noise = (float)finalTerrain.GetValue(newSurf.x, newSurf.y, newSurf.z);
+			noise = (float)finalTerrain.GetValue(surfPos.x, surfPos.y, surfPos.z);
+			heightData.Add(pos, noise);
+			cachedPoints.Add(pos);
+			//MyDebug.placeMarker(Unitracker.getFloatingPos(newSurf));
+			//Debug.Log(surf.ToString());
+			//calcs++;
+			//Debug.Log(calcs);
+		}
+
+		//if the list is big, remove the oldest value
+		if(heightData.Count>4000)
+		{
+			heightData.Remove(cachedPoints[0]);
+			cachedPoints.RemoveAt(0);
+		}
+		
+		//the marching cubes value is the distance to the voxel / the altitude(point on the surface) above or below that voxel
+		return distxyz/(radius + noise);
+	}
+
+
+	public Sub getSubstance(Vector3 pos)
+	{
+		return (Sub)finalTexture.GetValue(pos);
+	}
+
 	//returns the voxel val(float value used to build the mesh with marching cubes) and type(substance) at a specific voxel
 	public void getVoxData(Vector3 pos, out float val, out Sub sub)
 	{
@@ -115,9 +179,18 @@ public class NoiseHandler
 		//the substance noise to use at this voxel
 		//int tid;//the id of the texture module to use from substanceNoise
 		//sub = Sub.ICE;
+		//SurfacePos surf = UnitConverter.getSP(surfPos, 98174);//(int)(radius * .5f * Mathf.PI/TerrainObject.wsRatio));
+
+		//round to the nearest lev
+		//surf.u = Mathf.Round(surf.u / 134) * 123;
+		//surf.v = Mathf.Round(surf.v / 5) * 3;
+
+		//float noisea;
+		//heightData.ContainsKey(new SurfacePos());
+	
 
 		float noise = (float)finalTerrain.GetValue(surfPos.x, surfPos.y, surfPos.z);
-
+		//heightData.Add(surf, noise);
 
 		//float noise = 2;//(float)finalTerrain.GetValue(surfPos.x, surfPos.y, surfPos.z);
 

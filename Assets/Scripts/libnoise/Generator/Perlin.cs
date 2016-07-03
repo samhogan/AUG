@@ -139,7 +139,8 @@ namespace LibNoise.Generator
                 var ny = Utils.MakeInt32Range(y);
                 var nz = Utils.MakeInt32Range(z);
                 var seed = (_seed + i) & 0xffffffff;
-                var signal = Utils.GradientCoherentNoise3D(nx, ny, nz, seed, _quality);
+				var signal = Utils.GradientCoherentNoise3D(nx, ny, nz, seed, _quality);
+               // var signal = FastNoise.GradientCoherentNoise(nx, ny, nz, seed, _quality);
                 value += signal * cp;
                 x *= _lacunarity;
                 y *= _lacunarity;

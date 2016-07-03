@@ -31,7 +31,7 @@ public class Planet
 	private int startLev;
 
 	//later will have many parameters
-	public Planet(float r, UniPos pos)//Vector3 sp, float r)
+	public Planet(float r, UniPos pos, int seed)//Vector3 sp, float r)
 	{
 		radius = r;
 		scaledRadius = r/Unitracker.uniscale;
@@ -44,7 +44,7 @@ public class Planet
 		//generate the planet surface data
 		ModuleBase finalTerrain, finalTexture;
 		List<Blueprint> blueprints;
-		PlanetBuilder.genPlanetData(out finalTerrain, out finalTexture, out blueprints);
+		PlanetBuilder.genPlanetData(seed, out finalTerrain, out finalTexture, out blueprints);
 
 		noise = new NoiseHandler(radius, finalTerrain, finalTexture);
 

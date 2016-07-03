@@ -111,9 +111,11 @@ public class TerrainObject : WorldObject
 
 	}
 
-
+	static int totalCalcs = 0;
 	public void calculateNoise()
 	{
+		//totalCalcs += chunkSize * chunkSize * chunkSize;
+		//print(totalCalcs);
 		//loops through every voxel in the chunk
 		for (int x = 0; x<=chunkSize; x++) 
 		{
@@ -130,11 +132,11 @@ public class TerrainObject : WorldObject
 
 
 
-					Sub sub;//the substance of this voxel
-					float voxVal;//the voxel value of this voxel for marching cubes
+					Sub sub = planet.noise.getSubstance(new Vector3(voxPos.x+.5f, voxPos.y+.5f, voxPos.z+.5f));//the substance of this voxel
+					float voxVal = planet.noise.getVoxVal(voxPos, (int)scale);//the voxel value of this voxel for marching cubes
 
 					//retrieve the voxel data from noise
-					planet.noise.getVoxData(voxPos, out voxVal, out sub);
+					//planet.noise.getVoxData(voxPos, out voxVal, out sub);
 
 					//voxVal = y < 4 ? 0 : 2;
 					//sub = Sub.ROCK2;
