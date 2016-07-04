@@ -119,8 +119,10 @@ public class NoiseHandler
 
 		Vector3 surfPos = pos.normalized*radius;// get the spot at sea level of the planet(this is to prevent weird overhangs and stuff
 
-
-
+		//NOTE: 4 is the terrain object wsratio, so i should probably make a reference or something
+		surfPos.x = Mathf.Round(surfPos.x/4)*4;
+		surfPos.y = Mathf.Round(surfPos.y/4)*4;
+		surfPos.z = Mathf.Round(surfPos.z/4)*4;
 
 		/*SurfacePos surf = UnitConverter.getSP(surfPos, 98174*4);//(int)(radius * .5f * Mathf.PI/TerrainObject.wsRatio));
 		//SurfacePos surf = new SurfacePos(PSide.BACK, 1, 1);//UnitConverter.getSP(surfPos, 98174);//(int)(radius * .5f * Mathf.PI/TerrainObject.wsRatio));
@@ -133,7 +135,7 @@ public class NoiseHandler
 
 		float noise;
 		//if(heightData.TryGetValue(surf, out noise))
-		if(heightData.TryGetValue(pos, out noise))
+		if(heightData.TryGetValue(surfPos, out noise))
 		{
 			//noise = heightData[surf];
 			calcs++;
@@ -143,8 +145,8 @@ public class NoiseHandler
 			//Vector3 newSurf = UnitConverter.getWP(surf, radius, 98174*4);
 			//noise = (float)finalTerrain.GetValue(newSurf.x, newSurf.y, newSurf.z);
 			noise = (float)finalTerrain.GetValue(surfPos.x, surfPos.y, surfPos.z);
-			heightData.Add(pos, noise);
-			cachedPoints.Add(pos);
+			heightData.Add(surfPos, noise);
+			cachedPoints.Add(surfPos);
 			//MyDebug.placeMarker(Unitracker.getFloatingPos(newSurf));
 			//Debug.Log(surf.ToString());
 			//calcs++;

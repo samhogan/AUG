@@ -132,7 +132,7 @@ public class TerrainObject : WorldObject
 
 
 
-					Sub sub = planet.noise.getSubstance(new Vector3(voxPos.x+.5f, voxPos.y+.5f, voxPos.z+.5f));//the substance of this voxel
+					//Sub sub = planet.noise.getSubstance(new Vector3(voxPos.x+.5f, voxPos.y+.5f, voxPos.z+.5f));//the substance of this voxel
 					float voxVal = planet.noise.getVoxVal(voxPos, (int)scale);//the voxel value of this voxel for marching cubes
 
 					//retrieve the voxel data from noise
@@ -146,8 +146,8 @@ public class TerrainObject : WorldObject
 					//if(x+voxPos.x > 0)
 					//	chunk.voxVals[x, y, z] = 2;
 					//get the texture point of the substace at this vector
-					if(x<chunkSize && y<chunkSize && z<chunkSize)
-						voxSubs[x, y, z] = sub;
+					//if(x<chunkSize && y<chunkSize && z<chunkSize)
+					//	voxSubs[x, y, z] = sub;
 					//puts a hole in the planet(just for fun
 					//if(voxPos.x<10 && voxPos.x>-10 && voxPos.z<10 && voxPos.z>-10)
 					//chunk.voxVals[x,y,z] = 2;
@@ -157,6 +157,36 @@ public class TerrainObject : WorldObject
 
 			}
 
+		}
+
+
+		//calculate the textures only in voxels that currently contain the surface
+		for(int x = 0; x < chunkSize; x++)
+		{
+			for(int y = 0; y < chunkSize; y++)
+			{
+				for(int z = 0; z < chunkSize; z++)
+				{
+					int total = (voxVals[x, y, z] > 1 ? 1:0) + (voxVals[x, y, z + 1] > 1 ? 1:0) + (voxVals[x, y + 1, z] > 1 ? 1:0) + (voxVals[x, y + 1, z + 1] > 1 ? 1:0)  +
+						(voxVals[x + 1, y, z] > 1 ? 1:0) + (voxVals[x + 1, y, z + 1] > 1 ? 1:0) + (voxVals[x + 1, y + 1, z] > 1 ? 1:0) + (voxVals[x + 1, y + 1, z + 1] > 1 ? 1:0) ;
+
+					//only calc sub if at least 1 voxVal around it contains land and one doesn't
+					if(total!=0 && total!=8)
+					{
+
+						//the position in the middle of each cube, between 8 mc voxels
+						Vector3 voxPos = new Vector3();
+						voxPos.x = (pos.x * chunkWidth + x * TerrainObject.wsRatio) * scale;
+						voxPos.y = (pos.y * chunkWidth + y * TerrainObject.wsRatio) * scale;
+						voxPos.z = (pos.z * chunkWidth + z * TerrainObject.wsRatio) * scale;
+
+						voxSubs[x, y, z] = planet.noise.getSubstance(voxPos);//the substance of this voxel
+
+					}
+					else
+						voxSubs[x, y, z] = Sub.TEST;
+				}
+			}
 		}
 	}
 
