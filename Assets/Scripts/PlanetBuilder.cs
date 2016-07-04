@@ -4,7 +4,7 @@ using LibNoise;
 using LibNoise.Generator;
 using LibNoise.Operator;
 using System.Collections.Generic;
-
+using LibNoise.Fast;
 
 //contains parameters and generator for creating the noise modules that generate planetary terrain
 public class PlanetBuilder 
@@ -297,27 +297,45 @@ public class PlanetBuilder
 		switch((int)prob.getValue(rand.NextDouble()))
 		{
 		case 0: 
-			return new Perlin(1/scale,//randDoub(.00001, 0.1), 
+			/*return new Perlin(1/scale,//randDoub(.00001, 0.1), 
 				randDoub(1.8, 2.2, rand.NextDouble()), 
 				randDoub(.4, .6, rand.NextDouble()), 
 				rand.Next(2, 6), 
 				rand.Next(int.MinValue, int.MaxValue), 
-				QualityMode.High);
+				QualityMode.High);*/
+			return new FastNoise(rand.Next(0, int.MaxValue)) {
+				Frequency = 1 / scale,
+				Lacunarity = randDoub(1.8, 2.2, rand.NextDouble()),
+				Persistence = randDoub(.4, .6, rand.NextDouble()), 
+				OctaveCount = rand.Next(2, 6), 
+			};
 			break;
 		case 1:
-			return new Billow(1/scale,
+			/*return new Billow(1/scale,
 				randDoub(1.8, 2.2, rand.NextDouble()), 
 				randDoub(.4, .6, rand.NextDouble()), 
 				rand.Next(2, 6), 
 				rand.Next(int.MinValue, int.MaxValue), 
-				QualityMode.High);
+				QualityMode.High);*/
+			return new FastBillow(rand.Next(0, int.MaxValue)) {
+				Frequency = 1 / scale,
+				Lacunarity = randDoub(1.8, 2.2, rand.NextDouble()),
+				Persistence = randDoub(.4, .6, rand.NextDouble()), 
+				OctaveCount = rand.Next(2, 6), 
+			};
 			break;
 		case 2:
-			return new RidgedMultifractal(1/scale,
+			return new FastRidgedMultifractal(rand.Next(0, int.MaxValue)) {
+				Frequency = 1 / scale,
+				Lacunarity = randDoub(1.8, 2.2, rand.NextDouble()),
+				//Persistence = randDoub(.4, .6, rand.NextDouble()), 
+				OctaveCount = rand.Next(2, 6), 
+			};
+			/*return new RidgedMultifractal(1/scale,
 				randDoub(1.8, 2.2, rand.NextDouble()), 
 				rand.Next(2, 6), 
 				rand.Next(int.MinValue, int.MaxValue), 
-				QualityMode.High);
+				QualityMode.High);*/
 			break;
 		default:
 			return new Const(0.0);

@@ -24,57 +24,97 @@ using System;
 
 namespace LibNoise.Fast
 {
-    public class FastNoise
+    public class FastRidgedMultifractal
         : FastNoiseBasis
     {
         public double Frequency { get; set; }
-        public double Persistence { get; set; }
-        public QualityMode NoiseQuality { get; set; }
+		public QualityMode NoiseQuality { get; set; }
         private int mOctaveCount;
-        public double Lacunarity { get; set; }
+        private double mLacunarity;
 
         private const int MaxOctaves = 30;
 
-        public FastNoise()
+        private double[] SpectralWeights = new double[MaxOctaves];
+
+        public FastRidgedMultifractal()
             : this(0)
         {
 
         }
 
-        public FastNoise(int seed)
+        public FastRidgedMultifractal(int seed)
             : base(seed)
         {
             Frequency = 1.0;
             Lacunarity = 2.0;
             OctaveCount = 6;
-            Persistence = 0.5;
 			NoiseQuality = QualityMode.High;
         }
 
         public override double GetValue(double x, double y, double z)
         {
-            double value = 0.0;
-            double signal = 0.0;
-            double curPersistence = 1.0;
-            long seed;
-
             x *= Frequency;
             y *= Frequency;
             z *= Frequency;
 
+            double signal = 0.0;
+            double value = 0.0;
+            double weight = 1.0;
+
+            // These parameters should be user-defined; they may be exposed in a
+            // future version of libnoise.
+            double offset = 1.0;
+            double gain = 2.0;
+
             for (int currentOctave = 0; currentOctave < OctaveCount; currentOctave++)
             {
-                seed = (Seed + currentOctave) & 0xffffffff;
+ 
+                long seed = (Seed + currentOctave) & 0x7fffffff;
                 signal = GradientCoherentNoise(x, y, z, (int)seed, NoiseQuality);
-                value += signal * curPersistence;
 
+                // Make the ridges.
+                signal = System.Math.Abs(signal);
+                signal = offset - signal;
+
+                // Square the signal to increase the sharpness of the ridges.
+                signal *= signal;
+
+                // The weighting from the previous octave is applied to the signal.
+                // Larger values have higher weights, producing sharp points along the
+                // ridges.
+                signal *= weight;
+
+                // Weight successive contributions by the previous signal.
+                weight = signal * gain;
+                if (weight > 1.0)
+                {
+                    weight = 1.0;
+                }
+                if (weight < 0.0)
+                {
+                    weight = 0.0;
+                }
+
+                // Add the signal to the output value.
+                value += (signal * SpectralWeights[currentOctave]);
+
+                // Go to the next octave.
                 x *= Lacunarity;
                 y *= Lacunarity;
                 z *= Lacunarity;
-                curPersistence *= Persistence;
             }
 
-            return value;
+            return (value * 1.25) - 1.0;
+        }
+
+        public double Lacunarity
+        {
+            get { return mLacunarity; }
+            set
+            {
+                mLacunarity = value;
+                CalculateSpectralWeights();
+            }
         }
 
         public int OctaveCount
@@ -86,6 +126,19 @@ namespace LibNoise.Fast
                     throw new ArgumentException("Octave count must be greater than zero and less than " + MaxOctaves);
 
                 mOctaveCount = value;
+            }
+        }
+
+        private void CalculateSpectralWeights()
+        {
+            double h = 1.0;
+
+            double frequency = 1.0;
+            for (int i = 0; i < MaxOctaves; i++)
+            {
+                // Compute weight for each frequency.
+                SpectralWeights[i] = System.Math.Pow(frequency, -h);
+                frequency *= mLacunarity;
             }
         }
     }

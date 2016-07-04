@@ -24,24 +24,24 @@ using System;
 
 namespace LibNoise.Fast
 {
-    public class FastNoise
+    public class FastBillow
         : FastNoiseBasis
     {
         public double Frequency { get; set; }
         public double Persistence { get; set; }
-        public QualityMode NoiseQuality { get; set; }
+		public QualityMode NoiseQuality { get; set; }
         private int mOctaveCount;
         public double Lacunarity { get; set; }
 
         private const int MaxOctaves = 30;
 
-        public FastNoise()
+        public FastBillow()
             : this(0)
         {
 
         }
 
-        public FastNoise(int seed)
+        public FastBillow(int seed)
             : base(seed)
         {
             Frequency = 1.0;
@@ -64,8 +64,10 @@ namespace LibNoise.Fast
 
             for (int currentOctave = 0; currentOctave < OctaveCount; currentOctave++)
             {
+
                 seed = (Seed + currentOctave) & 0xffffffff;
                 signal = GradientCoherentNoise(x, y, z, (int)seed, NoiseQuality);
+                signal = 2.0 * System.Math.Abs(signal) - 1.0;
                 value += signal * curPersistence;
 
                 x *= Lacunarity;
@@ -73,6 +75,8 @@ namespace LibNoise.Fast
                 z *= Lacunarity;
                 curPersistence *= Persistence;
             }
+
+            value += 0.5;
 
             return value;
         }
