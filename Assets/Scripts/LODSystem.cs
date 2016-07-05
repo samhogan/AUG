@@ -259,6 +259,7 @@ public class LODSystem
 		CreateChunk(pos, false);
 	}
 
+	public static int totalChunks = 0;
 	//creates (instantiates) a terrain chunk (but does not render it yet)
 	public void CreateChunk(LODPos pos, bool render) 
 	{
@@ -266,6 +267,7 @@ public class LODSystem
 		if(chunks.ContainsKey(pos))
 			return;
 
+		totalChunks++;
 
 		//build the terrainobject and add its gameobject to the chunks list(may remove this last thing later)
 		//TerrainObject chunk = Build.buildObject<TerrainObject>(pos.toVector3(), Quaternion.identity);
@@ -435,12 +437,20 @@ public class LODSystem
 		//length of this specific lod chunk
 		float sideLength = TerrainObject.chunkWidth*Mathf.Pow(2,pos.level);
 
+		bool pointInLand = false;
 		for(int x = 0; x <= 1; x++)
 			for(int y = 0; y <= 1; y++)
 				for(int z = 0; z <= 1; z++)
 				{
-					if(pointContainsLand(sideLength, new Vector3(x,y,z), pos))
+					bool insideLand;
+					if(pointContainsLand(sideLength, new Vector3(x,y,z), pos, out insideLand))
 						return true;
+
+					if(x == 0 && y == 0 && z == 0)
+						pointInLand = insideLand;
+					else if(pointInLand != insideLand)
+						return true;
+						
 				}
 
 
@@ -450,7 +460,7 @@ public class LODSystem
 	}
 
 	//checks a single corner of a chunks to see if it is worthy of containing land
-	bool pointContainsLand(float sideLength, Vector3 corner, LODPos pos)
+	bool pointContainsLand(float sideLength, Vector3 corner, LODPos pos, out bool insideLand)
 	{
 		//the position of the corner chunk in relation to the center in unity units
 		Vector3 absPos = new Vector3(sideLength*(pos.x+corner.x),
@@ -459,6 +469,8 @@ public class LODSystem
 		//altitude of land below or above this point
 		float alt = planet.noise.getAltitude(absPos);
 
+		//is the point underground
+		insideLand = absPos.magnitude<alt;
 		//contains land if the dist to center of lod chunk is within a side length of the altitude
 		//NOTE: may later change it to half a side legth because the corners are closer
 		return absPos.magnitude < (alt+sideLength) && absPos.magnitude > (alt-sideLength);

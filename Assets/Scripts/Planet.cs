@@ -30,11 +30,14 @@ public class Planet
 	//the initial lod level (8 chunks of that level)
 	private int startLev;
 
+	private int seed;
+
 	//later will have many parameters
-	public Planet(float r, UniPos pos, int seed)//Vector3 sp, float r)
+	public Planet(float r, UniPos pos, int s)//Vector3 sp, float r)
 	{
 		radius = r;
 		scaledRadius = r/Unitracker.uniscale;
+		seed = s;
 
 		atmosRadius = r+200000;//atmosphere is 200 km above surface
 		scaledAtmosRadius = atmosRadius/Unitracker.uniscale;
@@ -64,7 +67,7 @@ public class Planet
 	//instantiates the unispace rep of the planet
 	void createRep(UniPos pos)
 	{
-		scaledRep =  new GameObject("Planet " + Random.Range(0,float.MaxValue) + "radius: " + radius);
+		scaledRep =  new GameObject("Planet " + seed + "radius: " + radius);
 
 
 		//the gameobject that holds the scaledRep's mesh data so it can be scaled

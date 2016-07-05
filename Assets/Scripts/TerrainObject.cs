@@ -176,9 +176,9 @@ public class TerrainObject : WorldObject
 
 						//the position in the middle of each cube, between 8 mc voxels
 						Vector3 voxPos = new Vector3();
-						voxPos.x = (pos.x * chunkWidth + x * TerrainObject.wsRatio) * scale;
-						voxPos.y = (pos.y * chunkWidth + y * TerrainObject.wsRatio) * scale;
-						voxPos.z = (pos.z * chunkWidth + z * TerrainObject.wsRatio) * scale;
+						voxPos.x = (pos.x * chunkWidth + (x+.5f) * TerrainObject.wsRatio) * scale;
+						voxPos.y = (pos.y * chunkWidth + (y+.5f) * TerrainObject.wsRatio) * scale;
+						voxPos.z = (pos.z * chunkWidth + (z+.5f) * TerrainObject.wsRatio) * scale;
 
 						voxSubs[x, y, z] = planet.noise.getSubstance(voxPos);//the substance of this voxel
 

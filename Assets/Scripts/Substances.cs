@@ -31,7 +31,8 @@ public class Substance
 		float xcp = (bpos%4)*16+Mathf.RoundToInt(g/17f);
 		float ycp = (bpos/4)*16+Mathf.RoundToInt(r/17f);
 			
-
+		xcp += .5f;
+		ycp += .5f;
 		xcp /= atlasWidth;//texture points are in the range [0,1]
 		ycp /= atlasWidth;
 		colorPoint = new Vector2(xcp, ycp);

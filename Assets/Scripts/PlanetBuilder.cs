@@ -24,8 +24,26 @@ public class PlanetBuilder
 	private static ProbMeter featAbundProb = new ProbMeter(new double[]{}, new double[]{1, 6, 1});
 	//
 
-	private static ProbItems baseFeatModProb = new ProbItems(new double[]{1,1});
+	//the amount of mods that will be applied to a base feature after being scalebiased
+	private static ProbItems preModAmount = new ProbItems(new double[]{5,1,1,.1});
 
+	//the type of mod that is applied to a base feature before being scalebiased
+	private static ProbItems preModType = new ProbItems(new double[]{1,1,0,0});
+
+	//the amount of mods that will be applied to a base feature after being scalebiased
+	private static ProbItems postModAmount = new ProbItems(new double[]{3,1,1,0.1 });
+
+	//the type of mod that is applied to a base feature after being scalebiased
+	private static ProbItems postModType = new ProbItems(new double[]{ 0, 0, 6, 1 });
+
+	//the scale of a base noise module
+	private static ProbMeter baseNoiseScale = new ProbMeter(new double[]{80, 100, 1000, 10000, 20000 }, new double[]{.2,3,3,1});
+
+	//the scale of the noise in a selector module
+	//private static ProbMeter controlNoiseScale = new ProbMeter(new double[]{ }, new double[]{ });
+
+	//the scale of the noise that can be added in modMod
+	private static ProbMeter addedNoiseScale = new ProbMeter(new double[]{3, 10, 1000 }, new double[]{ });
 
 
 	//should probably overload buildFeature, but this improves readability i think
@@ -136,16 +154,18 @@ public class PlanetBuilder
 		else
 		{
 			//scale is the inverse of the frequency and is used to influence amplitude
-			float scale = eDist(80, 20000, rand.NextDouble());
+			//float scale = eDist(80, 20000, rand.NextDouble());
+			float scale = (float)baseNoiseScale.getValue(rand.NextDouble());
 			//scale = 100;
 			//the starting noise for the final feature that will be modified
 
 			terrain = getGradientNoise(hnProb, rand.NextDouble(), scale, rand);
 
-			//apply a random modification to the primordial noise
+			//apply some random modification to the primordial noise
 			//possibly in the future multiple mods can be applied
-			if(rand.NextDouble()<.3)
-				terrain = modMod(terrain, (int)baseFeatModProb.getValue(rand.NextDouble()), rand);
+			int numPreMods = (int)preModAmount.getValue(rand.NextDouble());
+			for(int i=0; i<numPreMods; i++)
+				terrain = modMod(terrain, (int)preModType.getValue(rand.NextDouble()), rand);
 
 
 			//the amplidude or max height of the terrain
@@ -160,15 +180,17 @@ public class PlanetBuilder
 			//now apply the bias and amplitude
 			terrain = new ScaleBias(amplitude, bias * amplitude, terrain);
 
-			//apply a random post modification
-			if(rand.NextDouble()<.2)
+			//apply some random post modifications
+			int numMods = (int)postModAmount.getValue(rand.NextDouble());
+			for(int i=0; i<numMods; i++)
 			{
-				terrain = modMod(terrain, 2, rand);
+				terrain = modMod(terrain, (int)postModType.getValue(rand.NextDouble()), rand);
 			}
 
 			//texture = Random.value<.7 ? buildTexture(subList, out abundance, 1) : null;
 			//build a texture if it still needs one
-			texture = needsTexture ? buildTexture(subList, out abundance, 1, rand) : null;
+			//texture = needsTexture ? buildTexture(subList, out abundance, 1, rand) : null;
+			texture = buildTexture(subList, out abundance, 1, rand);
 			noiseScale = scale;
 		}
 
@@ -189,14 +211,14 @@ public class PlanetBuilder
 
 		switch(modType)
 		{
-		case 0: 
+		case 0: //curves
 			Curve c = new Curve(baseMod);
 			for(int i = 0; i<4; i++)
 			{
 				c.Add(rand.NextDouble()*2-1, rand.NextDouble()*2-1);
 			}
 			return c;
-		case 1:
+		case 1://terrace
 			Terrace terr = new Terrace(baseMod);
 			int numPoints = rand.Next(1,10);
 			for(int i = 0; i<numPoints; i++)
@@ -204,12 +226,14 @@ public class PlanetBuilder
 				terr.Add(randDoub(-1, 1, rand.NextDouble()));
 			}
 			return terr;
-		case 2:
+		case 2://add noise
 			float scale = eDist(1, 10000, rand.NextDouble());
 			ModuleBase addedTerrain = getGradientNoise(hnProb, rand.NextDouble(), scale, rand);
 			double amplitude = eDist(.5, scale/4, rand.NextDouble());
 			addedTerrain = new ScaleBias(amplitude, 0, addedTerrain);
 			return new Add(baseMod, addedTerrain);
+		case 3: //scale module input(stretch it)
+			return new Scale(rand.NextDouble() * 5 + .01, rand.NextDouble() * 5 + .01, rand.NextDouble() * 5 + .01, baseMod); 
 		default:
 			return new Checker();
 
