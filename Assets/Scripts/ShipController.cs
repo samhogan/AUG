@@ -5,6 +5,9 @@ public class ShipController : MonoBehaviour
 {
 
 	public float speed = 20f;
+	public float hyperSpeed = 200000f;
+
+	private bool isHyper = false;
 
 	private Rigidbody rb;
 
@@ -13,13 +16,19 @@ public class ShipController : MonoBehaviour
 	{
 		rb = GetComponent<Rigidbody>();
 	}
+
+	void Update()
+	{
+		if(Input.GetKeyDown("h"))
+			isHyper = !isHyper;
+	}
 	
 	void FixedUpdate()
 	{
 		
 		float forward = Input.GetAxisRaw("Vertical");
 		float right = Input.GetAxisRaw("Horizontal");
-		float throttle = Input.GetButton("Jump") ? speed : 0.0f;
+		float throttle = Input.GetButton("Jump") ? (isHyper ? hyperSpeed:speed) : 0.0f;
 
 
 

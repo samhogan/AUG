@@ -34,7 +34,7 @@ public class UniverseSystem
 		//Planet earth = new Planet(10000);
 		//Planet earth = new Planet(200);
 
-		Planet earth = new Planet(250000, new UniPos(new Vector3(0, 0, 0), 9010, 009, 3109), 456);//Random.Range(int.MinValue, int.MaxValue));
+	/*	Planet earth = new Planet(250000, new UniPos(new Vector3(0, 0, 0), 9010, 009, 3109), 456);//Random.Range(int.MinValue, int.MaxValue));
 		//planets.Add(earth);
 		bodies.Add(earth);
 		//curPlanet = earth;
@@ -45,9 +45,21 @@ public class UniverseSystem
 
 		//Planet planetnomy = new Planet(100000, new UniPos(new Vector3(0,0,0), 1000, 5000, 5000), 34532);
 		//planets.Add(planetnomy);
+*/
 
-		Star sun = new Star(3452, 7000000, new UniPos(new Vector3(0,0,0), 0, 0, 0));
+		for(int i = 0; i < 12; i++)
+		{
+			Planet planet = new Planet(Random.Range(100000, 1000000), 
+				new UniPos(new Vector3(0,0,0), Random.Range(-20000, 20000), Random.Range(-10, 10), Random.Range(-20000, 20000)), 
+				Random.Range(int.MinValue, int.MaxValue));
+			bodies.Add(planet);
+		}
+
+		Star sun = new Star(3452, 29000000, new UniPos(new Vector3(0,0,0), 0, 0, 0));
 		bodies.Add(sun);
+
+
+
 		/*for(int i = 0; i<20; i++)
 		{
 			Planet planetfun = new Planet(Random.Range(10000,1000000), new UniPos(new Vector3(0,0,0), 200*i, 00, 200));
