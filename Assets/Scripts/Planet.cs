@@ -3,7 +3,7 @@ using System.Collections;
 using LibNoise;
 using System.Collections.Generic;
 //holds all the information for the planet including terrain and civilization
-public class Planet
+public class Planet : CelestialBody
 {
 
 	//private RoadSystem roads;//builds the roads/civilization organization
@@ -13,36 +13,20 @@ public class Planet
 
 	public NoiseHandler noise;//contains all perlin noise info 
 
-	public float radius;//radius of the planet
-	private float scaledRadius;//the radius of the scaledRep in unispace
-	private float atmosRadius;//the radius of the atmosphere/direct gravitational influence/distance terrain is split from(distance from planet to make it curplanet)
-	public float scaledAtmosRadius;//atmosRadius in unispace
-
-	public float buildHeight;//the height the player must under for surface objects to be generated, and consequently, the build height (is actually radius+build height but whatever)
-
-	//the position of the planet in unispace (measured in 10000s or whatever the scale is)
-	public UniPos scaledPos;
 
 
-	//the large scale representation of the planet in unispace
-	public GameObject scaledRep;
+
+
 
 	//the initial lod level (8 chunks of that level)
 	private int startLev;
 
-	private int seed;
+
 
 	//later will have many parameters
-	public Planet(float r, UniPos pos, int s)//Vector3 sp, float r)
+	public Planet(float r, UniPos pos, int _seed):base(_seed, r, pos)//Vector3 sp, float r)
 	{
-		radius = r;
-		scaledRadius = r/Unitracker.uniscale;
-		seed = s;
-
-		atmosRadius = r+200000;//atmosphere is 200 km above surface
-		scaledAtmosRadius = atmosRadius/Unitracker.uniscale;
-
-		buildHeight = r+10000;//build height is 10 km above surface
+		
 
 		//generate the planet surface data
 		ModuleBase finalTerrain, finalTexture;
@@ -61,11 +45,11 @@ public class Planet
 
 
 
-		createRep(pos);
+		createRep();
 	}
 
 	//instantiates the unispace rep of the planet
-	void createRep(UniPos pos)
+	protected override void createRep()
 	{
 		scaledRep =  new GameObject("Planet " + seed + "radius: " + radius);
 
@@ -80,7 +64,6 @@ public class Planet
 		meshobj.layer = 8;
 
 		//arbitrary unipos for testing
-		scaledPos = pos;
 		scaledRep.transform.position = Unitracker.UniToAbs(scaledPos);
 		//scaledRep.transform.rotation = Quaternion.Euler(0,45,0);
 		scaledRep.transform.rotation = Quaternion.Euler(0,0,0);
@@ -100,8 +83,8 @@ public class Planet
 		//lod.splitChunk(new LODPos(13,1,1,1));
 		//lod.requestChunk(new LODPos(0, 3000,5400,9000));
 
-		Debug.Log(lod.containsLand(new LODPos(14,0,0,0)));
-		Debug.Log(lod.containsLand(new LODPos(12,3,3,3)));
+		//Debug.Log(lod.containsLand(new LODPos(14,0,0,0)));
+		//Debug.Log(lod.containsLand(new LODPos(12,3,3,3)));
 
 
 		//add some fun color

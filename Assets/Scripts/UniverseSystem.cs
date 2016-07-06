@@ -7,8 +7,9 @@ public class UniverseSystem
 {
 
 	//list of planets
-	public static List<Planet> planets = new List<Planet>();
+	//public static List<Planet> planets = new List<Planet>();
 
+	public static List<CelestialBody> bodies = new List<CelestialBody>();
 	//the planet that things will be built for
 	public static Planet curPlanet;
 
@@ -33,16 +34,20 @@ public class UniverseSystem
 		//Planet earth = new Planet(10000);
 		//Planet earth = new Planet(200);
 
-		Planet earth = new Planet(250000, new UniPos(new Vector3(0, 0, 0), 100, 0, 100), 456);//Random.Range(int.MinValue, int.MaxValue));
-		planets.Add(earth);
+		Planet earth = new Planet(250000, new UniPos(new Vector3(0, 0, 0), 9010, 009, 3109), 456);//Random.Range(int.MinValue, int.MaxValue));
+		//planets.Add(earth);
+		bodies.Add(earth);
 		//curPlanet = earth;
 
 		Planet planetfun = new Planet(1000000, new UniPos(new Vector3(0,0,0), 2000, 200, 50), 987165);
-		planets.Add(planetfun);
+		bodies.Add(planetfun);
+		//planets.Add(planetfun);
 
-		Planet planetnomy = new Planet(100000, new UniPos(new Vector3(0,0,0), 1000, 5000, 5000), 34532);
-		planets.Add(planetnomy);
+		//Planet planetnomy = new Planet(100000, new UniPos(new Vector3(0,0,0), 1000, 5000, 5000), 34532);
+		//planets.Add(planetnomy);
 
+		Star sun = new Star(3452, 7000000, new UniPos(new Vector3(0,0,0), 0, 0, 0));
+		bodies.Add(sun);
 		/*for(int i = 0; i<20; i++)
 		{
 			Planet planetfun = new Planet(Random.Range(10000,1000000), new UniPos(new Vector3(0,0,0), 200*i, 00, 200));

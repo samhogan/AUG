@@ -76,7 +76,8 @@ public class Unitracker : MonoBehaviour
 		{
 			
 			//Vector3 startPoint = new Vector3(0,250020,0);
-			Planet startPlanet = UniverseSystem.planets[0];
+			//Planet startPlanet = UniverseSystem.planets[0];
+			Planet startPlanet = UniverseSystem.bodies[0] as Planet;
 			UniverseSystem.curPlanet = startPlanet;
 
 			onPlanet = true;
@@ -90,6 +91,7 @@ public class Unitracker : MonoBehaviour
 			transform.SetParent(startPlanet.scaledRep.transform);
 			transform.localPosition = startPoint/uniscale;
 
+			checkTrackerPos();
 			//calculate the initial player ref points and relative position
 			reposPlayer();
 		}
@@ -108,7 +110,7 @@ public class Unitracker : MonoBehaviour
 	// Update is called once per frame
 	void Update()
 	{
-
+		print(tRefX+" "+ pRefX);
 		//calculate the position of the tracker based on the position of the player
 		float scaledX = pRefX+(player.transform.localPosition.x/uniscale);
 		float scaledY = pRefY+(player.transform.localPosition.y/uniscale);
@@ -163,12 +165,12 @@ public class Unitracker : MonoBehaviour
 	//checks if the player is in the jurisdiction of any planet
 	void checkPlanets()
 	{
-		foreach(Planet plan in UniverseSystem.planets)
+		foreach(CelestialBody plan in UniverseSystem.bodies)
 		{
 			//if the player is inside the planets "atmosphere" the it is the curplanet
-			if(Vector3.Distance(transform.position,plan.scaledRep.transform.position)<plan.scaledAtmosRadius)
+			if(plan is Planet && Vector3.Distance(transform.position,plan.scaledRep.transform.position)<plan.scaledAtmosRadius)
 			{
-				setCurPlanet(plan);
+				setCurPlanet(plan as Planet);
 				break;
 			}
 
@@ -227,11 +229,25 @@ public class Unitracker : MonoBehaviour
 		pRefY = Mathf.RoundToInt(transform.localPosition.y);
 		pRefZ = Mathf.RoundToInt(transform.localPosition.z);
 		
-		
+		//if transitioning from planet to space, pRef needs tRef added
+		//this is due to floating origin on the universal scale
+		if(!onPlanet)
+		{
+			pRefX += tRefX;
+			pRefY += tRefY;
+			pRefZ += tRefZ;
+		}
+
+
+
 		//calculate new position of the player
-		player.transform.position = new Vector3((transform.localPosition.x-pRefX)*uniscale,
+		//takes the fraction part of the tracker position and multiplies it by the uniscale
+	/*	player.transform.position = new Vector3((transform.localPosition.x-pRefX)*uniscale,
 		                                        (transform.localPosition.y-pRefY)*uniscale,
-		                                        (transform.localPosition.z-pRefZ)*uniscale);
+		                                        (transform.localPosition.z-pRefZ)*uniscale);*/
+		player.transform.position = new Vector3((transform.localPosition.x-Mathf.Round(transform.localPosition.x))*uniscale,
+												(transform.localPosition.y-Mathf.Round(transform.localPosition.y))*uniscale,
+												(transform.localPosition.z-Mathf.Round(transform.localPosition.z))*uniscale);
 
 		//rotate the player to account for a rotated planet/leaving a rotated planet
 		//player.transform.localRotation = player.transform.localRotation*transform.localRotation;
@@ -349,7 +365,11 @@ public class Unitracker : MonoBehaviour
 	void reposPlanets()
 	{
 		//print("planets were repositioned");
-		foreach(Planet plan in UniverseSystem.planets)
+		/*foreach(Planet plan in UniverseSystem.planets)
+		{
+			plan.scaledRep.transform.position = UniToAbs(plan.scaledPos);
+		}*/
+		foreach(CelestialBody plan in UniverseSystem.bodies)
 		{
 			plan.scaledRep.transform.position = UniToAbs(plan.scaledPos);
 		}
