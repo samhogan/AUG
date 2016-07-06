@@ -91,6 +91,7 @@ public class Unitracker : MonoBehaviour
 			transform.SetParent(startPlanet.scaledRep.transform);
 			transform.localPosition = startPoint/uniscale;
 
+			//TODO:calculate these values and then assign them for initial positions to avoid floating point errors
 			checkTrackerPos();
 			//calculate the initial player ref points and relative position
 			reposPlayer();
@@ -328,7 +329,8 @@ public class Unitracker : MonoBehaviour
 			int shift = Mathf.RoundToInt(transform.position.x/unithreshold)*unithreshold;
 			tRefX+=shift;
 			//the direction to shift in
-			transform.position += new Vector3(-shift, 0, 0);
+			if(!onPlanet)
+				transform.position += new Vector3(-shift, 0, 0);
 			newRef=true;
 		//	print("offsetX is " + shift);
 		}
@@ -338,7 +340,8 @@ public class Unitracker : MonoBehaviour
 			int shift = Mathf.RoundToInt(transform.position.y/unithreshold)*unithreshold;
 			tRefY+=shift;
 			//the direction to shift in
-			transform.position += new Vector3(0,-shift, 0);
+			if(!onPlanet)
+				transform.position += new Vector3(0,-shift, 0);
 			newRef=true;
 			//print("offsetX is " + shift);
 		}
@@ -348,7 +351,8 @@ public class Unitracker : MonoBehaviour
 			int shift = Mathf.RoundToInt(transform.position.z/unithreshold)*unithreshold;
 			tRefZ+=shift;
 			//the direction to shift in
-			transform.position += new Vector3(0,0,-shift);
+			if(!onPlanet)
+				transform.position += new Vector3(0,0,-shift);
 			newRef=true;
 
 		}
