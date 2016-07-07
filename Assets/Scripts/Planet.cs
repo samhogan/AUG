@@ -41,7 +41,7 @@ public class Planet : CelestialBody
 
 		lod = new LODSystem(this);
 		//TODO: does this 16 hold relavance?
-		startLev = Mathf.CeilToInt(Mathf.Log(radius/TerrainObject.chunkWidth, 2));
+		startLev = Mathf.CeilToInt(Mathf.Log(radius/TerrainObject.chunkWidth, 2))-1;
 
 
 
@@ -70,15 +70,31 @@ public class Planet : CelestialBody
 
 		meshobj.transform.localScale = new Vector3(scaledRadius*2, scaledRadius*2, scaledRadius*2);
 
-		for(int x = -1; x <= 0; x++)
+		/*for(int x = -1; x <= 0; x++)
 			for(int y = -1; y <= 0; y++)
 				for(int z = -1; z <= 0; z++)
 				{
 					LODPos lp = new LODPos(startLev, x, y, z);
 					lod.CreateChunk(lp, true);
-					//lod.splitChunk(lp);
+					lod.splitChunk(lp);
+					lod.splitCalc(lp);
+					lod.splitRender(lp);
+				}*/
+		//build all the starting lev chunks
+		for(int x = -2; x <= 1; x++)
+			for(int y = -2; y <= 1; y++)
+				for(int z = -2; z <= 1; z++)
+				{
+					LODPos lp = new LODPos(startLev, x, y, z);
+					if(lod.containsLand(lp))
+					{
+						lod.CreateChunk(lp, true);
+						lod.splitChunk(lp);
+						lod.splitCalc(lp);
+						lod.splitRender(lp);
+					}
 				}
-
+		
 		//lod.splitChunk(new LODPos(14,0,0,0));
 		//lod.splitChunk(new LODPos(13,1,1,1));
 		//lod.requestChunk(new LODPos(0, 3000,5400,9000));

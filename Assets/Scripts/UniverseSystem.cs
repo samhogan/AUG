@@ -50,7 +50,7 @@ public class UniverseSystem
 		for(int i = 0; i < 12; i++)
 		{
 			Planet planet = new Planet(Random.Range(100000, 1000000), 
-				new UniPos(new Vector3(0,0,0), Random.Range(-20000, 20000), Random.Range(-10, 10), Random.Range(-20000, 20000)), 
+				new UniPos(new Vector3(0,0,0), Random.Range(-30000, 30000), Random.Range(-20, 20), Random.Range(-30000, 30000)), 
 				Random.Range(int.MinValue, int.MaxValue));
 			bodies.Add(planet);
 		}

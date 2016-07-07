@@ -1,4 +1,4 @@
-﻿using UnityEngine;
+﻿ using UnityEngine;
 using System.Collections;
 
 public class Star : CelestialBody
@@ -27,7 +27,7 @@ public class Star : CelestialBody
 		scaledRep.layer = 8;//add to Unispace layer
 		meshobj.layer = 8;
 
-
+		meshobj.GetComponent<MeshRenderer>().material = Resources.Load("Star") as Material;
 	}
 
 

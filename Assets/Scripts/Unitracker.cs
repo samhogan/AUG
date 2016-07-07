@@ -85,7 +85,9 @@ public class Unitracker : MonoBehaviour
 			//the starting point of the player in relation to the starting planet
 			//this will eventually be handled by a double precision vector3
 			Vector3 startPoint = new Vector3(0,250020,0);
-			startPoint = new Vector3(0, UniverseSystem.curPlanet.noise.getAltitude(startPoint)+2,0);
+			//Vector3 startPoint = Random.onUnitSphere;
+			startPoint = new Vector3(0, UniverseSystem.curPlanet.noise.getAltitude(startPoint)+20,0);
+			//startPoint *=UniverseSystem.curPlanet.noise.getAltitude(startPoint)+3;
 
 			//parent tracker and set up position
 			transform.SetParent(startPlanet.scaledRep.transform);
