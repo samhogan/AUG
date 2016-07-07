@@ -8,6 +8,7 @@ public class Unitracker : MonoBehaviour
 {
 	//reference to the player (or whatever is being tracked)
 	public GameObject player;
+	public GameObject ship;//temporary
 
 	//is the player on a planet?(or asteroid or whatever gosh..)
 	public static bool onPlanet = true;
@@ -88,6 +89,7 @@ public class Unitracker : MonoBehaviour
 			//Vector3 startPoint = Random.onUnitSphere;
 			startPoint = new Vector3(0, UniverseSystem.curPlanet.noise.getAltitude(startPoint)+20,0);
 			//startPoint *=UniverseSystem.curPlanet.noise.getAltitude(startPoint)+3;
+			Vector3 shipStart = new Vector3(-20, UniverseSystem.curPlanet.noise.getAltitude(startPoint+Vector3.left*20)+1,0);
 
 			//parent tracker and set up position
 			transform.SetParent(startPlanet.scaledRep.transform);
@@ -97,6 +99,8 @@ public class Unitracker : MonoBehaviour
 			checkTrackerPos();
 			//calculate the initial player ref points and relative position
 			reposPlayer();
+
+			ship.transform.position = getFloatingPos(shipStart);
 		}
 		else
 		{
@@ -113,11 +117,11 @@ public class Unitracker : MonoBehaviour
 	// Update is called once per frame
 	void Update()
 	{
-		print(tRefX+" "+ pRefX);
+		//print(tRefX+" "+ pRefX);
 		//calculate the position of the tracker based on the position of the player
-		float scaledX = pRefX+(player.transform.localPosition.x/uniscale);
-		float scaledY = pRefY+(player.transform.localPosition.y/uniscale);
-		float scaledZ = pRefZ+(player.transform.localPosition.z/uniscale);
+		float scaledX = pRefX+(player.transform.position.x/uniscale);
+		float scaledY = pRefY+(player.transform.position.y/uniscale);
+		float scaledZ = pRefZ+(player.transform.position.z/uniscale);
 
 		//if the tracker is not parented to a planet, the tracker reference must be subtracted 
 		//because pRef is relative to the center of the universe rather than the center of a planet
@@ -248,9 +252,14 @@ public class Unitracker : MonoBehaviour
 	/*	player.transform.position = new Vector3((transform.localPosition.x-pRefX)*uniscale,
 		                                        (transform.localPosition.y-pRefY)*uniscale,
 		                                        (transform.localPosition.z-pRefZ)*uniscale);*/
-		player.transform.position = new Vector3((transform.localPosition.x-Mathf.Round(transform.localPosition.x))*uniscale,
+		Vector3 newPos = new Vector3((transform.localPosition.x-Mathf.Round(transform.localPosition.x))*uniscale,
 												(transform.localPosition.y-Mathf.Round(transform.localPosition.y))*uniscale,
 												(transform.localPosition.z-Mathf.Round(transform.localPosition.z))*uniscale);
+
+		if(Ship.playerOn)
+			ship.transform.position = newPos;
+		else
+			player.transform.position = newPos;
 
 		//rotate the player to account for a rotated planet/leaving a rotated planet
 		//player.transform.localRotation = player.transform.localRotation*transform.localRotation;
@@ -456,9 +465,11 @@ public class Unitracker : MonoBehaviour
 				if(chunk.Key.level<=LODSystem.uniCutoff)
 					chunk.Value.gameObject.transform.position+=shift;
 
-		
+
+		ship.transform.position += shift;
 		//also shift the player(should eventually not have to do this)
-		player.transform.position+=shift;
+		if(!Ship.playerOn)
+			player.transform.position+=shift;
 	}
 
 }

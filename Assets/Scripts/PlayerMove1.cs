@@ -30,60 +30,62 @@ public class PlayerMove1 : MonoBehaviour {
 
 	void FixedUpdate()
 	{
-
-		float forward = Input.GetAxis("Vertical");
-		float right = Input.GetAxis("Horizontal");
-		float up = Input.GetButton("Jump") ? jump : 0.0f;
-		//Vector3 force = new Vector3 (right, 0.0f, forward);
-		//force = transform.TransformDirection(force) * speed;\
-		//o
-		//finds the global direction and force to move
-		/*Vector3 force = (transform.forward * forward + transform.right * right) * speed;
+		if(!Ship.playerOn)
+		{
+			float forward = Input.GetAxis("Vertical");
+			float right = Input.GetAxis("Horizontal");
+			float up = Input.GetButton("Jump") ? jump : 0.0f;
+			//Vector3 force = new Vector3 (right, 0.0f, forward);
+			//force = transform.TransformDirection(force) * speed;\
+			//o
+			//finds the global direction and force to move
+			/*Vector3 force = (transform.forward * forward + transform.right * right) * speed;
 		force.y = rb.velocity.y;*/
 
 
-		Vector3 newVel = transform.InverseTransformDirection(rb.velocity); //converts current velocity to local space
-		newVel = new Vector3 (right * speed, newVel.y, forward * speed);//overrides right and forward speed, but preserves y speed
-		newVel = transform.TransformDirection(newVel);//converts back to global space
-		//moves the player
-		//rb.AddForce(force*speed, ForceMode.Impulse); 
-		bool buttonPush = forward != 0 || right != 0;
+			Vector3 newVel = transform.InverseTransformDirection(rb.velocity); //converts current velocity to local space
+			newVel = new Vector3(right * speed, newVel.y, forward * speed);//overrides right and forward speed, but preserves y speed
+			newVel = transform.TransformDirection(newVel);//converts back to global space
+			//moves the player
+			//rb.AddForce(force*speed, ForceMode.Impulse); 
+			bool buttonPush = forward != 0 || right != 0;
 
-		//*****************
-		//apply force but stop with velocity 
+			//*****************
+			//apply force but stop with velocity 
 
 
-		//if a button was pushed this update
-		if(buttonPush)
-			wasMoving = true;
-		//if a button was pushed this update or last
-		if(wasMoving)
-			rb.velocity = newVel;
+			//if a button was pushed this update
+			if(buttonPush)
+				wasMoving = true;
+			//if a button was pushed this update or last
+			if(wasMoving)
+				rb.velocity = newVel;
 
-		//keeps wasmoving true for an update after it stops moving
-		if(!buttonPush)
-			wasMoving=false;
+			//keeps wasmoving true for an update after it stops moving
+			if(!buttonPush)
+				wasMoving = false;
 
-		//apply velocity when a button is pushed or a button was pushed the last frame
+			//apply velocity when a button is pushed or a button was pushed the last frame
 
-		//jumps if touching the ground
-		if( isGrounded() )
+			//jumps if touching the ground
+			if(isGrounded())
 			//rb.AddForce(0.0f, up, 0.0f, ForceMode.VelocityChange);
-			rb.AddForce(transform.up*up, ForceMode.VelocityChange);
+			rb.AddForce(transform.up * up, ForceMode.VelocityChange);
 
-		//planet.Attract(transform);
+			//planet.Attract(transform);
 
-		Vector3 realPos = Unitracker.getRealPos(rb.position);
-		//points player away from planet
-		rb.rotation = Quaternion.FromToRotation (transform.up, realPos) * rb.rotation;
-		//print(Quaternion.FromToRotation (transform.up, transform.position) * transform.rotation);
-		/*Vector3 gravityUp = (transform.position).normalized;
+			Vector3 realPos = Unitracker.getRealPos(rb.position);
+			//points player away from planet
+			rb.rotation = Quaternion.FromToRotation(transform.up, realPos) * rb.rotation;
+			//print(Quaternion.FromToRotation (transform.up, transform.position) * transform.rotation);
+			/*Vector3 gravityUp = (transform.position).normalized;
 		Vector3 localUp = transform.up;
 		
 		// Apply downwards gravity to body
 		rb.AddForce(gravityUp * 10);
 		// Allign bodies up axis with the centre of planet
 		rb.rotation = Quaternion.FromToRotation(localUp,gravityUp) * transform.rotation;*/
+		}
 	}
 
 

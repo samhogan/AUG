@@ -35,6 +35,7 @@ public class ShipController : MonoBehaviour
 		rb.AddRelativeTorque(0, right*10, forward*10, ForceMode.Acceleration);
 		rb.AddForce(transform.right*throttle, ForceMode.Force);
 
+
 		if(forward==0&&right==0)
 			rb.angularVelocity = Vector3.zero;
 		if(throttle==0)
