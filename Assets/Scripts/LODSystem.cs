@@ -73,7 +73,7 @@ public class LODSystem
 			foreach(LODPos lpos in splitChunks)
 			{
 				//Debug.Log(lpos.ToString() + " " + chunks.ContainsKey(lpos));
-				if(!lodposInRange(pos, lpos))
+				if(!lodposInRange(pos, lpos) && lpos.level<planet.startLev)
 					chunksToCombine.Add(lpos);
 			}
 

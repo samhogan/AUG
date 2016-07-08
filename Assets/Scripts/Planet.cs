@@ -19,7 +19,7 @@ public class Planet : CelestialBody
 
 
 	//the initial lod level (8 chunks of that level)
-	private int startLev;
+	public int startLev;
 
 
 
@@ -94,7 +94,8 @@ public class Planet : CelestialBody
 						lod.splitRender(lp);
 					}
 				}
-		
+
+		startLev--;
 		//lod.splitChunk(new LODPos(14,0,0,0));
 		//lod.splitChunk(new LODPos(13,1,1,1));
 		//lod.requestChunk(new LODPos(0, 3000,5400,9000));
