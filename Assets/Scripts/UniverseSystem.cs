@@ -47,15 +47,15 @@ public class UniverseSystem
 		//planets.Add(planetnomy);
 */
 
-		for(int i = 0; i < 2; i++)
+		for(int i = 0; i < 12; i++)
 		{
-			Planet planet = new Planet(Random.Range(100000, 1000000), 
+			Planet planet = new Planet(PlanetBuilder.eDist(100000,1000000, Random.value), 
 				new UniPos(new Vector3(0,0,0), Random.Range(-30000, 30000), Random.Range(-20, 20), Random.Range(-30000, 30000)), 
 				Random.Range(int.MinValue, int.MaxValue));
 			bodies.Add(planet);
 		}
 
-		Star sun = new Star(3452, 29000000, new UniPos(new Vector3(0,0,0), 0, 0, 0));
+		Star sun = new Star(3452, 23000000, new UniPos(new Vector3(0,0,0), 0, 0, 0));
 		bodies.Add(sun);
 
 

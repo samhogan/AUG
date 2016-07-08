@@ -6,6 +6,7 @@ public class Star : CelestialBody
 
 	public Star(int _seed, float r, UniPos pos):base(_seed, r, pos)
 	{
+		
 		createRep();
 	}
 
@@ -28,6 +29,7 @@ public class Star : CelestialBody
 		meshobj.layer = 8;
 
 		meshobj.GetComponent<MeshRenderer>().material = Resources.Load("Star") as Material;
+		meshobj.GetComponent<MeshRenderer>().shadowCastingMode = UnityEngine.Rendering.ShadowCastingMode.Off;
 	}
 
 

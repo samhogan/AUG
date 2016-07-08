@@ -125,6 +125,45 @@ public class LODSystem
 	}
 
 
+	//immediately calculates all terrain chunks in range of the player
+	//very slow, only used at startup
+	public void updateAll(WorldPos pos)
+	{
+		List<LODPos> chunksToSplit = new List<LODPos>();
+
+
+		//for every chunk that is not split, check if it is close enough to be split
+		foreach(LODPos lpos in visChunks)
+		{
+			//if the distance from the player's position to the lpos is close enough and its not a level 0 pos, add it to the split list
+			if(lodposInRange(pos, lpos) && lpos.level>0)
+				chunksToSplit.Add(lpos);
+
+		}
+
+		if(chunksToSplit.Count == 0)
+			return;
+
+		foreach(LODPos chunk in chunksToSplit)
+		{
+			splitChunk(chunk);
+		}
+
+		foreach(LODPos lpos in chunksToSplitRender)
+		{
+			splitCalc(lpos);
+			splitRender(lpos);
+		}
+
+		/*foreach(LODPos lpos in chunksToSplitRender)
+		{
+			splitRender(lpos);
+		}*/
+		chunksToSplitRender.Clear();
+
+		updateAll(pos);
+	}
+
 	//updates level of detail by subdividing/combining chunks
 	//given a level 0 lodpos (which is just a worldpos)
 	/*public void updateLOD(WorldPos pos)

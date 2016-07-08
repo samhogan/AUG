@@ -10,8 +10,13 @@ public class Generator : MonoBehaviour {
 	public static List<WorldPos> requestedChunks = new List<WorldPos>();
 
 	// Use this for initialization
-	void Start () {
-	
+	void Start () 
+	{
+		WorldPos curChunkPos = UnitConverter.getChunk( Unitracker.getRealPos(transform.position));
+
+		if(Unitracker.onPlanet)
+			UniverseSystem.curPlanet.lod.updateAll(new WorldPos(curChunkPos.x/TerrainObject.chunkWidth, curChunkPos.y/TerrainObject.chunkWidth, curChunkPos.z/TerrainObject.chunkWidth));	
+
 	}
 	
 	// Update is called once per frame

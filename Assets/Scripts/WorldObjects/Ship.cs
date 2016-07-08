@@ -9,7 +9,7 @@ public class Ship : MobileObjects
 //	FixedJoint fj;
 
 	public float speed = 20f;
-	public float hyperSpeed = 200000f;
+	public float hyperSpeed = 300000000f;
 
 	private bool isHyper = false;
 
@@ -32,13 +32,15 @@ public class Ship : MobileObjects
 		{
 			if(Input.GetKeyDown("u"))
 			{
-				player.transform.position = transform.position + new Vector3(-3, 0, 0);
+				player.transform.parent = null;
+				player.transform.position = transform.position + transform.right*3 + transform.up;
 				//fj.connectedBody = null;
-				//player.transform.parent = null;
 				playerOn = false;
+				player.GetComponent<Rigidbody>().isKinematic = false;
+				player.GetComponent<Rigidbody>().detectCollisions = true;
 			}
 		}
-		else if((player.transform.position - transform.position).magnitude < 2) 
+		else if((player.transform.position - transform.position).magnitude < 2 || Input.GetKeyDown("j")) 
 		{
 			player.transform.parent = transform;
 			player.GetComponent<Rigidbody>().isKinematic = true;
@@ -47,7 +49,7 @@ public class Ship : MobileObjects
 			//player
 
 			//fj.connectedBody = player.GetComponent<Rigidbody>();
-			player.transform.localPosition = transform.up;
+			player.transform.localPosition = new Vector3(0,1,1);
 			player.transform.rotation = transform.rotation;
 			playerOn = true;
 			//player.GetComponent<Rigidbody>().
@@ -67,7 +69,7 @@ public class Ship : MobileObjects
 			isHyper = false;
 		
 			Vector3 realPos = Unitracker.getRealPos(transform.position);
-			speed = Mathf.Abs(realPos.magnitude - UniverseSystem.curPlanet.noise.getAltitude(realPos)) * 10 + 3500;
+			speed = Mathf.Abs(realPos.magnitude - UniverseSystem.curPlanet.noise.getAltitude(realPos)) * 9 + 3500;
 			//print(Mathf.Abs(Unitracker.getRealPos(transform.position).magnitude - UniverseSystem.curPlanet.radius));
 		}
 		else
@@ -80,20 +82,21 @@ public class Ship : MobileObjects
 	{
 		if(playerOn)
 		{
-			float forward = Input.GetAxisRaw("Vertical");
-			float right = Input.GetAxisRaw("Horizontal");
+			float pitch = Input.GetAxisRaw("Vertical");
+			float yaw = Input.GetAxisRaw("Horizontal");
 			float throttle = Input.GetButton("Jump") ? (isHyper ? hyperSpeed : speed) : 0.0f;
 
+			float roll = Input.GetKey("q") ? 1 : Input.GetKey("e") ? -1 : 0;
 
 			rb.angularVelocity = Vector3.zero;
 			rb.velocity = Vector3.zero;
 
-			rb.AddRelativeTorque(0, right * 70, forward * 70, ForceMode.Acceleration);
+			rb.AddRelativeTorque(pitch * -70, yaw * 70, roll * 70, ForceMode.Acceleration);
 			//transform.Rotate(0, right, forward);
-			rb.AddForce(transform.right * throttle, ForceMode.Force);
+			rb.AddForce(transform.forward * throttle, ForceMode.Force);
 
 
-			if(forward == 0 && right == 0)
+			if(pitch == 0 && yaw == 0 && roll == 0)
 				rb.angularVelocity = Vector3.zero;
 			if(throttle == 0)
 				rb.velocity = Vector3.zero;
@@ -110,7 +113,12 @@ public class Ship : MobileObjects
 	public override void Render()
 	{
 		MeshBuilder mb = new MeshBuilder();
-		ProcMesh.addCube(mb, Vector3.zero, 5, 4, 1, Sub.Gold);
-		setMesh(mb.getMesh());
+		ProcMesh.addCube(mb, Vector3.zero, 4, 5, .5f, Sub.Gold);
+		meshCollider.sharedMesh = mb.getMesh();
+		ProcMesh.addCube(mb, new Vector3(1.75f, 2, 2.25f), .5f, .5f, 4, Sub.Gold);
+		ProcMesh.addCube(mb, new Vector3(-1.75f, 2, 2.25f), .5f, .5f, 4, Sub.Gold);
+		ProcMesh.addCube(mb, new Vector3(0, 4, 2.25f), 4f, .5f, .5f, Sub.Gold);
+		filter.mesh = mb.getMesh();
+		//setMesh(mb.getMesh());
 	}
 }

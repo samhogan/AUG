@@ -45,9 +45,9 @@ public class Unitracker : MonoBehaviour
 	//the position of the tracker in THE UNIVERSE!!!!! (1:10000 scale)
 	//UniPos trackerPos;
 	//the tracker's reference point(in increments of 10000)
-	private static int tRefX;
-	private static int tRefY;
-	private static int tRefZ;
+	public static int tRefX;
+	public static int tRefY;
+	public static int tRefZ;
 
 
 	// Use this for initialization
@@ -85,11 +85,13 @@ public class Unitracker : MonoBehaviour
 
 			//the starting point of the player in relation to the starting planet
 			//this will eventually be handled by a double precision vector3
-			Vector3 startPoint = new Vector3(0,250020,0);
-			//Vector3 startPoint = Random.onUnitSphere;
-			startPoint = new Vector3(0, UniverseSystem.curPlanet.noise.getAltitude(startPoint)+20,0);
-			//startPoint *=UniverseSystem.curPlanet.noise.getAltitude(startPoint)+3;
-			Vector3 shipStart = new Vector3(-20, UniverseSystem.curPlanet.noise.getAltitude(startPoint+Vector3.left*20)+1,0);
+			//Vector3 startPoint = new Vector3(0,250020,0);
+			Vector3 startPoint = Random.onUnitSphere;
+			//startPoint = new Vector3(0, UniverseSystem.curPlanet.noise.getAltitude(startPoint)+20,0);
+			startPoint *=UniverseSystem.curPlanet.noise.getAltitude(startPoint)+3;
+		//	Vector3 shipStart = new Vector3(-20, UniverseSystem.curPlanet.noise.getAltitude(startPoint+Vector3.left*20)+1,0);
+			Vector3 shipStart = startPoint + new Vector3(1,1,1)*20;
+			shipStart = shipStart.normalized * (UniverseSystem.curPlanet.noise.getAltitude(shipStart)+1);
 
 			//parent tracker and set up position
 			transform.SetParent(startPlanet.scaledRep.transform);
@@ -101,6 +103,12 @@ public class Unitracker : MonoBehaviour
 			reposPlayer();
 
 			ship.transform.position = getFloatingPos(shipStart);
+
+			ship.transform.rotation = Quaternion.LookRotation(shipStart);
+			ship.transform.rotation *= Quaternion.Euler(90, 0, 0);
+
+			player.GetComponent<GravityController>().gravity = startPlanet.gravity;
+
 		}
 		else
 		{
@@ -205,7 +213,7 @@ public class Unitracker : MonoBehaviour
 		//print("p tracker parented rot is " + transform.rotation.eulerAngles);
 		
 		
-
+		player.GetComponent<GravityController>().gravity = plan.gravity;
 		
 
 		//rotate the player and other objects around it
@@ -300,6 +308,7 @@ public class Unitracker : MonoBehaviour
 			//print(transform.rotation.eulerAngles);
 			transform.localRotation = Quaternion.identity;
 
+			player.GetComponent<GravityController>().gravity = 0;
 
 			//clear up all the request system arrays
 			//yes sam you need to implement this asap

@@ -19,6 +19,8 @@ public abstract class CelestialBody
 	//the large scale representation of the planet in unispace
 	public GameObject scaledRep;
 
+	public float gravity;
+
 
 	public CelestialBody(int _seed, float r, UniPos pos)
 	{
@@ -32,6 +34,9 @@ public abstract class CelestialBody
 
 		buildHeight = r+10000;//build height is 10 km above surface
 
+		//gravity = 9.8f;
+		//TODO: use real gravity equations
+		gravity = radius/32000-1;
 
 	}
 
