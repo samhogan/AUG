@@ -7,16 +7,20 @@ public class StartMenuUI : MonoBehaviour {
 
 	public Canvas main;
 	public Canvas controls;
+	public Canvas loading;
 
 	// Use this for initialization
 	void Start () 
 	{
 		controls.enabled = false;
+		loading.enabled = false;
 	}
 	
 
 	public void playPress()
 	{
+		main.enabled = false;
+		loading.enabled = true;
 		SceneManager.LoadScene("GameBackup2", LoadSceneMode.Single);
 	}
 
@@ -30,6 +34,11 @@ public class StartMenuUI : MonoBehaviour {
 	{
 		main.enabled = true;
 		controls.enabled = false;
+	}
+
+	public void exitPress()
+	{
+		Application.Quit();
 	}
 
 }
