@@ -12,7 +12,9 @@ public class WorldManager : MonoBehaviour
 	//public static XXHash hash;
 
 	// Use this for initialization
-	void OnEnable () 
+	public int seed;
+
+	void Awake() 
 	{
 
 		//universal terrain stuff
@@ -23,8 +25,15 @@ public class WorldManager : MonoBehaviour
 
 		RandomHandler.hash = new XXHash(1);//using seed 1 for testing(will later be randomly chosen
 
+		seed = Random.Range(int.MinValue, int.MaxValue);
 		//initialize THE UNIVERSE!!!!!!!!!
-		universe = new UniverseSystem();
+		universe = new UniverseSystem(seed);
+	}
+
+	void Start()
+	{
+		GameUI.ui.setSeedText(seed);
+
 	}
 	
 	// Update is called once per frame

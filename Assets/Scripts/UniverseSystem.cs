@@ -19,14 +19,17 @@ public class UniverseSystem
 
 
 
+	public static int seed;
 
-
-	public UniverseSystem()
+	public UniverseSystem(int _seed)
 	{
+		seed = _seed; 
 	//	inSpace = true;
 		populate();
 
 	}
+
+
 
 	//populates the universe with planets and such
 	public void populate()
@@ -46,12 +49,14 @@ public class UniverseSystem
 		//Planet planetnomy = new Planet(100000, new UniPos(new Vector3(0,0,0), 1000, 5000, 5000), 34532);
 		//planets.Add(planetnomy);
 */
+		System.Random rand = new System.Random(seed);
+
 
 		for(int i = 0; i < 12; i++)
 		{
-			Planet planet = new Planet(PlanetBuilder.eDist(100000,1000000, Random.value), 
-				new UniPos(new Vector3(0,0,0), Random.Range(-30000, 30000), Random.Range(-20, 20), Random.Range(-30000, 30000)), 
-				Random.Range(int.MinValue, int.MaxValue));
+			Planet planet = new Planet(PlanetBuilder.eDist(100000,1000000, rand.NextDouble()), 
+				new UniPos(new Vector3(0,0,0), rand.Next(-30000, 30000), rand.Next(-20, 20), rand.Next(-30000, 30000)), 
+				rand.Next(int.MinValue, int.MaxValue));
 			bodies.Add(planet);
 		}
 
