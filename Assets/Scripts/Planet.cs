@@ -24,7 +24,7 @@ public class Planet : CelestialBody
 
 
 	//later will have many parameters
-	public Planet(float r, UniPos pos, int _seed):base(_seed, r, pos)//Vector3 sp, float r)
+	public Planet(float r, LongPos pos, int _seed):base(_seed, r, pos)//Vector3 sp, float r)
 	{
 		
 

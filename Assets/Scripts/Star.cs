@@ -4,7 +4,7 @@ using System.Collections;
 public class Star : CelestialBody
 {
 
-	public Star(int _seed, float r, UniPos pos):base(_seed, r, pos)
+	public Star(int _seed, float r, LongPos pos):base(_seed, r, pos)
 	{
 		
 		createRep();

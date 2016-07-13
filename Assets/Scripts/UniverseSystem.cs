@@ -49,7 +49,7 @@ public class UniverseSystem
 		//Planet planetnomy = new Planet(100000, new UniPos(new Vector3(0,0,0), 1000, 5000, 5000), 34532);
 		//planets.Add(planetnomy);
 */
-		System.Random rand = new System.Random(seed);
+		/*System.Random rand = new System.Random(seed);
 
 
 		for(int i = 0; i < 12; i++)
@@ -61,7 +61,7 @@ public class UniverseSystem
 		}
 
 		Star sun = new Star(3452, 23000000, new UniPos(new Vector3(0,0,0), 0, 0, 0));
-		bodies.Add(sun);
+		bodies.Add(sun);*/
 
 
 

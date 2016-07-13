@@ -13,8 +13,8 @@ public abstract class CelestialBody
 	public float scaledAtmosRadius;//atmosRadius in unispace
 	public float buildHeight;//the height the player must under for surface objects to be generated, and consequently, the build height (is actually radius+build height but whatever)
 
-	//the position of the planet in unispace (measured in 10000s or whatever the scale is)
-	public UniPos scaledPos;
+	//the position of the planet in stellar space
+	public LongPos scaledPos;
 
 	//the large scale representation of the planet in unispace
 	public GameObject scaledRep;
@@ -22,7 +22,7 @@ public abstract class CelestialBody
 	public float gravity;
 
 
-	public CelestialBody(int _seed, float r, UniPos pos)
+	public CelestialBody(int _seed, float r, LongPos pos)
 	{
 		radius = r;
 		scaledRadius = r/Unitracker.uniscale;
