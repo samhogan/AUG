@@ -12,9 +12,9 @@ public class Generator : MonoBehaviour {
 	// Use this for initialization
 	void Start () 
 	{
-		WorldPos curChunkPos = UnitConverter.getChunk( Unitracker.getRealPos(transform.position));
+		WorldPos curChunkPos = PositionController.getChunk();
 
-		if(Unitracker.onPlanet)
+		if(PositionController.curPlanet != null)
 			UniverseSystem.curPlanet.lod.updateAll(new WorldPos(curChunkPos.x/TerrainObject.chunkWidth, curChunkPos.y/TerrainObject.chunkWidth, curChunkPos.z/TerrainObject.chunkWidth));	
 
 	}
@@ -23,16 +23,16 @@ public class Generator : MonoBehaviour {
 	void Update() 
 	{
 		//calculate the player's real position from the floating position
-		Vector3 realPos = Unitracker.getRealPos(transform.position);
+		//Vector3 realPos = Unitracker.getRealPos(transform.position);
 
 		//only generate stuff for a planet if you are on a planet
-		if(Unitracker.onPlanet) 
+		if(PositionController.curPlanet != null)
 		{
 			//the current chunk the player is in
-			WorldPos curChunkPos = UnitConverter.getChunk(realPos);
-
+			WorldPos curChunkPos = PositionController.getChunk();
+			print(curChunkPos.toVector3().magnitude);
 			//only request chunk generation (of surface objects) if the chunk is within the build heigth
-			if(curChunkPos.toVector3().magnitude < UniverseSystem.curPlanet.buildHeight)
+			if(curChunkPos.toVector3().magnitude < PositionController.curPlanet.buildHeight)
 			{
 				findChunk(curChunkPos);
 

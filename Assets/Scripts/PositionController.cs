@@ -10,10 +10,10 @@ public class PositionController : MonoBehaviour
 
 	//the number of scaled units per unity unit
 	//keeps celestial objects at precise positions and within a managable unity space
-	const int SUperUU = 10000;
+	public const int SUperUU = 10000;
 
 	//the side length of a scaled unit in meters
-	const float planetarySU = 0.0001f;//100 micrometers, 1m per 1uu
+	public const float planetarySU = 0.0001f;//100 micrometers, 1m per 1uu
 	public const int stellarSU = 1;//1 meter, 10km per 1uu
 	const int galacticSU = 10000;//10km, 100,000km per 1uu
 	const int universalSU = 100000000;//100K km, 1B km per 1uu, might increase this later
@@ -29,7 +29,7 @@ public class PositionController : MonoBehaviour
 	const long floatThreshold = 1000L*SUperUU;
 	const long floatThresholddouble = 2*floatThreshold;//the full distance of the acceptable play area without shifting, what is rounded to to get the new floating origin
 
-	Planet curPlanet;
+	public static Planet curPlanet;
 	StarSystem curSystem;
 	//Galaxy curGalaxy;
 
@@ -44,6 +44,7 @@ public class PositionController : MonoBehaviour
 	{
 		StarSystem test = new StarSystem();
 		curPlanet = test.planets[Random.Range(0, test.planets.Count)];
+		UniverseSystem.curPlanet = curPlanet;
 		planetPos = new LongPos(0, (long)(curPlanet.noise.getAltitude(new Vector3(0,1,0))*SUperUU), 0);
 
 		//calculate the floating origin by rounding to the nearest threshold
@@ -100,6 +101,33 @@ public class PositionController : MonoBehaviour
 		return pos - (planetFloatOrigin.toVector3() / SUperUU);
 	}
 
+
+	public static Vector3 SUtoUU(LongPos pos)
+	{
+		return pos.toVector3()/SUperUU;
+	}
+
+	//get the real position of the player
+	public static Vector3 getPlayerPos()
+	{
+		return SUtoUU(planetPos);
+	}
+
+	/*public static Vector3 getRealPos(Vector3 floatPos)
+	{
+		return SUtoUU(planetPos);
+	}*/
+
+	//returns the chunk that the player is in for terrain generation
+	public static WorldPos getChunk()
+	{
+		Vector3 uSpace = getPlayerPos();
+		return new WorldPos(Mathf.FloorToInt(uSpace.x/Generator.chunkSize)*Generator.chunkSize,
+			Mathf.FloorToInt(uSpace.y/Generator.chunkSize)*Generator.chunkSize, 
+			Mathf.FloorToInt(uSpace.z/Generator.chunkSize)*Generator.chunkSize);
+	}
+
+
 	//calculates the floating origin of a space given the current position of the player/tracker in that space
 	//it just rounds to the nearest 1000/whatever threshold is
 	LongPos calcOrigin(LongPos pos)
@@ -137,3 +165,6 @@ public class PositionController : MonoBehaviour
 	
 	}
 }
+
+
+public enum spaces{Planetary = 9, Stellar = 10, Galactic=11, Universal = 12};

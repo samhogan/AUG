@@ -83,7 +83,7 @@ public class RequestSystem : MonoBehaviour
 	void Update() 
 	{
 		//calculate the player's real position from the floating position
-		Vector3 realPos = Unitracker.getRealPos(transform.position);
+	/*	Vector3 realPos = Unitracker.getRealPos(transform.position);
 
 		//only generate stuff for a planet if you are on a planet
 		if(Unitracker.onPlanet)
@@ -108,7 +108,7 @@ public class RequestSystem : MonoBehaviour
 				//Debug.Log("lod updated");
 				//UniverseSystem.curPlanet.lod.updateLOD(new WorldPos(curChunkPos.x/16, curChunkPos.y/16, curChunkPos.z/16));	
 			}
-			//Debug.Log("CMON!!!!!!!!!!!!");
+*/			//Debug.Log("CMON!!!!!!!!!!!!");
 			//if(upTimer == 100)
 			/*if(Time.time<7)
 			{
@@ -120,7 +120,7 @@ public class RequestSystem : MonoBehaviour
 			//Thread t = new Thread(() => UniverseSystem.curPlanet.lod.updateLOD(new WorldPos(curChunkPos.x/16, curChunkPos.y/16, curChunkPos.z/16)));
 			//t.Start();
 			//UniverseSystem.curPlanet.lod.updateLOD(new WorldPos(curChunkPos.x/16, curChunkPos.y/16, curChunkPos.z/16));	
-			UniverseSystem.curPlanet.lod.updateWorld(new WorldPos(curChunkPos.x/16, curChunkPos.y/16, curChunkPos.z/16));	
+			//UniverseSystem.curPlanet.lod.updateWorld(new WorldPos(curChunkPos.x/16, curChunkPos.y/16, curChunkPos.z/16));	
 			
 			//print("objects to render " + objectsToRender.Count);
 
@@ -157,7 +157,7 @@ public class RequestSystem : MonoBehaviour
 				//requestChunkDeletion(curChunkPos);
 				//requestTerrain(curChunkPos);
 			}*/
-		}
+	//	}
 		//testing
 
 		/*SurfacePos pos = UnitConverter.getSP(transform.position, 1024);

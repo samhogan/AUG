@@ -25,8 +25,8 @@ public class Star : CelestialBody
 		//TODO: move some of these things to a function in celestialbody
 		scaledRep.transform.position = PositionController.getStellarFloatingPos(scaledPos);
 
-		scaledRep.layer = 8;//add to Unispace layer
-		meshobj.layer = 8;
+		scaledRep.layer = (int)spaces.Stellar;//add to stellar space
+		meshobj.layer = (int)spaces.Stellar;
 
 		meshobj.GetComponent<MeshRenderer>().material = Resources.Load("Star") as Material;
 		meshobj.GetComponent<MeshRenderer>().shadowCastingMode = UnityEngine.Rendering.ShadowCastingMode.Off;

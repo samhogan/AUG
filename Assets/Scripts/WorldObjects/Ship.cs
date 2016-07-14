@@ -59,7 +59,7 @@ public class Ship : MobileObjects
 		{
 			if(!playerOn)
 				GameUI.ui.displayMessage("must be on ship to activate super-c drive");
-			else if(!isHyper && !Unitracker.onPlanet)
+			else if(!isHyper && PositionController.curPlanet==null)
 			{
 				isHyper = true;
 				GameUI.ui.displayMessage("super-c drive activated");
@@ -69,20 +69,20 @@ public class Ship : MobileObjects
 				isHyper = false;
 				GameUI.ui.displayMessage("super-c drive deactivated");
 			}
-			else if(Unitracker.onPlanet)
+			else if(PositionController.curPlanet!=null)
 				GameUI.ui.displayMessage("too close to planet to activate super-c drive");
 
 		}
 
 		//keep hyper speed off when on a planet 
-		if(Unitracker.onPlanet)
+		if(PositionController.curPlanet!=null)
 		{
 			if(isHyper)
 			{
 				isHyper = false;
 				GameUI.ui.displayMessage("super-c drive deactivated because hitting a planet at faster-than-light speed is not beneficial to one's health");
 			}
-			Vector3 realPos = Unitracker.getRealPos(transform.position);
+			Vector3 realPos = PositionController.getPlayerPos();//TODO: idk something
 			speed = Mathf.Abs(realPos.magnitude - UniverseSystem.curPlanet.noise.getAltitude(realPos)) * 9 + 3500;
 			//print(Mathf.Abs(Unitracker.getRealPos(transform.position).magnitude - UniverseSystem.curPlanet.radius));
 		}

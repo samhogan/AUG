@@ -74,7 +74,7 @@ public class PlayerMove1 : MonoBehaviour {
 
 			//planet.Attract(transform);
 
-			Vector3 realPos = Unitracker.getRealPos(rb.position);
+			Vector3 realPos = PositionController.getPlayerPos();
 			//points player away from planet
 			rb.rotation = Quaternion.FromToRotation(transform.up, realPos) * rb.rotation;
 			//print(Quaternion.FromToRotation (transform.up, transform.position) * transform.rotation);

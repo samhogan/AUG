@@ -13,9 +13,9 @@ public class HeyLightItsMePointHerePlsKThxBYE : MonoBehaviour {
 	
 	// Update is called once per frame
 	void Update () {
-		Vector3 pos = new Vector3(Unitracker.tRefX + tracker.transform.position.x, 
+		/*Vector3 pos = new Vector3(Unitracker.tRefX + tracker.transform.position.x, 
 			Unitracker.tRefY + tracker.transform.position.y,
 			Unitracker.tRefZ + tracker.transform.position.z);
-		transform.rotation = Quaternion.LookRotation(pos);
+		transform.rotation = Quaternion.LookRotation(pos);*/
 	}
 }

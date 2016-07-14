@@ -60,8 +60,8 @@ public class Planet : CelestialBody
 		GameObject.Destroy(meshobj.GetComponent<SphereCollider>());//remove this pesky component
 
 
-		scaledRep.layer = 8;//add to Unispace layer
-		meshobj.layer = 8;
+		scaledRep.layer = (int)spaces.Stellar;//add to Unispace layer
+		meshobj.layer = (int)spaces.Stellar;
 
 		//arbitrary unipos for testing
 		scaledRep.transform.position = PositionController.getStellarFloatingPos(scaledPos);

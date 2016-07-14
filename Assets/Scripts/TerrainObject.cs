@@ -70,11 +70,11 @@ public class TerrainObject : WorldObject
 
 			//add it to unispace and make its parent proud
 			transform.SetParent(planet.scaledRep.transform);
-			gameObject.layer = 8;//add to Unispace layer
+			gameObject.layer = (int)spaces.Stellar;//add to Unispace layer
 		
 
-			//finds the adjusted scale of this terrain obj when in unispace
-			float absScale = ((float)scale)/Unitracker.uniscale;
+			//finds the adjusted scale of this terrain obj when in stellar space
+			float absScale = ((float)scale)/10000;
 			gameObject.transform.localScale = new Vector3(absScale, absScale, absScale)*TerrainObject.wsRatio;
 
 			//the adjusted position of this terrain obj whin in unispace
@@ -84,10 +84,10 @@ public class TerrainObject : WorldObject
 		}
 		else//it is in normal space
 		{
-			gameObject.layer = 0;
+			gameObject.layer = 0;//TODO:?
 			//gameObject.transform.parent = null;
 			gameObject.transform.localScale = new Vector3(scale, scale, scale)*TerrainObject.wsRatio;
-			gameObject.transform.localPosition = Unitracker.getFloatingPos(pos.toVector3()*scale*TerrainObject.chunkWidth);
+			gameObject.transform.localPosition = PositionController.getPlanetFloatingPos(pos.toVector3()*scale*TerrainObject.chunkWidth);
 
 		}
 
