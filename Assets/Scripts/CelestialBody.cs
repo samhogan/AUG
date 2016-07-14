@@ -25,12 +25,12 @@ public abstract class CelestialBody
 	public CelestialBody(int _seed, float r, LongPos pos)
 	{
 		radius = r;
-		scaledRadius = r/Unitracker.uniscale;
+//		scaledRadius = r/PositionController.;
 		seed = _seed;
 		scaledPos = pos;
 
 		atmosRadius = r+200000;//atmosphere is 200 km above surface
-		scaledAtmosRadius = atmosRadius/Unitracker.uniscale;
+		//scaledAtmosRadius = atmosRadius/Unitracker.uniscale;
 
 		buildHeight = r+10000;//build height is 10 km above surface
 

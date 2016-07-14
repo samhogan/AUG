@@ -7,7 +7,7 @@ using System.Collections.Generic;
 public class Unitracker : MonoBehaviour
 {
 	//reference to the player (or whatever is being tracked)
-	public GameObject player;
+/*	public GameObject player;
 	public GameObject ship;//temporary
 
 	//is the player on a planet?(or asteroid or whatever gosh..)
@@ -253,14 +253,14 @@ public class Unitracker : MonoBehaviour
 			pRefZ += tRefZ;
 		}
 
-
+*/
 
 		//calculate new position of the player
 		//takes the fraction part of the tracker position and multiplies it by the uniscale
 	/*	player.transform.position = new Vector3((transform.localPosition.x-pRefX)*uniscale,
 		                                        (transform.localPosition.y-pRefY)*uniscale,
 		                                        (transform.localPosition.z-pRefZ)*uniscale);*/
-		Vector3 newPos = new Vector3((transform.localPosition.x-Mathf.Round(transform.localPosition.x))*uniscale,
+/*		Vector3 newPos = new Vector3((transform.localPosition.x-Mathf.Round(transform.localPosition.x))*uniscale,
 												(transform.localPosition.y-Mathf.Round(transform.localPosition.y))*uniscale,
 												(transform.localPosition.z-Mathf.Round(transform.localPosition.z))*uniscale);
 
@@ -388,12 +388,12 @@ public class Unitracker : MonoBehaviour
 	//recalculates all planet scaledRep positions 
 	void reposPlanets()
 	{
-		//print("planets were repositioned");
+*/		//print("planets were repositioned");
 		/*foreach(Planet plan in UniverseSystem.planets)
 		{
 			plan.scaledRep.transform.position = UniToAbs(plan.scaledPos);
 		}*/
-		foreach(CelestialBody plan in UniverseSystem.bodies)
+/*		foreach(CelestialBody plan in UniverseSystem.bodies)
 		{
 			plan.scaledRep.transform.position = UniToAbs(plan.scaledPos);
 		}
@@ -480,5 +480,5 @@ public class Unitracker : MonoBehaviour
 		if(!Ship.playerOn)
 			player.transform.position+=shift;
 	}
-
+*/
 }

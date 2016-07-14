@@ -23,7 +23,7 @@ public class Star : CelestialBody
 		meshobj.transform.localScale = new Vector3(scaledRadius*2, scaledRadius*2, scaledRadius*2);
 
 		//TODO: move some of these things to a function in celestialbody
-		scaledRep.transform.position = Unitracker.UniToAbs(scaledPos);
+		scaledRep.transform.position = PositionController.getStellarFloatingPos(scaledPos);
 
 		scaledRep.layer = 8;//add to Unispace layer
 		meshobj.layer = 8;

@@ -64,7 +64,7 @@ public class Planet : CelestialBody
 		meshobj.layer = 8;
 
 		//arbitrary unipos for testing
-		scaledRep.transform.position = Unitracker.UniToAbs(scaledPos);
+		scaledRep.transform.position = PositionController.getStellarFloatingPos(scaledPos);
 		//scaledRep.transform.rotation = Quaternion.Euler(0,45,0);
 		scaledRep.transform.rotation = Quaternion.Euler(0,0,0);
 
