@@ -13,9 +13,12 @@ public class Generator : MonoBehaviour {
 	void Start () 
 	{
 		WorldPos curChunkPos = PositionController.getChunk();
-
+		print("initial" + curChunkPos);
 		if(PositionController.curPlanet != null)
+		{
+			//print("aksdfaaasdfasdfasfasfasdhasdhsdxfasdfgusadhjasdujkashu");
 			UniverseSystem.curPlanet.lod.updateAll(new WorldPos(curChunkPos.x/TerrainObject.chunkWidth, curChunkPos.y/TerrainObject.chunkWidth, curChunkPos.z/TerrainObject.chunkWidth));	
+		}
 
 	}
 	
@@ -30,7 +33,8 @@ public class Generator : MonoBehaviour {
 		{
 			//the current chunk the player is in
 			WorldPos curChunkPos = PositionController.getChunk();
-			print(curChunkPos.toVector3().magnitude);
+
+			//print(curChunkPos.toVector3().magnitude);
 			//only request chunk generation (of surface objects) if the chunk is within the build heigth
 			if(curChunkPos.toVector3().magnitude < PositionController.curPlanet.buildHeight)
 			{

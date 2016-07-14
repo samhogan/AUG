@@ -141,6 +141,7 @@ public class LODSystem
 
 		}
 
+		Debug.Log("terrain chunks " + chunksToSplit.Count);
 		if(chunksToSplit.Count == 0)
 			return;
 

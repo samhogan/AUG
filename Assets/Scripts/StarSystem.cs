@@ -27,6 +27,6 @@ public class StarSystem
 			planets.Add(planet);
 		}
 
-		Star sun = new Star(3452, 23000000, new LongPos(0,0,0));
+		star = new Star(3452, 23000000, new LongPos(0,0,0));
 	}
 }
