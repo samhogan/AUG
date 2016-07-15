@@ -8,6 +8,7 @@ public class PositionController : MonoBehaviour
 	//the physical trackers in unity space that contain cameras for redering the different spaces
 	public GameObject player, stellarTracker, galacticTracker, universalTracker;
 	public GameObject playerCam, stellarCam, galacticCam, universalCam;
+    public GameObject ship;
 
 	//the number of scaled units per unity unit
 	//keeps celestial objects at precise positions and within a managable unity space
@@ -67,7 +68,16 @@ public class PositionController : MonoBehaviour
 		player.GetComponent<GravityController>().gravity = curPlanet.gravity;
 
 
-	}
+        Vector3 shipStart = startPoint + new Vector3(1, 1, 1) * 20;
+        shipStart = shipStart.normalized * (curPlanet.noise.getAltitude(shipStart) + 1);
+
+        ship.transform.position = getPlanetFloatingPos(shipStart);
+
+        ship.transform.rotation = Quaternion.LookRotation(shipStart);
+        ship.transform.rotation *= Quaternion.Euler(90, 0, 0);
+
+
+    }
 
 
 	// Update is called once per frame
