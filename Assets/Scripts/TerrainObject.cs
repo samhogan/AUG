@@ -87,7 +87,7 @@ public class TerrainObject : WorldObject
 			gameObject.layer = 0;//TODO:?
 			//gameObject.transform.parent = null;
 			gameObject.transform.localScale = new Vector3(scale, scale, scale)*TerrainObject.wsRatio;
-			gameObject.transform.localPosition = PositionController.getPlanetFloatingPos(pos.toVector3()*scale*TerrainObject.chunkWidth);
+			gameObject.transform.localPosition = CoordinateHandler.planetSpace.getFloatingPos(pos.toVector3()*scale*TerrainObject.chunkWidth);
 
 		}
 

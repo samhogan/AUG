@@ -33,8 +33,10 @@ public class PositionController : MonoBehaviour
 
 	public static Planet curPlanet;
 	StarSystem curSystem;
-	//Galaxy curGalaxy;
+    //Galaxy curGalaxy;
 
+    
+    public static bool onPlanet, inSystem, inGalaxy;
 
 	// Use this for initialization
 	void Awake() 
@@ -49,6 +51,7 @@ public class PositionController : MonoBehaviour
 		curPlanet = test.planets[Random.Range(0, test.planets.Count)];
 		UniverseSystem.curPlanet = curPlanet;
 
+        onPlanet = inSystem = inGalaxy = true;
 
 		Vector3 startPoint = Random.onUnitSphere;
 		//startPoint = new Vector3(0, UniverseSystem.curPlanet.noise.getAltitude(startPoint)+20,0);
@@ -90,6 +93,35 @@ public class PositionController : MonoBehaviour
 	}
 
 
+    void checkPlanet()
+    {
+        //if on a planet, check to see if you are far enough to leave it
+        if(onPlanet)
+        {
+            //if the distance from the planet is greater than it's enter radius, remove
+            if(curPlanet.atmosRadius < LongPos.Distance(curPlanet.scaledPos, stellarPos))
+            {
+                exitPlanet();
+            }
+        }
+        else//check all planets to see if you are close enough to one to enter it
+        {
+        }
+
+
+    }
+
+    //
+    void exitPlanet()
+    {
+        onPlanet = false;
+        curPlanet = null;
+
+
+
+    }
+
+
 	void updatePlanetTracker()
 	{
 		//set planetPos based on the player position
@@ -97,7 +129,7 @@ public class PositionController : MonoBehaviour
 		planetPos.y = (long)(player.transform.position.y*SUperUU)+planetFloatOrigin.y;
 		planetPos.z = (long)(player.transform.position.z*SUperUU)+planetFloatOrigin.z;
 
-		print(player.transform.position.y+" "+player.transform.position.y*SUperUU+" "+planetPos.y+" "+planetFloatOrigin.y);
+		//print(player.transform.position.y+" "+player.transform.position.y*SUperUU+" "+planetPos.y+" "+planetFloatOrigin.y);
 		//Debug.Log("{0} {1}", 
 		if(originNeedsUpdate(planetPos, planetFloatOrigin))
 		{
@@ -161,7 +193,7 @@ public class PositionController : MonoBehaviour
 
 	bool originNeedsUpdate(LongPos pos, LongPos origin)
 	{
-		print(System.Math.Abs(pos.y-origin.y) + " " + floatThreshold);
+		//print(System.Math.Abs(pos.y-origin.y) + " " + floatThreshold);
 		return System.Math.Abs(pos.x-origin.x) > floatThreshold || System.Math.Abs(pos.y-origin.y) > floatThreshold || System.Math.Abs(pos.z-origin.z) > floatThreshold;
 	}
 
@@ -219,9 +251,9 @@ public class PositionController : MonoBehaviour
 	LongPos calcOrigin(LongPos pos)
 	{
 		
-		return new LongPos(roundToNearest(pos.x, floatThreshold),
-			roundToNearest(pos.y, floatThreshold),
-			roundToNearest(pos.z, floatThreshold));
+		return new LongPos(roundToNearest(pos.x, floatThresholddouble),
+			roundToNearest(pos.y, floatThresholddouble),
+			roundToNearest(pos.z, floatThresholddouble));
 		
 	}
 

@@ -32,5 +32,11 @@ public struct LongPos
 		return new LongPos(p1.x/num, p1.y/num, p1.z/num);
 	}
 
+    //distance between two longpos using distance formula
+    public static double Distance(LongPos p1, LongPos p2)
+    {
+        return System.Math.Sqrt(System.Math.Pow(p1.x - p2.x, 2) + System.Math.Pow(p1.y - p2.y, 2) + System.Math.Pow(p1.y - p2.y, 2));       
+    }
+
 
 }

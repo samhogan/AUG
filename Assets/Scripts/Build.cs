@@ -20,7 +20,7 @@ public class Build
 		go.name = typeof(T).ToString();
 
 		//calculate the floating position(around the world origin)
-		Vector3 floatPos = PositionController.getPlanetFloatingPos(pos);
+		Vector3 floatPos = CoordinateHandler.planetSpace.getFloatingPos(pos);
 
 		//set the objects position
 		go.transform.position = floatPos;
