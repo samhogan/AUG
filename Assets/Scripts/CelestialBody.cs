@@ -8,7 +8,7 @@ public abstract class CelestialBody : AstroObject
 
 
 	public float radius;//radius of the planet in m or stellar su
-	public long radiusSU;//radius in scaled units(100micrometers)
+	//public long radiusSU;//radius in scaled units(100micrometers)
 	protected float scaledRadius;//the radius of the scaledRep in unispace
 	public float atmosRadius;//the radius of the atmosphere/direct gravitational influence/distance terrain is split from(distance from planet to make it curplanet)
 	public float scaledAtmosRadius;//atmosRadius in unispace
@@ -25,8 +25,8 @@ public abstract class CelestialBody : AstroObject
 	{
 		radius = r;
 		//this is only an approximation, which is suitable
-		radiusSU = (long)(r/PositionController.planetarySU);
-		scaledRadius = r/PositionController.SUperUU;
+		//radiusSU = (long)(r/PositionController.planetarySU);
+		scaledRadius = r/CoordinateSystem.SUperUU;
 
 		seed = _seed;
 		scaledPos = pos;

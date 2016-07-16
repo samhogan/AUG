@@ -20,7 +20,7 @@ public class PlanetaryCoordinates : CoordinateSystem
         pos.y = floatingOrigin.y + (long)(tracker.transform.position.y * SUperUU);
         pos.z = floatingOrigin.z + (long)(tracker.transform.position.z * SUperUU);
 
-        Debug.Log(pos + " " + floatingOrigin);
+        //Debug.Log(pos + " " + floatingOrigin);
 
         //if the origin needs updating, update it and shift everything
         if(originNeedsUpdate(pos, floatingOrigin))
@@ -69,7 +69,7 @@ public class PlanetaryCoordinates : CoordinateSystem
 
 
 
-        Debug.Log(getFloatingPos(pos) + " " + (tracker.transform.position + shift));
+        //Debug.Log(getFloatingPos(pos) + " " + (tracker.transform.position + shift));
 
         if(!Ship.playerOn)
             ship.transform.position += shift;

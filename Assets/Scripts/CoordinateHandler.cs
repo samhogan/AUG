@@ -26,7 +26,12 @@ public class CoordinateHandler : MonoBehaviour
     void initialPositioning()
     {
 
-        CoordinateSystem.curPlanet = new Planet(300000, new LongPos(0,0,0), 3241);
+        //later move these to worldhandler/universehandler or something
+        StarSystem test = new StarSystem();
+        CoordinateSystem.curSystem = test;
+
+        CoordinateSystem.curPlanet = test.planets[0];
+        Debug.Log((test.planets[1] == null) + " " + (test.planets[0] == null));
         UniverseSystem.curPlanet = CoordinateSystem.curPlanet;
 
         Vector3 startPoint = Random.onUnitSphere;
@@ -36,9 +41,9 @@ public class CoordinateHandler : MonoBehaviour
         //calculate the player floating position 
         player.transform.position = planetSpace.getFloatingPos(startPoint);
 
-        planetSpace.update();
-        stellarSpace.update();
+       
 
+        Debug.Log(CoordinateSystem.curPlanet == null);
         player.GetComponent<GravityController>().gravity = CoordinateSystem.curPlanet.gravity;
 
         //position the ship
@@ -50,7 +55,8 @@ public class CoordinateHandler : MonoBehaviour
         ship.transform.rotation = Quaternion.LookRotation(shipStart);
         ship.transform.rotation *= Quaternion.Euler(90, 0, 0);
 
-
+        planetSpace.update();
+        stellarSpace.update();
     }
 	
 	// Update is called once per frame

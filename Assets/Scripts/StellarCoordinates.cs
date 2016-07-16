@@ -26,7 +26,20 @@ public class StellarCoordinates : CoordinateSystem {
     {
         if(LongPos.Distance(pos, curPlanet.scaledPos) > curPlanet.atmosRadius)
         {
-            leaveBody();
+            curPlanet = null;
+            updateChildRef();
+        }
+    }
+
+    protected override void checkBodies()
+    {
+        foreach(Planet plan in curSystem.planets)
+        {
+            if(LongPos.Distance(pos, plan.scaledPos) < plan.atmosRadius)
+            {
+                curPlanet = plan;
+                updateChildRef();
+            }
         }
     }
 }

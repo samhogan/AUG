@@ -22,7 +22,7 @@ public class CoordinateSystem
     protected const int SUThreshold = UUThreshold * SUperUU;
 
     //the number of scaled units that must be exceeded for the entire coordinate system to shifted in its parent coordinate system
-    protected readonly long referenceThreshold = 100000000;
+    protected readonly long referenceThreshold = 1000000000000;
 
     //a referece to the player/tracker and its camera for the base planetary system
     protected GameObject tracker, camera;
@@ -71,8 +71,9 @@ public class CoordinateSystem
         {
             pos = childRef + child.pos / SUtoChildSU;
       
-           /* if(childOriginNeedsUpdate())
-                updateChildRef();*/
+            if(childOriginNeedsUpdate())
+                updateChildRef();
+            Debug.Log(childRef);
             //Debug.Log(child.pos.x + " " + child.pos.y + " " + child.pos.z);
         }
         else//we are on a planet
@@ -94,17 +95,27 @@ public class CoordinateSystem
 
 
     //checks if the child tracker is far enough away from the body it is attached to to be freed
+    //if it is far enough away, separate it from the body
+    //in case you are curious, "Void" just means absence of matter in this context
     protected virtual void checkVoid()
     {
 
     }
 
-    //disconnect from the current body
-    protected void leaveBody()
+  
+    //checks the surrounding bodies to see if the tracker is close enough to be attached to one
+    protected virtual void checkBodies()
+    { }
+
+    //called when a new body is set
+    protected void enterBody()
     {
-        curPlanet = null;
-        updateChildRef();
+        //convert this coordinate to a child coordinate
+        child.pos = (pos - getBodyReference().scaledPos) * SUtoChildSU;
+        child.updateTracker();
     }
+
+  
 
     //rotates the tracker camera based on the child camera
     void updateTrackerRotation()
@@ -121,7 +132,7 @@ public class CoordinateSystem
             floatingOrigin = calcOrigin(pos);
 
             //shift all gameobjects
-            //if(getBodyReference()!=null)
+            if(getBodyReference()!=null)
                 shiftItems();
         }
         //move the stellar tracker to its appropriate position
@@ -129,7 +140,7 @@ public class CoordinateSystem
     }
 
     //shifts the child coordinate system
-    void updateChildRef()
+    protected void updateChildRef()
     {
         childRef = calcReferenceOrigin();
         child.pos = (pos - childRef) * SUtoChildSU;
