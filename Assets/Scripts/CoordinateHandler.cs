@@ -3,18 +3,20 @@ using System.Collections;
 
 public class CoordinateHandler : MonoBehaviour
 {
-    public GameObject player;
+    public GameObject player, stellarTracker;
+    public GameObject playerCam, stellarCam;
+    public GameObject ship;
 
 
-    public static CoordinateSystem planetSpace;
+    public static PlanetaryCoordinates planetSpace;
+    public static StellarCoordinates stellarSpace;
 
-
-    public static Planet curPlanet;
+    
 
 	void Start ()
     {
-        planetSpace = new CoordinateSystem(0.0001, player, spaces.Planetary);
-
+        planetSpace = new PlanetaryCoordinates(player, playerCam, ship);
+        stellarSpace = new StellarCoordinates(stellarTracker, stellarCam, planetSpace);
 
         initialPositioning();
 
@@ -24,25 +26,37 @@ public class CoordinateHandler : MonoBehaviour
     void initialPositioning()
     {
 
-        curPlanet = new Planet(300000, new LongPos(0,0,0), 3241);
-        UniverseSystem.curPlanet = curPlanet;
+        CoordinateSystem.curPlanet = new Planet(300000, new LongPos(0,0,0), 3241);
+        UniverseSystem.curPlanet = CoordinateSystem.curPlanet;
 
         Vector3 startPoint = Random.onUnitSphere;
-        startPoint *= curPlanet.noise.getAltitude(startPoint) + 3;
+        startPoint *= CoordinateSystem.curPlanet.noise.getAltitude(startPoint) + 3;
 
 
         //calculate the player floating position 
         player.transform.position = planetSpace.getFloatingPos(startPoint);
 
         planetSpace.update();
+        stellarSpace.update();
 
-        player.GetComponent<GravityController>().gravity = curPlanet.gravity;
+        player.GetComponent<GravityController>().gravity = CoordinateSystem.curPlanet.gravity;
+
+        //position the ship
+        Vector3 shipStart = startPoint + new Vector3(1, 1, 1) * 20;
+        shipStart = shipStart.normalized * (CoordinateSystem.curPlanet.noise.getAltitude(shipStart) + 1);
+
+        ship.transform.position = planetSpace.getFloatingPos(shipStart);
+
+        ship.transform.rotation = Quaternion.LookRotation(shipStart);
+        ship.transform.rotation *= Quaternion.Euler(90, 0, 0);
+
 
     }
 	
 	// Update is called once per frame
 	void Update() {
         planetSpace.update();
+        stellarSpace.update();
 	}
 
 

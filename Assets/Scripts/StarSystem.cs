@@ -2,7 +2,7 @@
 using System.Collections;
 using System.Collections.Generic;
 
-public class StarSystem 
+public class StarSystem : AstroObject
 {
 	//a reference to the star and planets in this solar system
 	//TODO: multiple stars, did you know that 1/3 to 1/2 of all star systems are binary/more than 1 stars?

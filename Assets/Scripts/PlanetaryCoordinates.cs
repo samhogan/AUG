@@ -1,13 +1,16 @@
 ﻿using UnityEngine;
 using System.Collections;
+using System.Collections.Generic;
 
 public class PlanetaryCoordinates : CoordinateSystem
 {
 
-    public CoordinateSystem(double su, GameObject track):base(su, track)
+    //temporary
+    GameObject ship;
+
+    public PlanetaryCoordinates(GameObject player, GameObject cam, GameObject sh):base(0.0001, player, cam)
     {
-        SU = su;
-        tracker = track;
+        ship = sh;
     }
 
     public override void update()
@@ -23,32 +26,65 @@ public class PlanetaryCoordinates : CoordinateSystem
             //calculate where the origin should now be
             LongPos newOrigin = calcOrigin(pos);
 
-            //calcualte how much to shift the worldobjects
-            Vector3 shift = ((floatingOrigin - newOrigin) / SUperUU).toVector3();
-            foreach(KeyValuePair<WorldPos, List<WorldObject>> objectList in RequestSystem.builtObjects)
-            {
-                foreach(WorldObject wo in objectList.Value)
-                {
-                    wo.transform.position += shift;
-                }
-            }
-
-            //move all terrain objects that are in planetary space (if the player is on a planet
-            // if(curPlanet != null)
-            foreach(KeyValuePair<LODPos, TerrainObject> chunk in UniverseSystem.curPlanet.lod.chunks)
-                if(chunk.Key.level <= LODSystem.uniCutoff)
-                    chunk.Value.gameObject.transform.position += shift;
+            //shift all items if on a planet
+            if(curPlanet != null)
+                shiftItems(newOrigin);
 
 
             //ship.transform.position += shift;
             //also shift the player(should eventually not have to do this)
             //if(!Ship.playerOn)
-            tracker.transform.position += shift;
+            //tracker.transform.position = getFloatingPos(pos);
 
             //now update the origin
             floatingOrigin = newOrigin;
         }
 
+    }
+
+    void shiftItems(LongPos newOrigin)
+    {
+        //calcualte how much to shift the worldobjects
+        Vector3 shift = ((floatingOrigin - newOrigin) / SUperUU).toVector3();
+        foreach(KeyValuePair<WorldPos, List<WorldObject>> objectList in RequestSystem.builtObjects)
+        {
+            foreach(WorldObject wo in objectList.Value)
+            {
+                wo.transform.position += shift;
+            }
+        }
+
+        //move all terrain objects that are in planetary space (if the player is on a planet
+        foreach(KeyValuePair<LODPos, TerrainObject> chunk in UniverseSystem.curPlanet.lod.chunks)
+            if(chunk.Key.level <= LODSystem.uniCutoff)
+                chunk.Value.gameObject.transform.position += shift;
+
+
+        ship.transform.position += shift;
+
+        if(!Ship.playerOn)
+            tracker.transform.position += shift;// getFloatingPos(pos);
+
+    }
+
+
+    //updates the poition of player
+    //only called when exit/leaving planet and shifting the full coordinate system
+    protected override void updateTracker()
+    {
+        //if the pos is outside the threshold of the origin, recalculate the origin and shift everything back
+        if(originNeedsUpdate(pos, floatingOrigin))
+            floatingOrigin = calcOrigin(pos);
+
+        //move the player tracker to its appropriate position
+        //tracker.transform.position = getFloatingPos(pos);
+        ship.transform.position = getFloatingPos(pos);
+    }
+
+
+    protected override Planet getBodyReference()
+    {
+        return curPlanet;
     }
 
 }
