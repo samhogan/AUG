@@ -45,5 +45,10 @@ public struct LongPos
         return System.Math.Sqrt(System.Math.Pow(p1.x - p2.x, 2) + System.Math.Pow(p1.y - p2.y, 2) + System.Math.Pow(p1.y - p2.y, 2));       
     }
 
+    public override string ToString()
+    {
+        return x + ", " + y + ", " + z; 
+    }
+
 
 }

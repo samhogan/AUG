@@ -61,26 +61,49 @@ public class CoordinateSystem
     //updates the pos, floating origin, child system shift
     public virtual void update()
     {
+
+        if(childBodyDependent())
+            checkVoid();
+
        // Debug.Log("sup");
         //first calculate the new position and update the child system if needed
         if(!childBodyDependent())
         {
             pos = childRef + child.pos / SUtoChildSU;
       
-            if(childOriginNeedsUpdate())
-                updateChildRef();
-            Debug.Log("idk");
+           /* if(childOriginNeedsUpdate())
+                updateChildRef();*/
+            //Debug.Log(child.pos.x + " " + child.pos.y + " " + child.pos.z);
         }
         else//we are on a planet
         {
             //the planet origin is the origin
             pos = child.getBodyReference().scaledPos + child.pos / SUtoChildSU;
-            
+            checkVoid();
         }
 
         //now update the tracker and floating origin
         updateTracker();
-        updateTrackerRotation();    
+        updateTrackerRotation();
+
+
+        
+
+    }
+
+
+
+    //checks if the child tracker is far enough away from the body it is attached to to be freed
+    protected virtual void checkVoid()
+    {
+
+    }
+
+    //disconnect from the current body
+    protected void leaveBody()
+    {
+        curPlanet = null;
+        updateChildRef();
     }
 
     //rotates the tracker camera based on the child camera
@@ -110,7 +133,8 @@ public class CoordinateSystem
     {
         childRef = calcReferenceOrigin();
         child.pos = (pos - childRef) * SUtoChildSU;
-        updateTracker();
+        child.updateTracker();
+      
     }
 
     //shifts all the gameObjects in this system when the floating origin changes
@@ -125,7 +149,7 @@ public class CoordinateSystem
         return child.getBodyReference()!=null;
     }
 
-    protected virtual Planet getBodyReference()
+    protected virtual AstroObject getBodyReference()
     {
         return null;
     }

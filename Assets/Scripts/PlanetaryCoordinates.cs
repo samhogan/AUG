@@ -20,9 +20,12 @@ public class PlanetaryCoordinates : CoordinateSystem
         pos.y = floatingOrigin.y + (long)(tracker.transform.position.y * SUperUU);
         pos.z = floatingOrigin.z + (long)(tracker.transform.position.z * SUperUU);
 
+        Debug.Log(pos + " " + floatingOrigin);
+
         //if the origin needs updating, update it and shift everything
         if(originNeedsUpdate(pos, floatingOrigin))
         {
+            Debug.Log("origin updating.");
             //calculate where the origin should now be
             LongPos newOrigin = calcOrigin(pos);
 
@@ -34,10 +37,15 @@ public class PlanetaryCoordinates : CoordinateSystem
             //ship.transform.position += shift;
             //also shift the player(should eventually not have to do this)
             //if(!Ship.playerOn)
-            //tracker.transform.position = getFloatingPos(pos);
+           // tracker.transform.position = getFloatingPos(pos);
 
             //now update the origin
             floatingOrigin = newOrigin;
+
+            if(!Ship.playerOn)
+                tracker.transform.position = getFloatingPos(pos);
+            else
+                ship.transform.position = getFloatingPos(pos);
         }
 
     }
@@ -60,10 +68,16 @@ public class PlanetaryCoordinates : CoordinateSystem
                 chunk.Value.gameObject.transform.position += shift;
 
 
-        ship.transform.position += shift;
+
+        Debug.Log(getFloatingPos(pos) + " " + (tracker.transform.position + shift));
 
         if(!Ship.playerOn)
-            tracker.transform.position += shift;// getFloatingPos(pos);
+            ship.transform.position += shift;
+
+       
+
+       // if(!Ship.playerOn)
+         //   tracker.transform.position = getFloatingPos(pos);*/
 
     }
 
@@ -74,7 +88,7 @@ public class PlanetaryCoordinates : CoordinateSystem
     {
         //if the pos is outside the threshold of the origin, recalculate the origin and shift everything back
         if(originNeedsUpdate(pos, floatingOrigin))
-            floatingOrigin = calcOrigin(pos);
+             floatingOrigin = calcOrigin(pos);
 
         //move the player tracker to its appropriate position
         //tracker.transform.position = getFloatingPos(pos);
@@ -82,7 +96,7 @@ public class PlanetaryCoordinates : CoordinateSystem
     }
 
 
-    protected override Planet getBodyReference()
+    protected override AstroObject getBodyReference()
     {
         return curPlanet;
     }

@@ -17,8 +17,16 @@ public class StellarCoordinates : CoordinateSystem {
     }
 
     //returns the current star system if it exists
-    protected override Planet getBodyReference()
+    protected override AstroObject getBodyReference()
     {
-        return null;// curSystem;
+        return curSystem;// curSystem;
+    }
+
+    protected override void checkVoid()
+    {
+        if(LongPos.Distance(pos, curPlanet.scaledPos) > curPlanet.atmosRadius)
+        {
+            leaveBody();
+        }
     }
 }
