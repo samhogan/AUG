@@ -13,7 +13,8 @@ public class CoordinateHandler : MonoBehaviour
 
 	void Start ()
     {
-        planetSpace = new CoordinateSystem(0.0001, player);
+        planetSpace = new CoordinateSystem(0.0001, player, spaces.Planetary);
+
 
         initialPositioning();
 

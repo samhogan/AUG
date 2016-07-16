@@ -292,4 +292,4 @@ public class PositionController : MonoBehaviour
 }
 
 
-public enum spaces{Planetary = 9, Stellar = 10, Galactic=11, Universal = 12};
+

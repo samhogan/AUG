@@ -5,78 +5,44 @@ using System.Collections.Generic;
 public class CoordinateSystem
 {
     //the number of scaled units per unity unit in every coordinate system
-    const int SUperUU = 10000;
+    public const int SUperUU = 10000;
 
     //the length of a single scaled unit in meters
-    private readonly double SU;
+    protected readonly double SU;
 
     //the current position of the camera/player in this coordinate system
-    LongPos pos;
+    protected LongPos pos;
     //the point in this coordinate system that marks the origin of the unity space, moves when the player is out of range
-    LongPos floatingOrigin;
+    protected LongPos floatingOrigin;
 
     //the number of unity units that must be exceeded in unity space for the objects to be shifted back
-    const int UUThreshold = 10000;
+    protected const int UUThreshold = 10000;
 
     //the number of scaled units that must be exceeded in this coordinate system for the objects to be shifted back
-    const int SUThreshold = UUThreshold * SUperUU;
+    protected const int SUThreshold = UUThreshold * SUperUU;
 
     //the number of scaled units that must be exceeded for the entire coordinate system to shifted in its parent coordinate system
-    readonly long referenceThreshold;
+    protected readonly long referenceThreshold = 100000000;
 
     //a referece to the player for the base planetary system
-    GameObject player;
+    GameObject tracker, camera;
 
-    public CoordinateSystem(double su, GameObject pl)
+
+    public CoordinateSystem(double su, GameObject track)
     {
         SU = su;
-        player = pl;
+        tracker = track;
     }
 
 
     //updates the pos, floating origin, child system shift
-    public void update()
+    public virtual void update()
     {
-        //calculate the pos based on the player's position in unityspace
-        pos.x = floatingOrigin.x + (long)(player.transform.position.x * SUperUU);
-        pos.y = floatingOrigin.y + (long)(player.transform.position.y * SUperUU);
-        pos.z = floatingOrigin.z + (long)(player.transform.position.z * SUperUU);
-
-        //if the origin needs updating, update it and shift everything
-        if(originNeedsUpdate(pos, floatingOrigin))
-        {
-            //calculate where the origin should now be
-            LongPos newOrigin = calcOrigin(pos);
-
-            //calcualte how much to shift the worldobjects
-            Vector3 shift = ((floatingOrigin - newOrigin) / SUperUU).toVector3();
-            foreach(KeyValuePair<WorldPos, List<WorldObject>> objectList in RequestSystem.builtObjects)
-            {
-                foreach(WorldObject wo in objectList.Value)
-                {
-                    wo.transform.position += shift;
-                }
-            }
-
-            //move all terrain objects that are in planetary space (if the player is on a planet
-            // if(curPlanet != null)
-            foreach(KeyValuePair<LODPos, TerrainObject> chunk in UniverseSystem.curPlanet.lod.chunks)
-                if(chunk.Key.level <= LODSystem.uniCutoff)
-                    chunk.Value.gameObject.transform.position += shift;
-
-
-            //ship.transform.position += shift;
-            //also shift the player(should eventually not have to do this)
-            //if(!Ship.playerOn)
-            player.transform.position += shift;
-
-            //now update the origin
-            floatingOrigin = newOrigin;
-        }
-
+      
 
     }
 
+   
 
     //checks if the current pos is far away enough from the floating origin that it needs shifting/updating
     static bool originNeedsUpdate(LongPos pos, LongPos origin)
@@ -86,7 +52,7 @@ public class CoordinateSystem
 
     //calculates the floating origin of a space given the current position of the player/tracker in that space
     //it just rounds to the nearest 1000/whatever threshold is
-    LongPos calcOrigin(LongPos pos)
+    public LongPos calcOrigin(LongPos pos)
     {
 
         return new LongPos(roundToNearest(pos.x, SUThreshold * 2),
@@ -149,3 +115,5 @@ public class CoordinateSystem
         return SUtoUU(pos);
     }
 }
+
+public enum spaces { Planetary = 9, Stellar = 10, Galactic = 11, Universal = 12 };
