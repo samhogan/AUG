@@ -25,7 +25,7 @@ public class PlanetaryCoordinates : CoordinateSystem
         //if the origin needs updating, update it and shift everything
         if(originNeedsUpdate(pos, floatingOrigin))
         {
-            Debug.Log("origin updating.");
+            //Debug.Log("origin updating.");
             //calculate where the origin should now be
             LongPos newOrigin = calcOrigin(pos);
 

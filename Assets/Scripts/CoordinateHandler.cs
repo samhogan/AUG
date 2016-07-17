@@ -31,17 +31,22 @@ public class CoordinateHandler : MonoBehaviour
         CoordinateSystem.curSystem = test;
 
         CoordinateSystem.curPlanet = test.planets[0];
-        Debug.Log((test.planets[1] == null) + " " + (test.planets[0] == null));
+      //  Debug.Log((test.planets[1] == null) + " " + (test.planets[0] == null));
         UniverseSystem.curPlanet = CoordinateSystem.curPlanet;
 
         Vector3 startPoint = Random.onUnitSphere;
         startPoint *= CoordinateSystem.curPlanet.noise.getAltitude(startPoint) + 3;
 
+        //planetSpace.pos = new LongPos(startPoint.x, startPoint.y, startPoint.z) * CoordinateSystem.SUperUU;
 
         //calculate the player floating position 
-        player.transform.position = planetSpace.getFloatingPos(startPoint);
+        player.transform.position = startPoint;// planetSpace.getFloatingPos(startPoint);
 
-       
+        planetSpace.update();
+        stellarSpace.update();
+
+        //player.transform.position = planetSpace.getFloatingPos(startPoint);
+
 
         Debug.Log(CoordinateSystem.curPlanet == null);
         player.GetComponent<GravityController>().gravity = CoordinateSystem.curPlanet.gravity;
@@ -55,8 +60,7 @@ public class CoordinateHandler : MonoBehaviour
         ship.transform.rotation = Quaternion.LookRotation(shipStart);
         ship.transform.rotation *= Quaternion.Euler(90, 0, 0);
 
-        planetSpace.update();
-        stellarSpace.update();
+       
     }
 	
 	// Update is called once per frame

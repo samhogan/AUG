@@ -83,7 +83,7 @@ public class Ship : MobileObjects
 				GameUI.ui.displayMessage("super-c drive deactivated because hitting a planet at faster-than-light speed is not beneficial to one's health");
 			}
 			Vector3 realPos = CoordinateHandler.planetSpace.getRealPos();//TODO: idk something
-			speed = Mathf.Abs(realPos.magnitude - UniverseSystem.curPlanet.noise.getAltitude(realPos)) * 9 + 3500;
+			speed = Mathf.Abs(realPos.magnitude - CoordinateSystem.curPlanet.noise.getAltitude(realPos)) * 9 + 3500;
 			//print(Mathf.Abs(Unitracker.getRealPos(transform.position).magnitude - UniverseSystem.curPlanet.radius));
 		}
 		else

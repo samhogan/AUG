@@ -11,7 +11,7 @@ public class CoordinateSystem
     protected readonly double SU;
 
     //the current position of the camera/player in this coordinate system
-    protected LongPos pos;
+    public LongPos pos;
     //the point in this coordinate system that marks the origin of the unity space, moves when the player is out of range
     protected LongPos floatingOrigin;
 
@@ -62,8 +62,10 @@ public class CoordinateSystem
     public virtual void update()
     {
 
-        if(childBodyDependent())
-            checkVoid();
+        Debug.Log(childBodyDependent() + " " + child.pos);
+
+      //  if(childBodyDependent())
+        //    checkVoid();
 
        // Debug.Log("sup");
         //first calculate the new position and update the child system if needed
@@ -73,13 +75,15 @@ public class CoordinateSystem
       
             if(childOriginNeedsUpdate())
                 updateChildRef();
-            Debug.Log(childRef);
-            //Debug.Log(child.pos.x + " " + child.pos.y + " " + child.pos.z);
+
+            checkBodies();
         }
         else//we are on a planet
         {
             //the planet origin is the origin
+
             pos = child.getBodyReference().scaledPos + child.pos / SUtoChildSU;
+           
             checkVoid();
         }
 
@@ -111,7 +115,8 @@ public class CoordinateSystem
     protected void enterBody()
     {
         //convert this coordinate to a child coordinate
-        child.pos = (pos - getBodyReference().scaledPos) * SUtoChildSU;
+        child.pos = (pos - child.getBodyReference().scaledPos) * SUtoChildSU;
+      
         child.updateTracker();
     }
 

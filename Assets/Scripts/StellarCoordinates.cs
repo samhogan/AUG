@@ -24,6 +24,7 @@ public class StellarCoordinates : CoordinateSystem {
 
     protected override void checkVoid()
     {
+       // Debug.Log(LongPos.Distance(pos, curPlanet.scaledPos) + " " + curPlanet.atmosRadius);
         if(LongPos.Distance(pos, curPlanet.scaledPos) > curPlanet.atmosRadius)
         {
             curPlanet = null;
@@ -38,7 +39,8 @@ public class StellarCoordinates : CoordinateSystem {
             if(LongPos.Distance(pos, plan.scaledPos) < plan.atmosRadius)
             {
                 curPlanet = plan;
-                updateChildRef();
+                enterBody();
+                break;
             }
         }
     }
