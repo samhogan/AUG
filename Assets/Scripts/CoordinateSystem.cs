@@ -62,12 +62,7 @@ public class CoordinateSystem
     public virtual void update()
     {
 
-        Debug.Log(childBodyDependent() + " " + child.pos);
 
-      //  if(childBodyDependent())
-        //    checkVoid();
-
-       // Debug.Log("sup");
         //first calculate the new position and update the child system if needed
         if(!childBodyDependent())
         {
@@ -82,8 +77,8 @@ public class CoordinateSystem
         {
             //the planet origin is the origin
 
-            pos = child.getBodyReference().scaledPos + child.pos / SUtoChildSU;
-           
+            //the pos is the reference plus the child coordinates rotated around the ref body
+            pos = child.getBodyReference().scaledPos + rotAroundChildRef(child.pos / SUtoChildSU);
             checkVoid();
         }
 
@@ -97,6 +92,13 @@ public class CoordinateSystem
     }
 
 
+    //rotates a given longpos by the rotation of the reference body 
+    //this compensates for rotation of the body and therefore of the entire child coordinate system
+    private LongPos rotAroundChildRef(LongPos pos)
+    {
+        Vector3 rotated = child.getBodyReference().Rotation*pos.toVector3();
+        return new LongPos((long)rotated.x, (long)rotated.y, (long)rotated.z);
+    }
 
     //checks if the child tracker is far enough away from the body it is attached to to be freed
     //if it is far enough away, separate it from the body
@@ -125,7 +127,11 @@ public class CoordinateSystem
     //rotates the tracker camera based on the child camera
     void updateTrackerRotation()
     {
-        camera.transform.rotation = child.camera.transform.rotation;
+        //if body dependent, compensate for the rotation of it (add the body's rotation to the child cam rotation)
+        if(childBodyDependent())
+            camera.transform.rotation = child.getBodyReference().Rotation * child.camera.transform.rotation;
+        else
+            camera.transform.rotation = child.camera.transform.rotation;
     }
 
     //updates the poition of tracker and shifts it with everything else if out of the floating threshold
@@ -150,6 +156,7 @@ public class CoordinateSystem
         childRef = calcReferenceOrigin();
         child.pos = (pos - childRef) * SUtoChildSU;
         child.updateTracker();
+     
       
     }
 

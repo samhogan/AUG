@@ -82,7 +82,7 @@ public class PlanetaryCoordinates : CoordinateSystem
     }
 
 
-    //updates the poition of player
+    //updates the poition of player based on the pos
     //only called when exit/leaving planet and shifting the full coordinate system
     protected override void updateTracker()
     {

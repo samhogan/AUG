@@ -61,7 +61,7 @@ public class LODSystem
 				if(lodposInRange(pos, lpos) && lpos.level>0)
 				{
 					chunksToSplit.Add(lpos);
-					if(++count>5) break;
+					if(++count>maxBuild) break;
 				}
 
 

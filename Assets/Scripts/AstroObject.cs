@@ -7,6 +7,15 @@ public class AstroObject
     //the position of this astronomical object in its respective space
     public LongPos scaledPos;
 
+    //the gameobject that represents this object in its space
+    public GameObject scaledRep;
+
+    public Quaternion Rotation
+    {
+        get{return scaledRep.transform.rotation; }
+        
+    }
+
     public AstroObject()
     {
     }

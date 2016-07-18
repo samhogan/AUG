@@ -68,7 +68,7 @@ public class TerrainObject : WorldObject
 		if(pos.level > LODSystem.uniCutoff)
 		{
 
-			//add it to unispace and make its parent proud
+			//add it to stellar and make its parent proud
 			transform.SetParent(planet.scaledRep.transform);
 			gameObject.layer = (int)spaces.Stellar;//add to Unispace layer
 		
@@ -88,10 +88,11 @@ public class TerrainObject : WorldObject
 			//gameObject.transform.parent = null;
 			gameObject.transform.localScale = new Vector3(scale, scale, scale)*TerrainObject.wsRatio;
 			gameObject.transform.localPosition = CoordinateHandler.planetSpace.getFloatingPos(pos.toVector3()*scale*TerrainObject.chunkWidth);
+            //gameObject.transform.localRotation = Quaternion.identity;
 
-		}
+        }
 
-	}
+    }
 	//gosh it's just a joke k?
 
 
@@ -107,7 +108,7 @@ public class TerrainObject : WorldObject
 		//maybe do some clever preserving with this later idk
 		coll.sharedMesh = null;
 		transform.parent = null;
-
+        transform.rotation = Quaternion.identity;
 
 	}
 

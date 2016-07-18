@@ -16,7 +16,7 @@ public abstract class CelestialBody : AstroObject
 
 
 	//the large scale representation of the planet in unispace
-	public GameObject scaledRep;
+	//public GameObject scaledRep;
 
 	public float gravity;
 
