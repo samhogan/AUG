@@ -78,7 +78,7 @@ public class CoordinateSystem
             //the planet origin is the origin
 
             //the pos is the reference plus the child coordinates rotated around the ref body
-            pos = child.getBodyReference().scaledPos + rotAroundChildRef(child.pos / SUtoChildSU);
+            pos = child.getBodyReference().scaledPos + rotAroundLong(child.pos / SUtoChildSU, child.getBodyReference().Rotation);
             checkVoid();
         }
 
@@ -92,11 +92,11 @@ public class CoordinateSystem
     }
 
 
-    //rotates a given longpos by the rotation of the reference body 
-    //this compensates for rotation of the body and therefore of the entire child coordinate system
-    private LongPos rotAroundChildRef(LongPos pos)
+    //rotates a given longpos by a certain rotation
+    //this compensates for rotation of a body and therefore of the entire child coordinate system
+    private LongPos rotAroundLong(LongPos pos, Quaternion rot)
     {
-        Vector3 rotated = child.getBodyReference().Rotation*pos.toVector3();
+        Vector3 rotated = rot*pos.toVector3();
         return new LongPos((long)rotated.x, (long)rotated.y, (long)rotated.z);
     }
 
@@ -117,7 +117,8 @@ public class CoordinateSystem
     protected void enterBody()
     {
         //convert this coordinate to a child coordinate
-        child.pos = (pos - child.getBodyReference().scaledPos) * SUtoChildSU;
+        //finds pos relative to the body, rotates it by the inverse of the body rot(to compensate), and converts to child su
+        child.pos = rotAroundLong(pos - child.getBodyReference().scaledPos, Quaternion.Inverse(child.getBodyReference().Rotation)) * SUtoChildSU;
       
         child.updateTracker();
     }
