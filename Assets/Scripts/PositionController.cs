@@ -46,7 +46,7 @@ public class PositionController : MonoBehaviour
 
 	void setUp()
 	{
-		StarSystem test = new StarSystem();
+		StarSystem test = new StarSystem(new LongPos(0,0,0));
 		curSystem = test;
 		curPlanet = test.planets[Random.Range(0, test.planets.Count)];
 		UniverseSystem.curPlanet = curPlanet;

@@ -8,7 +8,7 @@ public class PlanetaryCoordinates : CoordinateSystem
     //temporary
     GameObject ship;
 
-    public PlanetaryCoordinates(GameObject player, GameObject cam, GameObject sh):base(0.0001, player, cam)
+    public PlanetaryCoordinates(double su, GameObject player, GameObject cam, GameObject sh):base(su, player, cam)
     {
         ship = sh;
     }

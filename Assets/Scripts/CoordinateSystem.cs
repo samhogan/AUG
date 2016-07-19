@@ -43,6 +43,7 @@ public class CoordinateSystem
     //static references to the current bodies, null if not connected
     public static Planet curPlanet;
     public static StarSystem curSystem;
+    public static Galaxy curGalaxy;
 
     public CoordinateSystem(double su, GameObject track, GameObject cam)
     {

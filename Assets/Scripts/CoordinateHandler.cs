@@ -3,20 +3,22 @@ using System.Collections;
 
 public class CoordinateHandler : MonoBehaviour
 {
-    public GameObject player, stellarTracker;
-    public GameObject playerCam, stellarCam;
+    public GameObject player, stellarTracker, galacticTracker, universalTracker;
+    public GameObject playerCam, stellarCam, galacticCam, universalCam;
     public GameObject ship;
 
 
     public static PlanetaryCoordinates planetSpace;
     public static StellarCoordinates stellarSpace;
+    public static GalacticCoordinates galacticSpace;
 
     
 
 	void Start ()
     {
-        planetSpace = new PlanetaryCoordinates(player, playerCam, ship);
-        stellarSpace = new StellarCoordinates(stellarTracker, stellarCam, planetSpace);
+        planetSpace = new PlanetaryCoordinates(0.0001, player, playerCam, ship);
+        stellarSpace = new StellarCoordinates(1, stellarTracker, stellarCam, planetSpace);
+        galacticSpace = new GalacticCoordinates(10000, galacticTracker, galacticCam, stellarSpace);
 
         initialPositioning();
 
@@ -26,11 +28,17 @@ public class CoordinateHandler : MonoBehaviour
     void initialPositioning()
     {
 
-        //later move these to worldhandler/universehandler or something
-        StarSystem test = new StarSystem();
-        CoordinateSystem.curSystem = test;
 
-        CoordinateSystem.curPlanet = test.planets[0];
+        //later move these to worldhandler/universehandler or something
+        Galaxy test = new Galaxy();
+        CoordinateSystem.curGalaxy = test;
+        test.generateStuff();
+       
+        StarSystem sys = test.systems[0];
+        CoordinateSystem.curSystem = sys;
+        sys.generateStuff();
+
+        CoordinateSystem.curPlanet = sys.planets[0];
       //  Debug.Log((test.planets[1] == null) + " " + (test.planets[0] == null));
         UniverseSystem.curPlanet = CoordinateSystem.curPlanet;
 
@@ -42,8 +50,8 @@ public class CoordinateHandler : MonoBehaviour
         //calculate the player floating position 
         player.transform.position = startPoint;// planetSpace.getFloatingPos(startPoint);
 
-        planetSpace.update();
-        stellarSpace.update();
+        Update();
+
 
         //player.transform.position = planetSpace.getFloatingPos(startPoint);
 
@@ -67,6 +75,7 @@ public class CoordinateHandler : MonoBehaviour
 	void Update() {
         planetSpace.update();
         stellarSpace.update();
+        galacticSpace.update();
 	}
 
 

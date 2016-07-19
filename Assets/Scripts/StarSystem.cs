@@ -9,9 +9,11 @@ public class StarSystem : AstroObject
 	public Star star;
 	public List<Planet> planets = new List<Planet>();
 
-	public StarSystem()
+	public StarSystem(LongPos pos)
 	{
-		generateStuff();
+        scaledPos = pos;
+        createRep();
+		//generateStuff();
 	}
 
 	public void generateStuff()
@@ -29,4 +31,27 @@ public class StarSystem : AstroObject
 
 		star = new Star(3452, 23000000, new LongPos(0,0,0));
 	}
+
+    private void createRep()
+    {
+        scaledRep = new GameObject("Star System");
+
+
+
+        //the gameobject that holds the scaledRep's mesh data so it can be scaled
+        GameObject meshobj = GameObject.CreatePrimitive(PrimitiveType.Sphere);
+        meshobj.transform.SetParent(scaledRep.transform);
+        GameObject.Destroy(meshobj.GetComponent<SphereCollider>());//remove this pesky component
+        meshobj.transform.localScale = new Vector3(230,230,230);
+
+        //TODO: move some of these things to a function in celestialbody
+        scaledRep.transform.position = CoordinateHandler.stellarSpace.getFloatingPos(scaledPos);
+
+        scaledRep.layer = (int)spaces.Galactic;//add to stellar space
+        meshobj.layer = (int)spaces.Galactic;
+
+        meshobj.GetComponent<MeshRenderer>().material = Resources.Load("Star") as Material;
+        meshobj.GetComponent<MeshRenderer>().shadowCastingMode = UnityEngine.Rendering.ShadowCastingMode.Off;
+
+    }
 }

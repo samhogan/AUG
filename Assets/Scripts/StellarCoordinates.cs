@@ -3,7 +3,7 @@ using System.Collections;
 
 public class StellarCoordinates : CoordinateSystem {
 
-    public StellarCoordinates(GameObject track, GameObject cam, CoordinateSystem ch) : base(1, track, cam, ch)
+    public StellarCoordinates(double su, GameObject track, GameObject cam, CoordinateSystem ch) : base(su, track, cam, ch)
     {
 
     }
@@ -39,6 +39,7 @@ public class StellarCoordinates : CoordinateSystem {
             if(LongPos.Distance(pos, plan.scaledPos) < plan.atmosRadius)
             {
                 curPlanet = plan;
+                UniverseSystem.curPlanet = plan;//TODO: c'mon sam
                 enterBody();
                 break;
             }
