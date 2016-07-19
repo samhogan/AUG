@@ -18,7 +18,7 @@ public class Galaxy : AstroObject
     {
         System.Random rand = new System.Random(Random.Range(int.MinValue, int.MaxValue));
 
-        for(int i = 0; i<100; i++)
+        for(int i = 0; i<50; i++)
         {
             LongPos pos;
             if(i == 0)

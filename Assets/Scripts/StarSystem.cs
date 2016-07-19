@@ -21,7 +21,7 @@ public class StarSystem : AstroObject
 
 		System.Random rand = new System.Random(Random.Range(int.MinValue, int.MaxValue));
 
-		for(int i = 0; i < 5; i++)
+		for(int i = 0; i < 10; i++)
 		{
 			Planet planet = new Planet(PlanetBuilder.eDist(100000,1000000, rand.NextDouble()), 
 				new LongPos(rand.Next(-30000, 30000)*10000L, rand.Next(-20, 20)*10000L, rand.Next(-30000, 30000)*10000L),
@@ -42,7 +42,7 @@ public class StarSystem : AstroObject
         GameObject meshobj = GameObject.CreatePrimitive(PrimitiveType.Sphere);
         meshobj.transform.SetParent(scaledRep.transform);
         GameObject.Destroy(meshobj.GetComponent<SphereCollider>());//remove this pesky component
-        meshobj.transform.localScale = new Vector3(230,230,230);
+        meshobj.transform.localScale = new Vector3(100,100,100);
 
         //TODO: move some of these things to a function in celestialbody
         scaledRep.transform.position = CoordinateHandler.stellarSpace.getFloatingPos(scaledPos);
