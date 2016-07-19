@@ -22,7 +22,7 @@ public class CameraMove : MonoBehaviour {
 	void Start () 
 	{
 		rb = GetComponent<Rigidbody>();
-		cam = GameObject.FindGameObjectWithTag("MainCamera");
+		cam = GameObject.FindGameObjectWithTag("PlayerCam");
 		playerTargetRot = transform.localEulerAngles;
 		camTargetRot = cam.transform.rotation;
 	}

@@ -16,7 +16,7 @@ public class CoordinateSystem
     protected LongPos floatingOrigin;
 
     //the number of unity units that must be exceeded in unity space for the objects to be shifted back
-    protected const int UUThreshold = 10000;
+    protected const int UUThreshold = 2000;
 
     //the number of scaled units that must be exceeded in this coordinate system for the objects to be shifted back
     protected const int SUThreshold = UUThreshold * SUperUU;
