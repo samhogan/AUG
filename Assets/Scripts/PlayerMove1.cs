@@ -11,6 +11,7 @@ public class PlayerMove1 : MonoBehaviour {
 	private float groundCheck = 0.01f; //distance below player to check for ground
 	private bool wasMoving = false; //if the player was moving the last frame (used to stop the player)
 
+    public bool rotateControl;
 
 	// Use this for initialization
 	void Start () 
@@ -72,12 +73,15 @@ public class PlayerMove1 : MonoBehaviour {
 			//rb.AddForce(0.0f, up, 0.0f, ForceMode.VelocityChange);
 			rb.AddForce(transform.up * up, ForceMode.VelocityChange);
 
-			//planet.Attract(transform);
-
-			Vector3 realPos = CoordinateHandler.planetSpace.getRealPos();
-			//points player away from planet
-			rb.rotation = Quaternion.FromToRotation(transform.up, realPos) * rb.rotation;
-			//print(Quaternion.FromToRotation (transform.up, transform.position) * transform.rotation);
+            //planet.Attract(transform);
+            print(isGrounded());
+            if(!rotateControl)
+            {
+                Vector3 realPos = CoordinateHandler.planetSpace.getRealPos();
+                //points player away from planet
+                rb.rotation = Quaternion.FromToRotation(transform.up, realPos) * rb.rotation;
+            }
+            //print(Quaternion.FromToRotation (transform.up, transform.position) * transform.rotation);
 			/*Vector3 gravityUp = (transform.position).normalized;
 		Vector3 localUp = transform.up;
 		
