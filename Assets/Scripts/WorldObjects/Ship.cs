@@ -5,7 +5,7 @@ public class Ship : MobileObjects
 {
 	public GameObject player;
 	public static bool playerOn = false;
-	Rigidbody rb;
+	//Rigidbody rb;
 //	FixedJoint fj;
 
 	public float speed = 20f;

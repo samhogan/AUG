@@ -64,16 +64,22 @@ public class ProcMesh
 	}
 		
 	//builds a right rectangular prism
-	public static void addCube(MeshBuilder mb, Vector3 origin, float width, float length, float height, Sub sub)//also add rotation quaternion
+	public static void addCube(MeshBuilder mb, Vector3 origin, float width, float length, float height, Sub sub, Quaternion rot)
 	{
-		Vector3 widthDir = Vector3.right*width;
-		Vector3 lengthDir = Vector3.forward*length;
-		Vector3 heightDir = Vector3.up*height;
+		Vector3 widthDir = rot*Vector3.right*width;
+		Vector3 lengthDir = rot*Vector3.forward*length;
+		Vector3 heightDir = rot*Vector3.up*height;
 		addCuboid(mb, origin, widthDir, lengthDir, heightDir, sub);
 	}
 
-	//builds a polyhedron made of 6 quadrilaterals
-	public static void addCuboid(MeshBuilder mb, Vector3 origin, Vector3 widthDir, Vector3 lengthDir, Vector3 heightDir, Sub sub)
+    //OVERLOADED!!!!!!!!!!!!!
+    public static void addCube(MeshBuilder mb, Vector3 origin, float width, float length, float height, Sub sub)
+    {
+        addCube(mb, origin, width, length, height, sub, Quaternion.identity);
+    }
+
+    //builds a polyhedron made of 6 quadrilaterals
+    public static void addCuboid(MeshBuilder mb, Vector3 origin, Vector3 widthDir, Vector3 lengthDir, Vector3 heightDir, Sub sub)
 	{
 		addQuad(mb, origin+heightDir*.5f, widthDir, lengthDir, sub);
 		addQuad(mb, origin-heightDir*.5f, -widthDir, lengthDir, sub);

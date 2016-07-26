@@ -6,8 +6,10 @@ using System.Collections;
 public class MobileObjects : WorldObject 
 {
 	protected MeshCollider meshCollider;
+	protected Rigidbody rb;
+ 
 
-	public override void setReferences()
+    public override void setReferences()
 	{
 		base.setReferences();
 		meshCollider = gameObject.GetComponent<MeshCollider>();
@@ -16,7 +18,18 @@ public class MobileObjects : WorldObject
 	public void setMesh(Mesh m)
 	{
 		filter.mesh = m;
-		meshCollider.sharedMesh = m;
-	}
+    }
+
+    public void setMeshCol(Mesh m)
+    {
+        meshCollider.sharedMesh = m;
+    }
+
+    //creates a rigid body for the object
+    public void addRB()
+    {
+        rb = gameObject.AddComponent<Rigidbody>();
+        meshCollider.convex = true;
+    }
 
 }
