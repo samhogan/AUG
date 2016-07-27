@@ -11,6 +11,16 @@ public class VehicleBase : FunctionalObject
         addRB();
     }
 
+
+    void Update()
+    {
+
+
+
+
+    }
+
+
     //don't ask why I capitalized this method but don't follow convention for anything else
     //okay fine I'll tell you, you might want to get some popcorn because it's story time
     //Many believe the Render method to be a fluke, an accident, the result of an experiment gone horribly wrong.
@@ -34,11 +44,12 @@ public class VehicleBase : FunctionalObject
     public override void Render()
     {
         MeshBuilder mb = new MeshBuilder();
-        ProcMesh.addCube(mb, Vector3.zero, 4, 5, .5f, Sub.Gold);
+        ProcMesh.addCube(mb, Vector3.zero, 3, 5, .5f, Sub.Gold);
         setMeshCol(mb.getMesh());
-        addNode(mb, new Vector3(0, 0, -2.5f), Quaternion.Euler(-90, 0, 0));
+        addNode<PowerOutNode>(mb, new Vector3(0, 0, -2.5f), Quaternion.Euler(-90, 0, 0));
         setMesh(mb.getMesh());
 
     }
+
 
 }

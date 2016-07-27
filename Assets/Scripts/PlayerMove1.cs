@@ -74,7 +74,7 @@ public class PlayerMove1 : MonoBehaviour {
 			rb.AddForce(transform.up * up, ForceMode.VelocityChange);
 
             //planet.Attract(transform);
-            print(isGrounded());
+            //print(isGrounded());
             if(!rotateControl)
             {
                 Vector3 realPos = CoordinateHandler.planetSpace.getRealPos();
