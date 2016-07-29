@@ -25,7 +25,11 @@ public class FunctionalObject : MobileObjects
 
         // ProcMesh.addCube(mb, pos, .4f, .4f, .1f, Sub.Foyaite, rot);
         ProcMesh.addQuad(mb, pos, rot * Vector3.right *.4f, rot * Vector3.forward*.4f, sub);
-        nodes.Add(new Node(pos, rot) { go = this.gameObject });
+
+        //create the node
+        Node node = new Node(pos, rot) { go = this.gameObject };
+        nodes.Add(node);
+        Node.curNodes.Add(node);
 
     }
 
