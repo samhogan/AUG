@@ -77,7 +77,15 @@ public class PlayerGrab : MonoBehaviour
 
                         if(Vector3.Distance(nodePos, otherNodePos) < 1)
                         {
-                            targetPos += new Vector3(0, 1, 0);
+                            //targetPos += new Vector3(0, 1, 0);
+                            //targetRot = 
+                            //the rotation of the other node in unity space
+                            Quaternion otherNodeRot = otherNode.go.transform.rotation * otherNode.rotation;
+                            Quaternion nodeTargetRot = otherNodeRot * Quaternion.Euler(180,0,0);
+                            targetRot = nodeTargetRot * Quaternion.Inverse(node.rotation);//AAAAAHHHHHH!!!!! STUPID QUATERNIONS!!!!!!!!!! JK I LOVE THEM BUT THEY ARE SO HARD TO COMPREHEND
+
+                            targetPos = otherNodePos - targetRot * node.position;
+
                         }
 
                     }
