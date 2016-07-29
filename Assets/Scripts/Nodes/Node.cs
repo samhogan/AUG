@@ -22,7 +22,7 @@ public class Node
     private bool isActive;
     public virtual bool Active
     {
-        get { return isActive; }
+        get { Debug.Log("comon"); return isActive; }
         set { isActive = value; }
     }
 
@@ -35,9 +35,13 @@ public class Node
         rotation = rot;
     }
 
-    public void connectNode(Node other)
+    public static void connectNodes(Node n1, Node n2)
     {
-        connected = other;
+        n1.connected = n2;
+        n2.connected = n1;
+
+        FixedJoint joint = n1.go.AddComponent<FixedJoint>();
+        joint.connectedBody = n2.go.GetComponent<Rigidbody>();
     }
 
 }

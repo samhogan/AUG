@@ -27,7 +27,12 @@ public class FunctionalObject : MobileObjects
         ProcMesh.addQuad(mb, pos, rot * Vector3.right *.4f, rot * Vector3.forward*.4f, sub);
 
         //create the node
-        Node node = new Node(pos, rot) { go = this.gameObject };
+        Node node;
+        if(typeof(T) == typeof(PowerInNode))
+            node = new PowerInNode(pos, rot) { go = this.gameObject };
+        else
+            node = new PowerOutNode(pos, rot) { go = this.gameObject };
+
         nodes.Add(node);
         Node.curNodes.Add(node);
 

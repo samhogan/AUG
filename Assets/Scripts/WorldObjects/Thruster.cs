@@ -10,6 +10,17 @@ public class Thruster : FunctionalObject
         addRB();
     }
 
+    void Update()
+    {
+        if(nodes[0].Active)
+            rb.AddForce(transform.up*-100, ForceMode.Acceleration);
+
+       // print(nodes[0] != null);
+        //print(nodes[0].connected != null);
+        //print(nodes[0].connected.Active);
+
+    }
+
     public override void Render()
     {
         MeshBuilder mb = new MeshBuilder();

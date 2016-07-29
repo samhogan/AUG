@@ -13,6 +13,7 @@ public class PowerInNode : Node
     {
         get
         {
+
             if(connected != null)
                 return connected.Active;
             return false;

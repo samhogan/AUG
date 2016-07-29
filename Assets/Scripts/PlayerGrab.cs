@@ -19,6 +19,10 @@ public class PlayerGrab : MonoBehaviour
     //the functional component of the cur object if it has one
     private FunctionalObject fo;
 
+    //the current nodes being sized up if a functional object is held
+    private Node curNode;
+    private Node curOtherNode;
+
     // Use this for initialization
     void Start ()
     {
@@ -60,7 +64,9 @@ public class PlayerGrab : MonoBehaviour
 
         if(isFunctional())
         {
-            print("yes...");
+            
+            curNode = null;
+            curOtherNode = null;
 
             foreach(Node node in fo.nodes)
             {
@@ -85,6 +91,13 @@ public class PlayerGrab : MonoBehaviour
                             targetRot = nodeTargetRot * Quaternion.Inverse(node.rotation);//AAAAAHHHHHH!!!!! STUPID QUATERNIONS!!!!!!!!!! JK I LOVE THEM BUT THEY ARE SO HARD TO COMPREHEND
 
                             targetPos = otherNodePos - targetRot * node.position;
+
+                            //set up node references
+                            curNode = node;
+                            curOtherNode = otherNode;
+
+
+                            break;
 
                         }
 
@@ -128,6 +141,15 @@ public class PlayerGrab : MonoBehaviour
     //drops the current item
     void dropItem()
     {
+
+        //if two nodes are in focus, connect them
+        if(curNode != null)
+        {
+            Node.connectNodes(curNode, curOtherNode);
+        }
+        curNode = null;
+        curOtherNode = null;
+
         curBody.useGravity = true;
         curBody = null;
         curObject = null;

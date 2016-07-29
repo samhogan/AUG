@@ -15,8 +15,7 @@ public class VehicleBase : FunctionalObject
     void Update()
     {
 
-
-
+        nodes[0].Active = Input.GetKey("space");
 
     }
 
