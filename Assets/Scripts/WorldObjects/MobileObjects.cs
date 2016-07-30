@@ -30,6 +30,9 @@ public class MobileObjects : WorldObject
     {
         rb = gameObject.AddComponent<Rigidbody>();
         meshCollider.convex = true;
+
+        //rb.SetDensity(300);
+        rb.mass = 20;
     }
 
 }

@@ -22,7 +22,7 @@ public class Node
     private bool isActive;
     public virtual bool Active
     {
-        get { Debug.Log("comon"); return isActive; }
+        get { return isActive; }
         set { isActive = value; }
     }
 

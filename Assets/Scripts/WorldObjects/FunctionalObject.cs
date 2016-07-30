@@ -21,7 +21,11 @@ public class FunctionalObject : MobileObjects
         Sub sub = Sub.Foyaite;
         if(typeof(T) == typeof(PowerInNode))
             sub = Sub.Vegitation1;
-        
+        else if(typeof(T) == typeof(PowerOutNode))
+            sub = Sub.Foyaite;
+        else if(typeof(T) == typeof(NeutralNode))
+            sub = Sub.IronDioxide;
+
 
         // ProcMesh.addCube(mb, pos, .4f, .4f, .1f, Sub.Foyaite, rot);
         ProcMesh.addQuad(mb, pos, rot * Vector3.right *.4f, rot * Vector3.forward*.4f, sub);
@@ -30,8 +34,10 @@ public class FunctionalObject : MobileObjects
         Node node;
         if(typeof(T) == typeof(PowerInNode))
             node = new PowerInNode(pos, rot) { go = this.gameObject };
-        else
+        else if(typeof(T) == typeof(PowerOutNode))
             node = new PowerOutNode(pos, rot) { go = this.gameObject };
+        else
+            node = new NeutralNode(pos, rot) { go = this.gameObject };
 
         nodes.Add(node);
         Node.curNodes.Add(node);

@@ -14,9 +14,10 @@ public class VehicleBase : FunctionalObject
 
     void Update()
     {
-
-        nodes[0].Active = Input.GetKey("space");
-
+        if(PlayerMove1.sitting)
+        {
+            nodes[0].Active = Input.GetKey("space");
+        }
     }
 
 
@@ -46,6 +47,7 @@ public class VehicleBase : FunctionalObject
         ProcMesh.addCube(mb, Vector3.zero, 3, 5, .5f, Sub.Gold);
         setMeshCol(mb.getMesh());
         addNode<PowerOutNode>(mb, new Vector3(0, 0, -2.5f), Quaternion.Euler(-90, 0, 0));
+        addNode<NeutralNode>(mb, new Vector3(0, .25f, 0), Quaternion.identity);
         setMesh(mb.getMesh());
 
     }

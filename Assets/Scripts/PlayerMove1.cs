@@ -13,6 +13,9 @@ public class PlayerMove1 : MonoBehaviour {
 
     public bool rotateControl;
 
+    //is the player sitting
+    public static bool sitting = false;
+
 	// Use this for initialization
 	void Start () 
 	{
@@ -31,7 +34,7 @@ public class PlayerMove1 : MonoBehaviour {
 
 	void FixedUpdate()
 	{
-		if(!Ship.playerOn)
+		if(!Ship.playerOn && !sitting)
 		{
 			float forward = Input.GetAxis("Vertical");
 			float right = Input.GetAxis("Horizontal");
@@ -71,7 +74,7 @@ public class PlayerMove1 : MonoBehaviour {
 			//jumps if touching the ground
 			if(isGrounded())
 			//rb.AddForce(0.0f, up, 0.0f, ForceMode.VelocityChange);
-			rb.AddForce(transform.up * up, ForceMode.VelocityChange);
+			    rb.AddForce(transform.up * up, ForceMode.VelocityChange);
 
             //planet.Attract(transform);
             //print(isGrounded());
