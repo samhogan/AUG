@@ -18,6 +18,8 @@ public class CameraMove : MonoBehaviour {
 	private float vertRot = 0f; //camera vertical rotation
 
 	private float prot = 0f;
+
+    public GameObject sitRotater;
 	// Use this for initialization
 	void Start () 
 	{
@@ -55,9 +57,12 @@ public class CameraMove : MonoBehaviour {
 		if(smooth) 
 		{
 
-			//transform.eulerAngles += Vector3.Slerp(new Vector3(0f,0f,0f), new Vector3(0f, prot, 0f), smoothTime * Time.deltaTime);
-			//rb.rotation = 
-			transform.Rotate(Vector3.up * xMove);//remember to change to use slerp and rigidbody
+            //transform.eulerAngles += Vector3.Slerp(new Vector3(0f,0f,0f), new Vector3(0f, prot, 0f), smoothTime * Time.deltaTime);
+            //rb.rotation = 
+            if(PlayerMove1.sitting)
+                sitRotater.transform.Rotate(Vector3.up * xMove);
+            else
+                transform.Rotate(Vector3.up * xMove);//remember to change to use slerp and rigidbody
 			//rb.MoveRotation(
 			cam.transform.localRotation = Quaternion.Slerp(cam.transform.localRotation, camTargetRot, smoothTime * Time.deltaTime);
 		}

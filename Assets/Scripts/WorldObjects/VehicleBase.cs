@@ -17,8 +17,35 @@ public class VehicleBase : FunctionalObject
         if(PlayerMove1.sitting)
         {
             nodes[0].Active = Input.GetKey("space");
+            nodes[1].Active = Input.GetKey("g");
+
         }
     }
+
+    void FixedUpdate()
+    {
+        if(PlayerMove1.sitting)
+        {
+            float pitch = Input.GetAxisRaw("Vertical");
+            float yaw = Input.GetAxisRaw("Horizontal");
+            // float throttle = Input.GetButton("Jump") ? (isHyper ? hyperSpeed : speed) : 0.0f;
+
+            float roll = Input.GetKey("q") ? 1 : Input.GetKey("e") ? -1 : 0;
+
+            rb.angularVelocity = Vector3.zero;
+            //rb.velocity = Vector3.zero;
+
+            rb.AddRelativeTorque(pitch * -70, yaw * 70, roll * 70, ForceMode.Acceleration);
+            //transform.Rotate(0, right, forward);
+            //rb.AddForce(transform.forward * throttle, ForceMode.Force);
+
+
+            if(pitch == 0 && yaw == 0 && roll == 0)
+                rb.angularVelocity = Vector3.zero;
+        }
+    }
+
+
 
 
     //don't ask why I capitalized this method but don't follow convention for anything else
@@ -47,7 +74,9 @@ public class VehicleBase : FunctionalObject
         ProcMesh.addCube(mb, Vector3.zero, 3, 5, .5f, Sub.Gold);
         setMeshCol(mb.getMesh());
         addNode<PowerOutNode>(mb, new Vector3(0, 0, -2.5f), Quaternion.Euler(-90, 0, 0));
+        addNode<PowerOutNode>(mb, new Vector3(0, 0, 2.5f), Quaternion.Euler(90, 0, 0));
         addNode<NeutralNode>(mb, new Vector3(0, .25f, 0), Quaternion.identity);
+
         setMesh(mb.getMesh());
 
     }
